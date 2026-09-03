@@ -568,12 +568,171 @@ body.college-mode .p4lab{margin-top:18px}
 }
 @media(prefers-reduced-motion:reduce){.griddy-intro-v30{display:none!important}}
 
+
+/* GRIDLOCK V31 — persistent mobile NFL / COLLEGE switch */
+.mobile-league-nav{
+  display:none;
+}
+@media(max-width:900px){
+  .topbar{height:58px!important}
+  .topbar-inner{min-height:58px;padding:0 12px!important}
+  .brand{min-width:0!important}
+  .brand b{font-size:20px!important}
+  .brand small{font-size:8px!important}
+  .gridlock-g{width:38px!important;height:38px!important;flex:0 0 38px}
+  .top-actions{margin-left:auto!important}
+  .post-play-btn{width:44px;height:44px;padding:0!important;justify-content:center;border-radius:50%!important}
+  .post-play-btn .label{display:none!important}
+  .mainnav{display:none!important}
+
+  .mobile-league-nav{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    position:sticky;
+    top:58px;
+    z-index:29;
+    background:#061522;
+    border-bottom:1px solid #17344b;
+    padding:0 12px;
+  }
+  .mobile-league-btn{
+    height:44px;
+    border:0;
+    border-bottom:3px solid transparent;
+    background:transparent;
+    color:#8fa5b8;
+    font-size:12px;
+    font-weight:1000;
+    letter-spacing:.08em;
+  }
+  .mobile-league-btn.active{
+    color:#fff;
+    border-bottom-color:#168cff;
+  }
+  .mobile-league-btn[data-mobile-league="college"].active{
+    color:#7bc6ff;
+  }
+
+  /* Existing sticky score strip must sit below header + league switch. */
+  .score-strip-wrap{top:102px!important}
+
+  body.college-mode .mobile-league-btn[data-mobile-league="college"]{
+    color:#7bc6ff;
+  }
+}
+@media(max-width:420px){
+  .brand small{display:block!important}
+  .brand b{font-size:19px!important}
+}
+
+
+/* GRIDLOCK V32 — real mobile league switch + live college scoreboard */
+.mobile-header-switch{display:none}
+
+@media(max-width:900px){
+  .topbar{
+    height:100px!important;
+    align-items:stretch!important;
+  }
+  .topbar-inner{
+    min-height:100px!important;
+    padding:7px 12px 0!important;
+    gap:8px!important;
+    flex-wrap:wrap!important;
+    align-content:flex-start!important;
+  }
+  .brand{
+    order:1!important;
+    flex:1 1 auto!important;
+    min-width:0!important;
+    height:48px!important;
+  }
+  .brand b{font-size:20px!important}
+  .brand small{display:block!important;font-size:7px!important}
+  .gridlock-g{width:38px!important;height:38px!important;flex:0 0 38px!important}
+  .top-actions{
+    order:2!important;
+    margin-left:auto!important;
+    height:48px!important;
+    display:flex!important;
+    align-items:center!important;
+  }
+  .post-play-btn{
+    width:42px!important;height:42px!important;
+    border-radius:50%!important;padding:0!important;
+    display:grid!important;place-items:center!important;
+  }
+  .post-play-btn .label{display:none!important}
+  .mainnav{display:none!important}
+
+  .mobile-header-switch{
+    order:3!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    width:100%!important;
+    height:38px!important;
+    border-top:1px solid #15344b!important;
+    margin-top:-2px!important;
+  }
+  .mobile-header-league{
+    border:0!important;
+    border-bottom:3px solid transparent!important;
+    background:transparent!important;
+    color:#849bad!important;
+    font-size:12px!important;
+    font-weight:1000!important;
+    letter-spacing:.08em!important;
+  }
+  .mobile-header-league.active{
+    color:#fff!important;
+    border-bottom-color:#168cff!important;
+  }
+  .mobile-header-league[data-mobile-league="college"].active{color:#7bc6ff!important}
+
+  .score-strip-wrap{
+    top:100px!important;
+    display:block!important;
+  }
+  body.college-mode .score-strip-wrap{
+    display:block!important;
+  }
+  body.college-mode .matchup-head,
+  body.college-mode .tabs-wrap{display:none!important}
+
+  .strip-control{
+    display:flex!important;
+    min-width:96px!important;
+    padding:7px 8px!important;
+    flex-direction:column!important;
+    gap:3px!important;
+  }
+  .strip-control select{
+    width:82px!important;
+    padding:3px 6px!important;
+    font-size:9px!important;
+  }
+  .game-chip{
+    min-width:145px!important;
+    padding:7px 9px!important;
+  }
+  .game-chip .when{font-size:8px!important}
+  .chip-team{font-size:10px!important}
+}
+@media(max-width:420px){
+  .score-strip-wrap{top:100px!important}
+  .game-chip{min-width:138px!important}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
-  <header class="topbar"><div class="topbar-inner"><div class="brand gridlock-brand"><div class="gridlock-g">G</div><div><b>GRIDLOCK</b><small>FOOTBALL INTELLIGENCE</small></div></div><div class="mainnav"><span class="active" data-jump="matchup">NFL</span><span data-jump="heatmaps">COLLEGE</span><span data-jump="projection">PROJECTIONS</span><span data-jump="players">PLAYERS</span><span data-jump="news">NEWS</span></div><div class="top-actions"><div class="share-actions"><button class="share-btn post-play-btn" id="openShareBtn" type="button">＋ <span class="label">POST A PLAY</span></button></div></div></div></header>
-  <div class="score-strip-wrap"><div class="score-strip" id="scoreStrip"><div class="strip-control"><select><option>NFL</option></select><select><option>Week 1</option></select></div></div></div>
+  <header class="topbar"><div class="topbar-inner"><div class="brand gridlock-brand"><div class="gridlock-g">G</div><div><b>GRIDLOCK</b><small>FOOTBALL INTELLIGENCE</small></div></div><div class="mainnav"><span class="active" data-jump="matchup">NFL</span><span data-jump="heatmaps">COLLEGE</span><span data-jump="projection">PROJECTIONS</span><span data-jump="players">PLAYERS</span><span data-jump="news">NEWS</span></div><div class="mobile-header-switch" id="mobileHeaderSwitch" aria-label="League navigation">
+  <button type="button" class="mobile-header-league active" data-mobile-league="nfl">NFL</button>
+  <button type="button" class="mobile-header-league" data-mobile-league="college">COLLEGE</button>
+</div>
+<div class="top-actions"><div class="share-actions"><button class="share-btn post-play-btn" id="openShareBtn" type="button">＋ <span class="label">POST A PLAY</span></button></div></div></div></header>
+<div class="score-strip-wrap"><div class="score-strip" id="scoreStrip"><div class="strip-control"><select><option>NFL</option></select><select><option>Week 1</option></select></div></div></div>
   <section class="matchup-head"><div class="matchup-inner"><div class="team-head"><div class="team-mark" id="markA"></div><div><div class="team-name" id="teamNameA"></div><div class="team-meta" id="teamMetaA"></div></div></div><div class="kick"><div class="date">SEP 13</div><div class="time">1:00 PM ET</div><span class="net">EDGE</span></div><div class="team-head right"><div><div class="team-name" id="teamNameB"></div><div class="team-meta" id="teamMetaB"></div></div><div class="team-mark" id="markB"></div></div></div></section>
   <div class="tabs-wrap"><div class="tabs" id="tabs"><button class="tab active" data-tab="matchup">MATCHUP</button><button class="tab" data-tab="projection">PROJECTION</button><button class="tab" data-tab="players">PLAYERS</button><button class="tab" data-tab="injuries">INJURIES</button><button class="tab" data-tab="trends">TRENDS</button><button class="tab" data-tab="heatmaps">COLLEGE</button><button class="tab" data-tab="simulator">SIMULATOR</button><button class="tab" data-tab="news">NEWS</button><button class="tab" data-tab="chat">CHAT</button></div></div>
 
@@ -1466,7 +1625,7 @@ loadWeek();
 
 <script>
 (function(){
- const SNAP='gridlock.college.snapshots.v30', FIN='gridlock.college.finals.v30';
+ const SNAP='gridlock.college.snapshots.v32', FIN='gridlock.college.finals.v32';
  const $=id=>document.getElementById(id); const n=v=>{if(v===null||v===undefined||v==='')return null;v=Number(v);return Number.isFinite(v)?v:null};
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const rd=k=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return[]}}, wr=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
@@ -1694,7 +1853,7 @@ function syncPerformance(){
 async function refresh(){try{if(typeof loadSportsbookOdds==='function'&&!window.GRIDLOCK_ODDS_LOADED)await loadSportsbookOdds(false)}catch(e){}const valueRows=bestValueRows();const dogRows=dogWatchRows();renderRows('topValueList',valueRows,'value');renderRows('upsetWatchList',dogRows,'upset');featuredValue(valueRows);if($('topValueStamp'))$('topValueStamp').textContent=(window.GRIDLOCK_GET_ODDS_EVENTS?.().length)?'DIRECT + ESPN':'ESPN MARKET';if($('upsetStamp'))$('upsetStamp').textContent=(window.GRIDLOCK_GET_ODDS_EVENTS?.().length)?'LIVE +MONEY':'PRICED + WATCHLIST';syncArchive();syncPerformance()}
  const oldRender=typeof render==='function'?render:null;if(oldRender){window.render=function(){const r=oldRender.apply(this,arguments);setTimeout(refresh,50);return r}}
  let bootTries=0;async function bootWhenSlateReady(){bootTries++;if(slate().length){window.GRIDLOCK_ODDS_LOADED=false;await refresh();return}if(bootTries<80)setTimeout(bootWhenSlateReady,250)}setTimeout(bootWhenSlateReady,100);$('valueMarketFilter')?.addEventListener('change',refresh);
-setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V30={refresh,syncArchive};
+setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V32={refresh,syncArchive};
 })();
 
 </script>
@@ -1720,6 +1879,105 @@ setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V30={refres
   mo.observe(document.body,{attributes:true,attributeFilter:['class']});
   setTimeout(start,200);
   setTimeout(start,850);
+})();
+</script>
+
+
+<script>
+/* GRIDLOCK V32 — mobile league control + College live scoreboard */
+(function(){
+  const buttons=[...document.querySelectorAll('#mobileHeaderSwitch [data-mobile-league]')];
+  const scoreStrip=document.getElementById('scoreStrip');
+  if(!buttons.length||!scoreStrip)return;
+
+  const desktopNFL=document.querySelector('.mainnav [data-jump="matchup"]');
+  const desktopCollege=document.querySelector('.mainnav [data-jump="heatmaps"]');
+
+  function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+  function score(v){
+    if(v===null||v===undefined||v==='')return '0';
+    return String(v);
+  }
+  function gameStatus(g){
+    const st=String(g?.status||'').trim();
+    if(g?.complete)return 'FINAL';
+    return st || 'PREGAME';
+  }
+  function collegeGames(){
+    try{return window.GRIDLOCK_GET_COLLEGE_GAMES?.()||[]}catch(e){return []}
+  }
+  function currentCollegeWindow(){
+    const arr=collegeGames();
+    if(!arr.length)return [];
+    // Live first, then today's/upcoming games, while retaining final games near the current slate.
+    const live=arr.filter(g=>!g.complete && /quarter|half|ot|live|in progress|end/i.test(String(g.status||'')));
+    const rest=arr.filter(g=>!live.includes(g));
+    return [...live,...rest].slice(0,18);
+  }
+  function setControl(league){
+    const control=scoreStrip.querySelector('.strip-control');
+    if(!control)return;
+    control.innerHTML=league==='college'
+      ? '<select aria-label="League"><option>COLLEGE</option></select><select aria-label="Week"><option>Week 1</option></select>'
+      : '<select aria-label="League"><option>NFL</option></select><select aria-label="Week"><option>Week 1</option></select>';
+  }
+  function renderCollegeStrip(){
+    if(!document.body.classList.contains('college-mode'))return;
+    setControl('college');
+    scoreStrip.querySelectorAll('.game-chip').forEach(x=>x.remove());
+    const arr=currentCollegeWindow();
+    for(const g of arr){
+      const el=document.createElement('div');
+      el.className='game-chip college-score-chip';
+      const away=g.away||{},home=g.home||{};
+      const status=gameStatus(g);
+      el.innerHTML=`<div class="when">${esc(status)}</div>
+        <div class="chip-team"><span class="chip-side">${away.logo?`<img class="chip-logo" src="${esc(away.logo)}" alt="">`:''}<span>${esc(away.abbr||away.name||'AWAY')}</span></span><span class="chip-score">${score(away.score)}</span></div>
+        <div class="chip-team"><span class="chip-side">${home.logo?`<img class="chip-logo" src="${esc(home.logo)}" alt="">`:''}<span>${esc(home.abbr||home.name||'HOME')}</span></span><span class="chip-score">${score(home.score)}</span></div>`;
+      el.addEventListener('click',()=>window.GRIDLOCK_OPEN_COLLEGE_GAME?.(g.id));
+      scoreStrip.appendChild(el);
+    }
+  }
+  function renderNFLStrip(){
+    try{if(typeof renderStrip==='function')renderStrip()}catch(e){}
+    setControl('nfl');
+  }
+  function sync(){
+    const college=document.body.classList.contains('college-mode');
+    buttons.forEach(btn=>btn.classList.toggle('active',
+      college ? btn.dataset.mobileLeague==='college' : btn.dataset.mobileLeague==='nfl'
+    ));
+    if(college)renderCollegeStrip(); else renderNFLStrip();
+  }
+  buttons.forEach(btn=>btn.addEventListener('click',()=>{
+    if(btn.dataset.mobileLeague==='college'){
+      desktopCollege?.click();
+      if(!document.body.classList.contains('college-mode')){
+        document.body.classList.add('college-mode');
+        document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+        document.getElementById('heatmaps')?.classList.add('active');
+      }
+    }else{
+      desktopNFL?.click();
+      if(document.body.classList.contains('college-mode'))document.body.classList.remove('college-mode');
+    }
+    sync();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }));
+
+  const mo=new MutationObserver(sync);
+  mo.observe(document.body,{attributes:true,attributeFilter:['class']});
+
+  // College schedule is loaded asynchronously, so refresh scoreboard until games arrive,
+  // then keep live scores/status fresh.
+  let tries=0;
+  const boot=setInterval(()=>{
+    tries++;
+    if(document.body.classList.contains('college-mode'))renderCollegeStrip();
+    if(tries>80)clearInterval(boot);
+  },250);
+  setInterval(()=>{if(document.body.classList.contains('college-mode'))renderCollegeStrip()},10000);
+  setTimeout(sync,100);
 })();
 </script>
 
