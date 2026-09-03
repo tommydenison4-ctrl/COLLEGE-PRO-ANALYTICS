@@ -147,6 +147,22 @@ body.college-mode .p4lab{margin-top:18px}
 
 
 .shared-college-loading .score-strip-wrap,.shared-college-loading .matchup-head,.shared-college-loading .tabs-wrap,.shared-college-loading main.main>.section:not(#heatmaps){display:none!important}
+
+/* GRIDLOCK V19 — College home value boards + automatic final archive */
+.weekly-edge-shell{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.weekly-edge-card{background:linear-gradient(180deg,#0b1b2a,#091724);border:1px solid #17344b;border-radius:10px;overflow:hidden;box-shadow:0 10px 28px rgba(0,0,0,.16)}
+.weekly-edge-head{padding:13px 14px;border-bottom:1px solid #17344b;display:flex;justify-content:space-between;gap:12px;align-items:end}
+.weekly-edge-head b{font-size:12px;letter-spacing:.04em}.weekly-edge-head span{font-size:8px;color:#8fa5b8;font-weight:900}
+.weekly-edge-list{display:grid}.weekly-edge-row{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px 14px;border-top:1px solid #143148}
+.weekly-edge-row:first-child{border-top:0}.weekly-edge-rank{font-size:18px;font-weight:1000;color:#55aaff}.weekly-edge-title{font-size:10px;font-weight:1000}
+.weekly-edge-sub{font-size:8px;color:#8fa5b8;margin-top:3px;line-height:1.4}.weekly-edge-val{text-align:right;white-space:nowrap}.weekly-edge-val b{display:block;font-size:14px}.weekly-edge-val span{font-size:7px;color:#55e59b;font-weight:1000}
+.weekly-empty{padding:22px 14px;color:#718ea2;font-size:9px;line-height:1.55}
+.archive-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 14px}
+.archive-kpi{padding:10px 11px;border:1px solid #17344b;background:#081a29;border-radius:8px}.archive-kpi span{font-size:7px;color:#8fa5b8;font-weight:1000}.archive-kpi b{display:block;font-size:18px;margin-top:3px}
+.archive-list{display:grid;border-top:1px solid #17344b}.archive-row{padding:12px 14px;border-top:1px solid #143148;display:grid;grid-template-columns:1.4fr .9fr .8fr .8fr;gap:10px;align-items:center}
+.archive-row:first-child{border-top:0}.archive-row b{font-size:10px}.archive-row small{display:block;font-size:7px;color:#8fa5b8;margin-top:3px}.archive-metric{font-size:9px;font-weight:900}.archive-metric span{display:block;font-size:7px;color:#718ea2;margin-bottom:2px}
+@media(max-width:800px){.weekly-edge-shell{grid-template-columns:1fr}.archive-grid{grid-template-columns:1fr 1fr}.archive-row{grid-template-columns:1fr 1fr}}
+
 </style>
 </head>
 <body>
@@ -190,6 +206,23 @@ body.college-mode .p4lab{margin-top:18px}
     </div>
     <div class="college-kpis"><div><b id="collegeGameCount">—</b><span>GAMES</span></div><div><b id="collegeProjectedCount">0</b><span>WITH PROJECTIONS</span></div><div><b id="collegeFbsCount">—</b><span>FBS TEAMS ACTIVE</span></div><div><b id="collegeUpdated">—</b><span>UPDATED</span></div></div>
   </div>
+
+  <div class="weekly-edge-shell" id="collegeWeeklyEdge">
+    <div class="weekly-edge-card">
+      <div class="weekly-edge-head"><div><b>TOP VALUE OF THE WEEK</b><br><span>Top 5 GRIDLOCK projection edges vs current lines</span></div><span id="topValueStamp">LOADING</span></div>
+      <div id="topValueList" class="weekly-edge-list"><div class="weekly-empty">Calculating the strongest model-vs-market discrepancies from this week's slate…</div></div>
+    </div>
+    <div class="weekly-edge-card">
+      <div class="weekly-edge-head"><div><b>UPSET WATCH</b><br><span>Top 5 +money underdogs by GRIDLOCK expected value</span></div><span id="upsetStamp">LOADING</span></div>
+      <div id="upsetWatchList" class="weekly-edge-list"><div class="weekly-empty">Loading direct moneyline prices. GRIDLOCK will not invent a moneyline when the feed is unavailable.</div></div>
+    </div>
+  </div>
+  <div class="weekly-edge-card" id="collegeFinalArchive">
+    <div class="weekly-edge-head"><div><b>FINAL GAME ARCHIVE</b><br><span>Frozen pregame projection vs actual final</span></div><span>AUTO-GRADED</span></div>
+    <div id="archiveKpis" class="archive-grid"></div>
+    <div id="archiveList" class="archive-list"><div class="weekly-empty">Current pregame projections are being snapshotted automatically.</div></div>
+  </div>
+
   <div class="college-days" id="collegeDays"></div>
   <div class="college-empty" id="collegeEmpty" style="display:none">No games match these filters.</div>
   <div class="college-projection-note card"><b>MODEL + OVERRIDES</b><span>GRIDLOCK projections use the play-level efficiency model, but are calibrated to the current market spread/total when available. Unknown opponents use an explicit lower-tier prior instead of being treated as average Power 4 teams. CSV import remains available only for manual overrides.</span></div>
@@ -966,5 +999,57 @@ loadWeek();
 })();
 </script>
 
+<script>
+(function(){
+ const SNAP='gridlock.college.snapshots.v19', FIN='gridlock.college.finals.v19';
+ const $=id=>document.getElementById(id); const n=v=>{v=Number(v);return Number.isFinite(v)?v:null};
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const rd=k=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return[]}}, wr=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+ function implied(o){o=n(o);if(o===null||o===0)return null;return o>0?100/(o+100):(-o)/((-o)+100)}
+ function fmtOdds(o){o=n(o);return o===null?'—':(o>0?'+':'')+Math.round(o)}
+ function slate(){try{return typeof games!=='undefined'&&Array.isArray(games)?games:[]}catch(e){return[]}}
+ function projection(g){try{return typeof projFor==='function'?projFor(g):null}catch(e){return null}}
+ function directEvent(g){try{return typeof findOddsEvent==='function'?findOddsEvent(g):null}catch(e){return null}}
+ function bookName(b){try{return typeof bookLabel==='function'?bookLabel(b):(b.title||b.key||'Sportsbook')}catch(e){return b.title||b.key||'Sportsbook'}}
+ function market(b,k){try{return typeof marketByKey==='function'?marketByKey(b,k):(b.markets||[]).find(x=>x.key===k)}catch(e){return null}}
+ function outcome(m,name){try{return typeof outcomeByName==='function'?outcomeByName(m,name):(m?.outcomes||[]).find(x=>x.name===name)}catch(e){return null}}
+ function bestValueRows(){let rows=[];
+   for(const g of slate()){
+     if(g.complete)continue; const p=projection(g);if(!p)continue;
+     const modelMargin=n(p.home_score)-n(p.away_score), modelTotal=n(p.home_score)+n(p.away_score);if(!Number.isFinite(modelMargin)||!Number.isFinite(modelTotal))continue;
+     const e=directEvent(g);
+     if(e){for(const b of (e.bookmakers||[])){
+       const sm=market(b,'spreads');
+       for(const team of [g.away.name,g.home.name]){const o=outcome(sm,team),pt=n(o?.point);if(pt===null)continue;const tm=team===g.home.name?modelMargin:-modelMargin,edge=tm+pt;if(edge>0)rows.push({key:g.id+'|S|'+team,title:`${team} ${pt>0?'+':''}${pt.toFixed(1)}`,sub:`${g.away.name} at ${g.home.name} • ${bookName(b)} • ${fmtOdds(o.price)}`,edge,kind:'SPREAD'});}
+       const tmkt=market(b,'totals');for(const dir of ['Over','Under']){const o=(tmkt?.outcomes||[]).find(x=>String(x.name).toLowerCase()===dir.toLowerCase()),pt=n(o?.point);if(pt===null)continue;const edge=dir==='Over'?modelTotal-pt:pt-modelTotal;if(edge>0)rows.push({key:g.id+'|T|'+dir,title:`${dir.toUpperCase()} ${pt.toFixed(1)}`,sub:`${g.away.name} at ${g.home.name} • ${bookName(b)} • ${fmtOdds(o.price)}`,edge,kind:'TOTAL'});}
+     }} else {
+       const mm=n(p.market_margin ?? g.market?.home_margin), mt=n(p.market_total ?? g.market?.over_under), provider=g.market?.provider?`ESPN FEED • ${g.market.provider}`:'ESPN MARKET';
+       if(mm!==null){const edge=modelMargin-mm,team=edge>=0?g.home.name:g.away.name;if(Math.abs(edge)>0)rows.push({key:g.id+'|S|'+team,title:`${team} • ${g.market?.details||'SPREAD'}`,sub:`${g.away.name} at ${g.home.name} • ${provider}`,edge:Math.abs(edge),kind:'SPREAD'});}
+       if(mt!==null){const d=modelTotal-mt,dir=d>=0?'OVER':'UNDER';if(Math.abs(d)>0)rows.push({key:g.id+'|T|'+dir,title:`${dir} ${mt.toFixed(1)}`,sub:`${g.away.name} at ${g.home.name} • ${provider}`,edge:Math.abs(d),kind:'TOTAL'});}
+     }
+   }
+   const m=new Map;for(const r of rows){const old=m.get(r.key);if(!old||r.edge>old.edge)m.set(r.key,r)}return [...m.values()].sort((a,b)=>b.edge-a.edge).slice(0,5);
+ }
+ function upsetRows(){let rows=[];
+   for(const g of slate()){if(g.complete)continue;const p=projection(g),e=directEvent(g);if(!p||!e)continue;
+     for(const b of (e.bookmakers||[])){const hm=market(b,'h2h');for(const team of [g.away.name,g.home.name]){const o=outcome(hm,team),od=n(o?.price);if(od===null||od<=0)continue;let prob=team===g.home.name?n(p.home_win_prob):n(p.away_win_prob);if(prob===null)continue;if(prob>1)prob/=100;const imp=implied(od),ev=prob*(od/100)-(1-prob),edge=prob-imp;if(ev>0&&edge>0)rows.push({key:g.id+'|'+team,title:`${team} ML ${fmtOdds(od)}`,sub:`${g.away.name} at ${g.home.name} • ${bookName(b)} • GRIDLOCK ${(prob*100).toFixed(1)}% vs market ${(imp*100).toFixed(1)}%`,ev:ev*100,edge:edge*100});}}
+   }
+   const m=new Map;for(const r of rows){const old=m.get(r.key);if(!old||r.ev>old.ev)m.set(r.key,r)}return [...m.values()].sort((a,b)=>b.ev-a.ev).slice(0,5);
+ }
+ function renderRows(id,rows,type){const el=$(id);if(!el)return;if(!rows.length){el.innerHTML=`<div class="weekly-empty">${type==='upset'?'No positive-EV +money underdog is available from the direct sportsbook feed yet.':'No priced spread/total edges are available yet.'}</div>`;return}el.innerHTML=rows.map((r,i)=>`<div class="weekly-edge-row"><div class="weekly-edge-rank">${i+1}</div><div><div class="weekly-edge-title">${esc(r.title)}</div><div class="weekly-edge-sub">${esc(r.sub)}</div></div><div class="weekly-edge-val"><b>${type==='upset'?`+${r.ev.toFixed(1)}% EV`:`+${r.edge.toFixed(1)} pts`}</b><span>${type==='upset'?`+${r.edge.toFixed(1)}% PROB EDGE`:r.kind+' EDGE'}</span></div></div>`).join('')}
+ function syncArchive(){let snaps=rd(SNAP),fins=rd(FIN),sm=new Map(snaps.map(x=>[x.key,x])),fm=new Map(fins.map(x=>[x.key,x])),changedS=false,changedF=false;
+   for(const g of slate()){const p=projection(g),k='NCAA-'+g.id;if(!p)continue;if(!g.complete&&!sm.has(k)){const s={key:k,id:g.id,away:g.away.name,home:g.home.name,awayProj:n(p.away_score),homeProj:n(p.home_score),market:g.market||{},frozenAt:new Date().toISOString()};snaps.push(s);sm.set(k,s);changedS=true}if(g.complete&&sm.has(k)&&!fm.has(k)){const af=n(g.away.score),hf=n(g.home.score);if(af!==null&&hf!==null){fins.push({key:k,awayFinal:af,homeFinal:hf,finalAt:new Date().toISOString()});fm.set(k,fins[fins.length-1]);changedF=true}}}
+   if(changedS)wr(SNAP,snaps);if(changedF)wr(FIN,fins);renderArchive(snaps,fins)
+ }
+ function renderArchive(snaps=rd(SNAP),fins=rd(FIN)){const fm=new Map(fins.map(x=>[x.key,x])),done=snaps.filter(x=>fm.has(x.key));let wh=0,me=0,te=0,se=0;for(const s of done){const f=fm.get(s.key),pm=s.homeProj-s.awayProj,am=f.homeFinal-f.awayFinal;if((pm>0&&am>0)||(pm<0&&am<0)||(pm===0&&am===0))wh++;me+=Math.abs(pm-am);te+=Math.abs((s.homeProj+s.awayProj)-(f.homeFinal+f.awayFinal));se+=(Math.abs(s.awayProj-f.awayFinal)+Math.abs(s.homeProj-f.homeFinal))/2}
+   if($('archiveKpis'))$('archiveKpis').innerHTML=[['FINAL GAMES',done.length],['WINNER ACC.',done.length?(100*wh/done.length).toFixed(1)+'%':'—'],['AVG MARGIN ERROR',done.length?(me/done.length).toFixed(1):'—'],['AVG SCORE ERROR',done.length?(se/done.length).toFixed(1):'—']].map(x=>`<div class="archive-kpi"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('');
+   const el=$('archiveList');if(!el)return;const shown=snaps.filter(x=>fm.has(x.key)).slice(-12).reverse();el.innerHTML=shown.length?shown.map(s=>{const f=fm.get(s.key),pm=s.homeProj-s.awayProj,am=f.homeFinal-f.awayFinal;return `<div class="archive-row"><div><b>${esc(s.away)} at ${esc(s.home)}</b><small>${new Date(f.finalAt).toLocaleDateString()} • frozen pregame</small></div><div class="archive-metric"><span>PROJECTED → FINAL</span>${s.awayProj.toFixed(1)}–${s.homeProj.toFixed(1)} → ${f.awayFinal}–${f.homeFinal}</div><div class="archive-metric"><span>MARGIN ERROR</span>${Math.abs(pm-am).toFixed(1)}</div><div class="archive-metric"><span>TOTAL ERROR</span>${Math.abs((s.homeProj+s.awayProj)-(f.homeFinal+f.awayFinal)).toFixed(1)}</div></div>`}).join(''):'<div class="weekly-empty">No final games in the frozen archive yet. Current pregame projections are being snapshotted automatically.</div>';
+ }
+ async function refresh(){try{if(typeof loadSportsbookOdds==='function'&&!window.GRIDLOCK_ODDS_LOADED)await loadSportsbookOdds(false)}catch(e){}renderRows('topValueList',bestValueRows(),'value');renderRows('upsetWatchList',upsetRows(),'upset');if($('topValueStamp'))$('topValueStamp').textContent=window.GRIDLOCK_ODDS_EVENTS?.length?'DIRECT + ESPN':'ESPN MARKET';if($('upsetStamp'))$('upsetStamp').textContent=window.GRIDLOCK_ODDS_EVENTS?.length?'LIVE +MONEY':'DIRECT ML REQUIRED';syncArchive()}
+ const oldRender=typeof render==='function'?render:null;if(oldRender){window.render=function(){const r=oldRender.apply(this,arguments);setTimeout(refresh,50);return r}}
+ setTimeout(refresh,400);setInterval(refresh,30000);window.GRIDLOCK_V19={refresh,syncArchive};
+})();
+
+</script>
 </body>
 </html>
