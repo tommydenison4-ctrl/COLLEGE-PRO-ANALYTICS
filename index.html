@@ -107,6 +107,10 @@ body.college-mode .p4lab{margin-top:18px}
 .cg-pred[data-share-index]::after{content:'SHARE ↗';position:absolute;right:12px;top:12px;font-size:8px;font-weight:1000;letter-spacing:.06em;color:#35a9ff;border:1px solid #246487;border-radius:999px;padding:5px 7px}
 .cg-share-hint{font-size:8px;color:#6f91a8;margin:0 0 9px}
 
+
+/* GRIDLOCK V14 prediction picker */
+.play-picker{display:none;gap:10px}.share-modal.play-picker-mode #playShareView>.play-builder{display:none!important}.share-modal.play-picker-mode .play-picker{display:grid}.picker-tabs{display:flex;gap:7px;flex-wrap:wrap}.picker-tab{border:1px solid #24465e;background:#0d2232;color:#dcecff;border-radius:999px;padding:7px 11px;font-size:8px;font-weight:1000;cursor:pointer}.picker-tab.active{background:#1479d9;border-color:#2e9dff;color:#fff}.picker-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.picker-card{border:1px solid #24465e;background:#081d2c;color:#eef7ff;border-radius:10px;padding:11px;text-align:left;cursor:pointer}.picker-card:hover{border-color:#35a9ff;background:#0b2638}.picker-card b{display:block;font-size:10px;margin-bottom:4px}.picker-card span{display:block;font-size:8px;color:#89a7ba;line-height:1.45}.picker-card.disabled{opacity:.45;cursor:default}.picker-title{font-size:11px;font-weight:1000}.picker-sub{font-size:8px;color:#7795a9}.picker-back{border:0;background:transparent;color:#59b6ff;font-size:8px;font-weight:1000;padding:0;cursor:pointer;display:none}.share-modal.quick-share .picker-back{display:inline-block}.share-modal.quick-share .play-picker{display:none!important}@media(max-width:620px){.picker-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -296,7 +300,14 @@ body.college-mode .p4lab{margin-top:18px}
 
 <div class="share-modal" id="shareModal" aria-hidden="true"><div class="share-panel"><div class="share-panel-head"><span>POST A PLAY</span><button class="share-close" id="shareClose" type="button">×</button></div><div class="share-panel-body">
 <div class="share-tabs"><button class="share-tab active" id="playTabBtn" type="button">MY PLAY</button><button class="share-tab" id="matchupTabBtn" type="button">MATCHUP PROJECTION</button><button class="share-tab" id="postedTabBtn" type="button">POSTED PLAYS</button></div>
-<div class="share-view active" id="playShareView"><div class="play-builder">
+<div class="share-view active" id="playShareView">
+<div class="play-picker" id="collegePlayPicker">
+  <div><div class="picker-title" id="pickerGameTitle">SELECT A PLAY</div><div class="picker-sub">Choose a GRIDLOCK prediction or market. No typing required.</div></div>
+  <div class="picker-tabs" id="pickerTabs"><button class="picker-tab active" data-picker-cat="GAME" type="button">GAME</button><button class="picker-tab" data-picker-cat="SPREAD" type="button">SPREAD</button><button class="picker-tab" data-picker-cat="TOTAL" type="button">OVER / UNDER</button><button class="picker-tab" data-picker-cat="PROPS" type="button">PLAYER PROPS</button></div>
+  <div class="picker-grid" id="pickerGrid"></div>
+</div>
+<button class="picker-back" id="pickerBack" type="button">← CHOOSE A DIFFERENT PLAY</button>
+<div class="play-builder">
 <div class="play-type-row"><div class="sim-field"><label>PLAY TYPE</label><select id="playType"><option value="SINGLE">SINGLE PLAY</option><option value="SGP">SAME GAME PARLAY</option><option value="PARLAY">PARLAY</option><option value="OTHER">OTHER</option></select></div><div class="sim-field"><label>SPORTSBOOK / SOURCE</label><input id="playBook" placeholder="Optional"></div></div>
 <div class="play-meta"><div class="sim-field"><label>TITLE</label><input id="playTitle" placeholder="My Week 1 play"></div><div class="sim-field"><label>COMBINED ODDS</label><input id="playOdds" placeholder="+200"></div><div class="sim-field"><label>STAKE</label><input id="playStake" placeholder="$100"></div></div>
 <div><div class="eyebrow" style="margin-bottom:7px">LEGS</div><div class="play-legs" id="playLegs"></div></div>
@@ -423,7 +434,7 @@ function renderPostedPlays(){const rows=postedRead();const graded=rows.filter(x=
 
 function showShareView(view){const play=view==='play',match=view==='matchup',posted=view==='posted';document.getElementById('playShareView')?.classList.toggle('active',play);document.getElementById('matchupShareView')?.classList.toggle('active',match);document.getElementById('postedShareView')?.classList.toggle('active',posted);document.getElementById('playTabBtn')?.classList.toggle('active',play);document.getElementById('matchupTabBtn')?.classList.toggle('active',match);document.getElementById('postedTabBtn')?.classList.toggle('active',posted);if(match){const t=document.getElementById('matchupShareText');if(t)t.value=currentProjectionShareText()}if(posted)renderPostedPlays()}
 function openShare(){const m=document.getElementById('shareModal');m?.classList.remove('quick-share');if(!playLegData.length)addPlayLeg('', '');showShareView('play');updatePlayPreview();m?.classList.add('open');m?.setAttribute('aria-hidden','false')}
-function closeShare(){const m=document.getElementById('shareModal');m?.classList.remove('open','quick-share');m?.setAttribute('aria-hidden','true')}
+function closeShare(){const m=document.getElementById('shareModal');m?.classList.remove('open','quick-share','play-picker-mode');m?.setAttribute('aria-hidden','true')}
 function openQuickShare(opt){
  if(!opt)return;
  const m=document.getElementById('shareModal');
@@ -432,8 +443,43 @@ function openQuickShare(opt){
  if(title)title.value=opt.title||'GRIDLOCK prediction'; if(note)note.value=opt.note||''; if(book)book.value='GRIDLOCK'; if(odds)odds.value=''; if(stake)stake.value=''; if(type)type.value='SINGLE';
  showShareView('play');renderPlayLegs();updatePlayPreview();
  if(opt.text){const t=document.getElementById('shareText');if(t)t.value=opt.text;window.GRIDLOCK_QUICK_SHARE_TEXT=opt.text}else window.GRIDLOCK_QUICK_SHARE_TEXT='';
- m?.classList.add('open','quick-share');m?.setAttribute('aria-hidden','false');
+ m?.classList.remove('play-picker-mode');m?.classList.add('open','quick-share');m?.setAttribute('aria-hidden','false');
  setShareStatus('Ready to send. No typing required.');
+}
+function collegeMarketOptions(g,p){
+ const out=[]; if(!g||!p)return out;
+ const score=`${g.away.name} ${Number(p.away_score).toFixed(1)} – ${Number(p.home_score).toFixed(1)} ${g.home.name}`;
+ const total=Number(p.away_score)+Number(p.home_score), mt=Number(p.market_total ?? g.market?.over_under), margin=Number(p.home_score)-Number(p.away_score), mm=Number(p.market_margin);
+ const awp=Number(p.away_win_prob), hwp=Number(p.home_win_prob);
+ out.push({cat:'GAME',title:`${g.away.name} to win`,sub:`GRIDLOCK win probability ${pct(awp)}`,leg:`${g.away.name} to win`,text:`GRIDLOCK PICK: ${g.away.name} to win\nWin probability: ${pct(awp)}\nProjected score: ${score}`});
+ out.push({cat:'GAME',title:`${g.home.name} to win`,sub:`GRIDLOCK win probability ${pct(hwp)}`,leg:`${g.home.name} to win`,text:`GRIDLOCK PICK: ${g.home.name} to win\nWin probability: ${pct(hwp)}\nProjected score: ${score}`});
+ out.push({cat:'GAME',title:'GRIDLOCK projected score',sub:score,leg:`Projected score: ${score}`,text:`GRIDLOCK PROJECTED SCORE\n${score}`});
+ if(Number.isFinite(mm)){
+   const edge=margin-mm,side=edge>=0?g.home.name:g.away.name,abs=Math.abs(edge);
+   out.push({cat:'SPREAD',title:`${side} — spread lean`,sub:`${abs.toFixed(1)}-point model edge • ${g.market?.details||'market line'}`,leg:`${side} — GRIDLOCK spread lean`,text:`GRIDLOCK SPREAD LEAN: ${side}\nModel edge: ${abs.toFixed(1)} points\nProjected score: ${score}\nMarket: ${g.market?.details||'—'}`});
+ }
+ if(Number.isFinite(mt)){
+   const overEdge=total-mt,underEdge=mt-total;
+   out.push({cat:'TOTAL',title:`OVER ${mt.toFixed(1)}`,sub:`GRIDLOCK total ${total.toFixed(1)} • ${overEdge>=0?overEdge.toFixed(1)+' pts above market':Math.abs(overEdge).toFixed(1)+' pts below market'}`,leg:`OVER ${mt.toFixed(1)}`,text:`GRIDLOCK TOTAL: OVER ${mt.toFixed(1)}\nProjected total: ${total.toFixed(1)}\nProjected score: ${score}`});
+   out.push({cat:'TOTAL',title:`UNDER ${mt.toFixed(1)}`,sub:`GRIDLOCK total ${total.toFixed(1)} • ${underEdge>=0?underEdge.toFixed(1)+' pts below market':Math.abs(underEdge).toFixed(1)+' pts above market'}`,leg:`UNDER ${mt.toFixed(1)}`,text:`GRIDLOCK TOTAL: UNDER ${mt.toFixed(1)}\nProjected total: ${total.toFixed(1)}\nProjected score: ${score}`});
+ }
+ return out;
+}
+function renderCollegePlayPicker(cat='GAME'){
+ const g=window.GRIDLOCK_ACTIVE_COLLEGE_GAME;if(!g)return;
+ let p=null;try{p=window.GRIDLOCK_COLLEGE_PROJ_FOR?window.GRIDLOCK_COLLEGE_PROJ_FOR(g):window.GRIDLOCK_COLLEGE_MODEL?.project(g.away.name,g.home.name,g.neutral,g.market)}catch(e){}
+ const title=document.getElementById('pickerGameTitle');if(title)title.textContent=`${g.away.abbr} at ${g.home.abbr} • SELECT A PLAY`;
+ document.querySelectorAll('[data-picker-cat]').forEach(b=>b.classList.toggle('active',b.dataset.pickerCat===cat));
+ const grid=document.getElementById('pickerGrid');if(!grid)return;
+ if(cat==='PROPS'){grid.innerHTML=`<div class="picker-card disabled" style="grid-column:1/-1"><b>PLAYER PROPS</b><span>Reserved for QB passing, RB rushing/receiving, WR/TE receiving and touchdown projections as the player model is added.</span></div>`;return}
+ const opts=collegeMarketOptions(g,p).filter(x=>x.cat===cat);
+ if(!opts.length){grid.innerHTML=`<div class="picker-card disabled" style="grid-column:1/-1"><b>NO ${cat} MARKET AVAILABLE</b><span>GRIDLOCK does not have a usable current line for this market.</span></div>`;return}
+ grid.innerHTML=opts.map((o,i)=>`<button class="picker-card" type="button" data-picker-index="${i}"><b>${escHtml(o.title)}</b><span>${escHtml(o.sub||'Tap to prepare this play')}</span></button>`).join('');
+ window.GRIDLOCK_PICKER_VISIBLE_OPTIONS=opts;
+}
+function openCollegePlayPicker(){
+ const g=window.GRIDLOCK_ACTIVE_COLLEGE_GAME;if(!g)return openShare();
+ const m=document.getElementById('shareModal');window.GRIDLOCK_QUICK_SHARE_TEXT='';showShareView('play');m?.classList.remove('quick-share');m?.classList.add('open','play-picker-mode');m?.setAttribute('aria-hidden','false');renderCollegePlayPicker('GAME');setShareStatus('Choose the play you want to share or log.');
 }
 function openCollegeProjectionQuickShare(){
  const g=window.GRIDLOCK_ACTIVE_COLLEGE_GAME;if(!g)return openShare();
@@ -629,7 +675,7 @@ function cgChatRows(){try{return JSON.parse(localStorage.getItem(cgChatKey())||'
 function renderCGChat(){let g=selectedCollegeGame;if(!g)return;$('cgChatTitle').textContent=`${g.away.name.toUpperCase()} vs ${g.home.name.toUpperCase()} CHAT`;$('cgChatName').value=localStorage.getItem('gridlock.chat.name')||'';let rows=cgChatRows(),me=$('cgChatName').value;$('cgChatFeed').innerHTML=rows.length?rows.map(r=>`<div class="cg-chat-msg ${r.name===me?'mine':''}"><div class="cg-chat-meta">${escCG(r.name)} • ${new Date(r.time).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}</div>${escCG(r.msg)}</div>`).join(''):'<div style="margin:auto;color:#678398;font-size:9px">No messages in this game room yet.</div>';$('cgChatFeed').scrollTop=$('cgChatFeed').scrollHeight}
 function sendCGChat(){let name=($('cgChatName').value||'Guest').trim().slice(0,28),msg=$('cgChatInput').value.trim();if(!msg)return;localStorage.setItem('gridlock.chat.name',name);let rows=cgChatRows();rows.push({name,msg,time:new Date().toISOString()});localStorage.setItem(cgChatKey(),JSON.stringify(rows.slice(-200)));$('cgChatInput').value='';renderCGChat()}
 function openSpatialForGame(){let g=selectedCollegeGame;if(!g)return;$('collegeSpatialLab').style.display='block';if(window.GRIDLOCK_SCOPE_P4_GAME)window.GRIDLOCK_SCOPE_P4_GAME(g);$('collegeSpatialLab').scrollIntoView({behavior:'smooth',block:'start'})}
-$('collegeDays').addEventListener('click',e=>{let c=e.target.closest('.college-game');if(!c)return;let g=games.find(x=>x.id===c.dataset.game);if(g)openCollegeGame(g)});$('cgBack').onclick=closeCollegeGame;$('cgTabs').addEventListener('click',e=>{let b=e.target.closest('.cg-tab');if(b)setCGTab(b.dataset.cg)});$('cgRunSim').onclick=runCGSim;$('cgPostPlay').onclick=openCollegeProjectionQuickShare;$('cgPredictions').addEventListener('click',e=>{const card=e.target.closest('[data-share-index]');if(!card)return;const opt=(window.GRIDLOCK_COLLEGE_SHARE_OPTIONS||[])[+card.dataset.shareIndex];if(opt)openQuickShare(opt)});$('cgChatSend').onclick=sendCGChat;$('cgChatInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendCGChat()}});$('cgOpenSpatial').onclick=openSpatialForGame;
+$('collegeDays').addEventListener('click',e=>{let c=e.target.closest('.college-game');if(!c)return;let g=games.find(x=>x.id===c.dataset.game);if(g)openCollegeGame(g)});$('cgBack').onclick=closeCollegeGame;$('cgTabs').addEventListener('click',e=>{let b=e.target.closest('.cg-tab');if(b)setCGTab(b.dataset.cg)});$('cgRunSim').onclick=runCGSim;$('cgPostPlay').onclick=openCollegePlayPicker;$('cgPredictions').addEventListener('click',e=>{const card=e.target.closest('[data-share-index]');if(!card)return;const opt=(window.GRIDLOCK_COLLEGE_SHARE_OPTIONS||[])[+card.dataset.shareIndex];if(opt)openQuickShare(opt)});document.getElementById('pickerTabs')?.addEventListener('click',e=>{const b=e.target.closest('[data-picker-cat]');if(b)renderCollegePlayPicker(b.dataset.pickerCat)});document.getElementById('pickerGrid')?.addEventListener('click',e=>{const b=e.target.closest('[data-picker-index]');if(!b)return;const opt=(window.GRIDLOCK_PICKER_VISIBLE_OPTIONS||[])[+b.dataset.pickerIndex];if(opt)openQuickShare(opt)});document.getElementById('pickerBack')?.addEventListener('click',openCollegePlayPicker);$('cgChatSend').onclick=sendCGChat;$('cgChatInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendCGChat()}});$('cgOpenSpatial').onclick=openSpatialForGame;
 
 const ws=$('collegeWeek');weeks.forEach((w,i)=>{let o=document.createElement('option');o.value=i;o.textContent=`${w.label} • ${w.from.slice(5).replace('-','/')}–${w.to.slice(5).replace('-','/')}`;ws.appendChild(o)});ws.value=currentWeekIndex();
 ws.addEventListener('change',loadWeek);$('collegePrevWeek').onclick=()=>{ws.value=Math.max(0,+ws.value-1);loadWeek()};$('collegeNextWeek').onclick=()=>{ws.value=Math.min(weeks.length-1,+ws.value+1);loadWeek()};$('collegeConf').onchange=render;$('collegeSearch').oninput=render;$('collegeProjectionFile').onchange=e=>{let f=e.target.files?.[0];if(f)importProj(f);e.target.value=''};$('collegeClearProj').onclick=()=>{if(confirm('Clear manually imported college projection overrides?')){projections={};localStorage.removeItem('gridlock_college_projections_2026');render()}};
@@ -736,6 +782,7 @@ loadWeek();
   bind('shareClose',hardClose);
   var modal=byId('shareModal');if(modal)modal.addEventListener('click',function(e){if(e.target===modal)hardClose()},true);
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&byId('shareModal')?.classList.contains('open'))hardClose()});
+  var topPost=byId('openShareBtn');if(topPost)topPost.addEventListener('click',function(e){if(window.GRIDLOCK_ACTIVE_COLLEGE_GAME&&typeof openCollegePlayPicker==='function'){e.preventDefault();e.stopImmediatePropagation();openCollegePlayPicker()}},true);
   window.GRIDLOCK_SHARE_CONTROLS_READY=true;
 })();
 </script>
