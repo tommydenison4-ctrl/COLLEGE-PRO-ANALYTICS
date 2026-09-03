@@ -609,5 +609,78 @@ loadWeek();
  if(collegeTab)collegeTab.style.display='none';
 })();
 </script>
+
+<script>
+/* GRIDLOCK V12: resilient share controls. Bound after every league/game module loads. */
+(function(){
+  function byId(id){return document.getElementById(id)}
+  function status(msg){var e=byId('shareStatus');if(e)e.textContent=msg}
+  function prepared(){
+    try{ if(typeof prepareShare==='function') return prepareShare() || byId('shareText')?.value || ''; }catch(e){}
+    try{ if(typeof currentProjectionShareText==='function') return currentProjectionShareText() || ''; }catch(e){}
+    return byId('shareText')?.value || 'GRIDLOCK Football Intelligence';
+  }
+  function shareUrl(){
+    try{ if(typeof currentShareUrl==='function') return currentShareUrl(); }catch(e){}
+    return location.href.split('#')[0];
+  }
+  async function copyFallback(text){
+    text=String(text||'');
+    try{
+      if(navigator.clipboard && window.isSecureContext){await navigator.clipboard.writeText(text);return true}
+    }catch(e){}
+    try{
+      var ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';ta.style.pointerEvents='none';document.body.appendChild(ta);ta.focus();ta.select();var ok=document.execCommand('copy');ta.remove();if(ok)return true;
+    }catch(e){}
+    var box=byId('shareText');if(box){box.style.display='block';box.value=text;box.focus();box.select()}
+    return false;
+  }
+  function openNow(url){
+    var w=null;
+    try{w=window.open(url,'_blank','noopener,noreferrer')}catch(e){}
+    if(!w){status('Your browser blocked the share window. Allow pop-ups for this GRIDLOCK site and try again.');return false}
+    return true;
+  }
+  function xShare(){
+    var text=prepared(), u='https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(shareUrl());
+    var ok=openNow(u); if(ok) status('X composer opened.');
+  }
+  async function fbShare(){
+    var text=prepared();
+    // Open synchronously from the click so Safari does not classify it as an async popup.
+    var u='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(shareUrl());
+    var ok=openNow(u);
+    var copied=await copyFallback(text);
+    if(ok) status(copied?'Facebook opened. Your GRIDLOCK play text was copied — paste it into the post.':'Facebook opened. Paste the play text from the builder into your post.');
+  }
+  async function copyPlay(){
+    var ok=await copyFallback(prepared()); status(ok?'Play copied to clipboard.':'Copy was blocked. The play text is selected so you can copy it manually.');
+  }
+  async function native(){
+    var text=prepared(), url=shareUrl();
+    if(navigator.share){
+      try{await navigator.share({title:'GRIDLOCK Play',text:text,url:url});status('Shared.');try{if(typeof logPostedPlay==='function')logPostedPlay('SHARE')}catch(e){};return}catch(e){if(e && e.name==='AbortError')return}
+    }
+    var ok=await copyFallback(text);status(ok?'Native share is unavailable here, so the play was copied instead.':'Native share is unavailable. Copy the selected play text manually.');
+  }
+  function logPlay(){
+    try{
+      if(typeof logPostedPlay==='function'){logPostedPlay('MANUAL');status('Play logged to Posted Plays.');return}
+    }catch(e){console.error(e)}
+    status('Could not log this play. Reload GRIDLOCK and try again.');
+  }
+  function bind(id,fn){var e=byId(id);if(e)e.onclick=function(ev){ev.preventDefault();ev.stopPropagation();fn(ev)}}
+  bind('shareXBtn',xShare);
+  bind('shareFBBtn',fbShare);
+  bind('shareCopyBtn',copyPlay);
+  bind('nativeShareBtn',native);
+  bind('logPlayBtn',logPlay);
+  bind('matchupShareX',function(){var t='';try{t=currentProjectionShareText()}catch(e){};openNow('https://twitter.com/intent/tweet?text='+encodeURIComponent(t)+'&url='+encodeURIComponent(shareUrl()))});
+  bind('matchupShareFB',async function(){var t='';try{t=currentProjectionShareText()}catch(e){};openNow('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(shareUrl()));await copyFallback(t);status('Facebook opened. Matchup text copied for pasting.');});
+  bind('matchupShareCopy',async function(){var t='';try{t=currentProjectionShareText()}catch(e){};status(await copyFallback(t)?'Matchup projection copied.':'Copy blocked; select the text manually.');});
+  window.GRIDLOCK_SHARE_CONTROLS_READY=true;
+})();
+</script>
+
 </body>
 </html>
