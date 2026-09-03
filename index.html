@@ -181,6 +181,440 @@ body.college-mode .p4lab{margin-top:18px}
 .weekly-edge-val b{color:#f6fbff}.weekly-edge-val span{letter-spacing:.04em}
 @media(max-width:650px){.fun-edge-row{grid-template-columns:24px 42px minmax(0,1fr)!important}.weekly-edge-val{grid-column:3;margin-top:5px;text-align:left}.upset-dog{width:68px;height:42px}}
 
+
+/* GRIDLOCK V23 visual rebuild */
+#collegeWeeklyEdge{grid-template-columns:minmax(0,1.15fr) minmax(0,1.18fr) minmax(250px,.72fr)!important;align-items:stretch}
+#collegeWeeklyEdge>.weekly-edge-card{min-height:360px}
+#collegeWeeklyEdge .weekly-edge-head{min-height:62px}
+#collegeWeeklyEdge .weekly-edge-list{height:calc(100% - 62px)}
+#collegeFinalArchive{margin-top:12px}
+
+.model-perf-card{background:linear-gradient(180deg,#0c1729,#0a1323);border:1px solid #6e2d9a!important}
+.model-perf-card .weekly-edge-head{border-bottom-color:#4a2367}
+.model-perf-card .weekly-edge-head b{color:#e59cff}
+.model-perf-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px}
+.model-perf-stat{background:#0a1829;border:1px solid #263d57;border-radius:9px;padding:12px;min-height:76px}
+.model-perf-stat span{display:block;font-size:7px;color:#8fa5b8;font-weight:1000;letter-spacing:.07em}
+.model-perf-stat b{display:block;font-size:20px;margin-top:8px}
+.model-perf-wide{grid-column:1/-1;min-height:118px}
+.cal-bars{height:72px;display:flex;gap:6px;align-items:end;margin-top:12px}
+.cal-bars i{display:block;flex:1;min-width:8px;background:linear-gradient(180deg,#9c4dcc,#3b1d57);border:1px solid #79409c;border-radius:3px 3px 0 0}
+.perf-foot{padding:0 12px 12px;color:#ffca3a;font-size:8px;font-weight:1000}
+
+#topValueList .fun-edge-row,#upsetWatchList .fun-edge-row{min-height:58px;padding:9px 12px}
+#topValueList .weekly-edge-title,#upsetWatchList .weekly-edge-title{font-size:11px}
+#topValueList .weekly-edge-match,#upsetWatchList .weekly-edge-match{font-size:7px}
+.edge-columns{display:grid;grid-template-columns:54px 54px 54px 74px;gap:6px;align-items:center;text-align:center}
+.edge-columns .ec{font-size:7px;color:#7f9aaf;font-weight:1000}
+.edge-columns .ev{display:block;font-size:11px;color:#eef6ff;margin-top:2px}
+.edge-columns .good{color:#39ec8b}
+.edge-columns .confbar{height:5px;border-radius:999px;background:#153149;overflow:hidden;margin-top:4px}
+.edge-columns .confbar i{display:block;height:100%;background:#19a7ff}
+.value-right{display:flex;align-items:center;gap:10px}
+.value-pill{min-width:70px;border:1px solid #3da95d;background:linear-gradient(180deg,#164b2a,#102f1f);border-radius:8px;padding:7px 8px;text-align:center;color:#8effae;font-size:8px;font-weight:1000;box-shadow:0 0 12px rgba(54,219,104,.12)}
+.value-pill.dog{border-color:#e67a19;background:linear-gradient(180deg,#5a2c0d,#311806);color:#ffd09b}
+.upset-fun-head{position:relative;overflow:visible}
+.dog-head-wrap{position:static!important}
+.upset-dog{position:absolute!important;right:4px;top:48px;width:205px!important;height:290px!important;object-fit:cover!important;object-position:center!important;border-radius:0!important;mix-blend-mode:screen!important;z-index:1;pointer-events:none;filter:drop-shadow(0 10px 14px rgba(0,0,0,.4))!important}
+#upsetWatchList{position:relative;z-index:2;padding-right:162px}
+#upsetWatchList .fun-edge-row{grid-template-columns:26px 42px minmax(0,1fr) auto!important}
+#upsetWatchList .weekly-edge-sub{max-width:220px}
+#upsetStamp{position:relative;z-index:3;background:#1a2637;border:1px solid #394e66;padding:4px 7px;border-radius:999px}
+.top-value-head{border-bottom-color:#426d1d!important}
+#collegeWeeklyEdge>.weekly-edge-card:first-child{border-color:#497d23}
+#collegeWeeklyEdge>.weekly-edge-card:nth-child(2){border-color:#9f5f19}
+#collegeWeeklyEdge>.weekly-edge-card:first-child .weekly-edge-head b{color:#f7ffec}
+#collegeWeeklyEdge>.weekly-edge-card:nth-child(2) .weekly-edge-head b{color:#ffb95e}
+
+.market-filter{height:30px;background:#071827;color:#eaf5ff;border:1px solid #24465e;border-radius:7px;padding:0 8px;font-size:8px;font-weight:900}
+.weekly-edge-head-right{display:flex;align-items:center;gap:7px}
+
+.featured-value-card{margin-top:12px;display:grid;grid-template-columns:1.05fr 1fr .62fr;gap:12px}
+.featured-panel{background:linear-gradient(180deg,#0b1b2a,#091724);border:1px solid #17344b;border-radius:10px;overflow:hidden}
+.featured-head{padding:11px 13px;border-bottom:1px solid #17344b;font-size:11px;font-weight:1000}
+.featured-body{padding:13px}
+.featured-match{display:grid;grid-template-columns:1fr 120px 1fr;align-items:center;gap:10px}
+.featured-team{display:flex;align-items:center;gap:10px}.featured-team.home{justify-content:flex-end;text-align:right}
+.featured-team img{width:58px;height:58px;object-fit:contain}
+.featured-name{font-size:12px;font-weight:1000}.featured-meta{font-size:8px;color:#8fa5b8;margin-top:2px}
+.featured-score{text-align:center;background:#081a29;border:1px solid #17344b;border-radius:9px;padding:10px}
+.featured-score b{font-size:27px}.featured-score span{display:block;font-size:7px;color:#8fa5b8;font-weight:1000}
+.featured-bet{text-align:center;margin-top:8px;color:#55e59b;font-size:12px;font-weight:1000}
+.team-log-table{width:100%;border-collapse:collapse;font-size:8px}.team-log-table th,.team-log-table td{padding:5px;border-bottom:1px solid #153147;text-align:right}.team-log-table th:first-child,.team-log-table td:first-child{text-align:left}
+.why-list{display:grid;gap:8px}.why-item{display:flex;gap:8px;font-size:8px;line-height:1.35;color:#c9d9e7}.why-item:before{content:'✓';width:16px;height:16px;border-radius:50%;background:#103b2b;color:#55e59b;display:grid;place-items:center;font-weight:1000;flex:0 0 16px}
+
+.archive-tabs{display:flex;gap:6px;align-items:center}.archive-tab{border:1px solid #24465e;background:#0d2232;color:#dcecff;border-radius:7px;padding:6px 10px;font-size:8px;font-weight:1000}.archive-tab.active{background:#0e4777;border-color:#168cff}
+.archive-table-head{display:grid;grid-template-columns:90px 1.5fr .8fr .8fr .7fr .7fr .7fr .7fr .7fr;gap:8px;padding:7px 14px;border-top:1px solid #17344b;border-bottom:1px solid #17344b;background:#071522;color:#8fa5b8;font-size:7px;font-weight:1000}
+.archive-empty-center{text-align:center;padding:28px 14px;color:#8fa5b8;font-size:9px}
+.archive-empty-center b{display:block;color:#eaf5ff;font-size:12px;margin-bottom:4px}
+.archive-footer{display:flex;justify-content:space-between;gap:12px;padding:8px 14px;font-size:8px;color:#8fa5b8;flex-wrap:wrap}
+.legend-value{color:#55e59b;font-weight:1000}.legend-dog{color:#ff9a45;font-weight:1000}
+
+@media(max-width:1100px){
+ #collegeWeeklyEdge{grid-template-columns:1fr 1fr!important}
+ .model-perf-card{grid-column:1/-1}
+ .model-perf-grid{grid-template-columns:repeat(4,1fr)}
+ .model-perf-wide{grid-column:span 2}
+ .featured-value-card{grid-template-columns:1fr 1fr}.featured-value-card>.featured-panel:last-child{grid-column:1/-1}
+}
+@media(max-width:760px){
+ #collegeWeeklyEdge{grid-template-columns:1fr!important}
+ #upsetWatchList{padding-right:0}.upset-dog{opacity:.16;right:0;width:170px!important;height:250px!important}
+ .model-perf-grid{grid-template-columns:1fr 1fr}.model-perf-wide{grid-column:1/-1}
+ .featured-value-card{grid-template-columns:1fr}.featured-value-card>.featured-panel:last-child{grid-column:auto}
+ .featured-match{grid-template-columns:1fr}.featured-team.home{justify-content:flex-start;text-align:left}
+ .archive-table-head{display:none}
+}
+
+
+/* GRIDLOCK V24 — wide value boards, isolated mascot, horizontal performance strip */
+#collegeWeeklyEdge{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:14px!important;
+  align-items:stretch!important;
+}
+#collegeWeeklyEdge>.weekly-edge-card{
+  min-width:0!important;
+  min-height:0!important;
+}
+.model-perf-card{
+  grid-column:1/-1!important;
+  min-height:0!important;
+}
+.model-perf-card .weekly-edge-head{min-height:54px!important}
+.model-perf-grid{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  gap:8px!important;
+  padding:10px 12px!important;
+}
+.model-perf-stat{
+  min-height:68px!important;
+  padding:10px!important;
+}
+.model-perf-wide{
+  grid-column:1/-1!important;
+  min-height:90px!important;
+}
+.cal-bars{height:50px!important;margin-top:8px!important}
+
+#topValueList,
+#upsetWatchList{
+  height:auto!important;
+  min-height:0!important;
+}
+#topValueList .fun-edge-row,
+#upsetWatchList .fun-edge-row{
+  min-height:74px!important;
+  padding:10px 12px!important;
+  display:grid!important;
+  grid-template-columns:28px 54px minmax(180px,1fr) minmax(320px,auto)!important;
+  gap:10px!important;
+  align-items:center!important;
+}
+.edge-copy{min-width:0!important}
+.weekly-edge-title{
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  font-size:11px!important;
+}
+.weekly-edge-match,
+.weekly-edge-sub{
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.value-right{
+  display:grid!important;
+  grid-template-columns:minmax(250px,1fr) 78px!important;
+  gap:10px!important;
+  align-items:center!important;
+  min-width:0!important;
+}
+.edge-columns{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(52px,1fr))!important;
+  gap:7px!important;
+  min-width:0!important;
+}
+.edge-columns>div{
+  min-width:0!important;
+  padding:5px 4px!important;
+  border-left:1px solid #17344b!important;
+}
+.edge-columns>div:first-child{border-left:0!important}
+.edge-columns .ec{
+  display:block!important;
+  font-size:7px!important;
+  color:#7f9aaf!important;
+  white-space:nowrap!important;
+}
+.edge-columns .ev{
+  display:block!important;
+  font-size:11px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.edge-logos{
+  width:54px!important;
+  height:44px!important;
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+}
+.edge-logos img{width:38px!important;height:38px!important}
+.edge-logos img+img{width:28px!important;height:28px!important;margin-left:-10px!important}
+.value-pill{
+  min-width:76px!important;
+  padding:8px 6px!important;
+  font-size:8px!important;
+  white-space:nowrap!important;
+}
+.weekly-edge-rank{font-size:19px!important}
+
+/* Upset Watch gets a dedicated mascot rail instead of image overlap */
+#collegeWeeklyEdge>.weekly-edge-card:nth-child(2){
+  position:relative!important;
+  overflow:hidden!important;
+}
+#collegeWeeklyEdge>.weekly-edge-card:nth-child(2) .weekly-edge-head{
+  padding-right:150px!important;
+}
+#upsetWatchList{
+  padding-right:150px!important;
+  position:relative!important;
+  z-index:2!important;
+}
+.upset-dog{
+  position:absolute!important;
+  right:4px!important;
+  top:70px!important;
+  width:145px!important;
+  height:250px!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  z-index:1!important;
+  opacity:1!important;
+  mix-blend-mode:screen!important;
+  pointer-events:none!important;
+  border-radius:0!important;
+}
+.dog-head-wrap{position:static!important}
+#upsetStamp{
+  position:absolute!important;
+  right:12px!important;
+  top:18px!important;
+  z-index:3!important;
+}
+#upsetWatchList .fun-edge-row{
+  grid-template-columns:28px 44px minmax(145px,1fr) minmax(260px,auto)!important;
+}
+#upsetWatchList .value-right{
+  grid-template-columns:minmax(205px,1fr) 70px!important;
+}
+#upsetWatchList .edge-columns{
+  grid-template-columns:repeat(4,minmax(44px,1fr))!important;
+}
+
+/* Featured row remains wide and clean */
+.featured-value-card{
+  grid-template-columns:1.05fr 1fr .72fr!important;
+}
+.featured-panel{min-width:0!important}
+
+/* Slightly denser archive so it fits naturally below */
+#collegeFinalArchive{margin-top:14px!important}
+.archive-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+
+/* Tablet */
+@media(max-width:1180px){
+  #collegeWeeklyEdge{grid-template-columns:1fr!important}
+  .model-perf-card{grid-column:auto!important}
+  #collegeWeeklyEdge>.weekly-edge-card:nth-child(2) .weekly-edge-head{padding-right:145px!important}
+  #upsetWatchList{padding-right:145px!important}
+  .model-perf-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .model-perf-wide{grid-column:1/-1!important}
+}
+
+/* Mobile */
+@media(max-width:780px){
+  #topValueList .fun-edge-row,
+  #upsetWatchList .fun-edge-row{
+    grid-template-columns:24px 42px minmax(0,1fr)!important;
+  }
+  .value-right{
+    grid-column:3!important;
+    grid-template-columns:1fr!important;
+    margin-top:6px!important;
+  }
+  .edge-columns{
+    grid-template-columns:repeat(4,1fr)!important;
+  }
+  .value-pill{justify-self:start!important}
+  #collegeWeeklyEdge>.weekly-edge-card:nth-child(2) .weekly-edge-head{padding-right:12px!important}
+  #upsetWatchList{padding-right:0!important}
+  .upset-dog{
+    width:135px!important;
+    height:220px!important;
+    right:0!important;
+    top:64px!important;
+    opacity:.14!important;
+  }
+  #upsetStamp{position:static!important}
+  .model-perf-grid{grid-template-columns:repeat(2,1fr)!important}
+  .featured-value-card{grid-template-columns:1fr!important}
+}
+
+
+/* GRIDLOCK V25 — Griddy animated intro */
+.griddy-intro{
+  position:relative;
+  height:0;
+  z-index:40;
+  pointer-events:none;
+}
+.griddy-stage{
+  position:absolute;
+  right:10px;
+  top:-8px;
+  width:310px;
+  height:310px;
+  overflow:visible;
+  pointer-events:none;
+}
+.griddy-mascot{
+  position:absolute;
+  right:-270px;
+  top:16px;
+  width:190px;
+  height:270px;
+  object-fit:cover;
+  object-position:center;
+  mix-blend-mode:screen;
+  filter:drop-shadow(0 14px 20px rgba(0,0,0,.48));
+  opacity:0;
+  transform-origin:50% 85%;
+  will-change:transform,opacity;
+}
+.griddy-bark{
+  position:absolute;
+  right:154px;
+  top:6px;
+  min-width:118px;
+  padding:9px 11px 8px;
+  border:2px solid #ff9a1f;
+  border-radius:16px 16px 4px 16px;
+  background:linear-gradient(180deg,#ffb72f,#f07a00);
+  color:#111;
+  font-style:italic;
+  font-weight:1000;
+  line-height:.92;
+  text-align:center;
+  transform:scale(.15) rotate(-8deg);
+  opacity:0;
+  box-shadow:0 10px 28px rgba(0,0,0,.34);
+  will-change:transform,opacity;
+}
+.griddy-bark span,.griddy-bark strong{display:block}
+.griddy-bark span{font-size:20px}
+.griddy-bark strong{font-size:24px}
+.griddy-paws{
+  position:absolute;
+  right:14px;
+  top:245px;
+  display:flex;
+  gap:18px;
+  opacity:0;
+  color:#a66d36;
+  font-size:17px;
+  transform:rotate(-5deg);
+}
+.griddy-intro.run .griddy-mascot{
+  animation:
+    griddyEnter .95s cubic-bezier(.2,.86,.32,1.18) forwards,
+    griddyBarkBody .28s ease-in-out 1.05s 3 alternate,
+    griddyExit 1.35s cubic-bezier(.55,.02,.84,.46) 3.35s forwards;
+}
+.griddy-intro.run .griddy-bark{
+  animation:
+    griddyBubbleIn .22s cubic-bezier(.2,1.25,.4,1) 1.0s forwards,
+    griddyBubblePulse .28s ease-in-out 1.28s 3 alternate,
+    griddyBubbleOut .24s ease 2.35s forwards;
+}
+.griddy-intro.run .griddy-paws{
+  animation:griddyPaws 1.1s ease 3.5s forwards;
+}
+@keyframes griddyEnter{
+  0%{right:-270px;opacity:0;transform:translateY(24px) rotate(5deg) scale(.86)}
+  72%{right:8px;opacity:1;transform:translateY(-5px) rotate(-2deg) scale(1.04)}
+  100%{right:0;opacity:1;transform:translateY(0) rotate(0) scale(1)}
+}
+@keyframes griddyBarkBody{
+  from{transform:translateY(0) rotate(0) scale(1)}
+  to{transform:translateY(-7px) rotate(-2.5deg) scale(1.055)}
+}
+@keyframes griddyBubbleIn{
+  from{opacity:0;transform:scale(.15) rotate(-8deg)}
+  to{opacity:1;transform:scale(1) rotate(-4deg)}
+}
+@keyframes griddyBubblePulse{
+  from{transform:scale(1) rotate(-4deg)}
+  to{transform:scale(1.12) rotate(2deg)}
+}
+@keyframes griddyBubbleOut{
+  to{opacity:0;transform:scale(.4) rotate(7deg)}
+}
+@keyframes griddyExit{
+  0%{right:0;opacity:1;transform:translateY(0) rotate(0) scale(1)}
+  18%{transform:translateY(-8px) rotate(2deg) scale(.99)}
+  36%{transform:translateY(3px) rotate(-2deg) scale(.98)}
+  55%{transform:translateY(-7px) rotate(2deg) scale(.96)}
+  100%{right:-390px;opacity:0;transform:translateY(12px) rotate(7deg) scale(.88)}
+}
+@keyframes griddyPaws{
+  0%{opacity:0;transform:translateX(0) rotate(-5deg)}
+  20%{opacity:.8}
+  100%{opacity:0;transform:translateX(170px) rotate(8deg)}
+}
+.griddy-intro.done{display:none!important}
+
+/* Once Griddy is gone, Upset Watch is full-width and clean. */
+#collegeWeeklyEdge>.weekly-edge-card:nth-child(2) .weekly-edge-head{
+  padding-right:14px!important;
+}
+#upsetWatchList{
+  padding-right:0!important;
+}
+#upsetStamp{
+  position:static!important;
+}
+#upsetWatchList .fun-edge-row{
+  grid-template-columns:28px 54px minmax(180px,1fr) minmax(320px,auto)!important;
+}
+#upsetWatchList .value-right{
+  grid-template-columns:minmax(250px,1fr) 78px!important;
+}
+#upsetWatchList .edge-columns{
+  grid-template-columns:repeat(4,minmax(52px,1fr))!important;
+}
+.upset-dog{display:none!important}
+
+@media(max-width:780px){
+  .griddy-stage{width:230px;height:245px;right:0}
+  .griddy-mascot{width:145px;height:210px}
+  .griddy-bark{right:108px;min-width:92px;padding:7px}
+  .griddy-bark span{font-size:15px}
+  .griddy-bark strong{font-size:18px}
+  #upsetWatchList .fun-edge-row{grid-template-columns:24px 42px minmax(0,1fr)!important}
+  #upsetWatchList .value-right{grid-template-columns:1fr!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .griddy-intro{display:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -225,20 +659,72 @@ body.college-mode .p4lab{margin-top:18px}
     <div class="college-kpis"><div><b id="collegeGameCount">—</b><span>GAMES</span></div><div><b id="collegeProjectedCount">0</b><span>WITH PROJECTIONS</span></div><div><b id="collegeFbsCount">—</b><span>FBS TEAMS ACTIVE</span></div><div><b id="collegeUpdated">—</b><span>UPDATED</span></div></div>
   </div>
 
-  <div class="weekly-edge-shell" id="collegeWeeklyEdge">
-    <div class="weekly-edge-card">
-      <div class="weekly-edge-head"><div><b>💎 TOP VALUE OF THE WEEK</b><br><span>Top 5 GRIDLOCK projection edges vs current lines</span></div><span id="topValueStamp">LOADING</span></div>
-      <div id="topValueList" class="weekly-edge-list"><div class="weekly-empty">Calculating the strongest model-vs-market discrepancies from this week's slate…</div></div>
-    </div>
-    <div class="weekly-edge-card">
-      <div class="weekly-edge-head upset-fun-head"><div><b>🐶 UPSET WATCH</b><br><span>Priced +EV dogs first • best model dogs fill the watchlist</span></div><div class="dog-head-wrap"><img src="assets/upset-dog.png" class="upset-dog" alt="Barking underdog mascot"><span id="upsetStamp">LOADING</span></div></div>
-      <div id="upsetWatchList" class="weekly-edge-list"><div class="weekly-empty">Loading direct moneyline prices. GRIDLOCK will not invent a moneyline when the feed is unavailable.</div></div>
-    </div>
+  
+
+<div id="griddyIntro" class="griddy-intro" aria-hidden="true">
+  <div class="griddy-stage">
+    <div class="griddy-bark" id="griddyBark"><span>BARK!</span><span>BARK!</span><strong>VALUE!</strong></div>
+    <img src="assets/griddy.png" class="griddy-mascot" id="griddyMascot" alt="">
+    <div class="griddy-paws" aria-hidden="true"><i>🐾</i><i>🐾</i><i>🐾</i></div>
   </div>
-  <div class="weekly-edge-card" id="collegeFinalArchive">
-    <div class="weekly-edge-head"><div><b>FINAL GAME ARCHIVE</b><br><span>Frozen pregame projection vs actual final</span></div><span>AUTO-GRADED</span></div>
+</div>
+
+<div class="weekly-edge-shell" id="collegeWeeklyEdge">
+  <div class="weekly-edge-card">
+    <div class="weekly-edge-head top-value-head">
+      <div><b>💎 TOP VALUE OF THE WEEK</b><br><span>Best GRIDLOCK edges vs current market</span></div>
+      <div class="weekly-edge-head-right">
+        <select id="valueMarketFilter" class="market-filter" aria-label="Filter top values">
+          <option value="ALL">ALL MARKETS</option><option value="SPREAD">SPREADS</option><option value="TOTAL">TOTALS</option>
+        </select>
+        <span id="topValueStamp">LOADING</span>
+      </div>
+    </div>
+    <div id="topValueList" class="weekly-edge-list"><div class="weekly-empty">Calculating this week's strongest values…</div></div>
+  </div>
+  <div class="weekly-edge-card upset-card">
+    <div class="weekly-edge-head upset-fun-head">
+      <div><b>🐾 UPSET WATCH</b><br><span>Top +money underdogs with GRIDLOCK value</span></div>
+      <span id="upsetStamp">LOADING</span>
+    </div>
+    
+    <div id="upsetWatchList" class="weekly-edge-list"><div class="weekly-empty">Loading dogs…</div></div>
+  </div>
+  <div class="weekly-edge-card model-perf-card">
+    <div class="weekly-edge-head"><div><b>📊 MODEL PERFORMANCE</b><br><span>Season-to-date</span></div><span>FULL REPORT →</span></div>
+    <div class="model-perf-grid">
+      <div class="model-perf-stat"><span>WINNER ACCURACY</span><b id="perfWinner">—</b></div>
+      <div class="model-perf-stat"><span>AVG MARGIN ERROR</span><b id="perfMargin">—</b></div>
+      <div class="model-perf-stat"><span>SPREAD ACCURACY</span><b id="perfSpread">0-0-0</b></div>
+      <div class="model-perf-stat"><span>AVG SCORE ERROR</span><b id="perfScore">—</b></div>
+      <div class="model-perf-stat"><span>TOTALS ACCURACY</span><b id="perfTotals">0-0-0</b></div>
+      <div class="model-perf-stat"><span>AVG TOTAL ERROR</span><b id="perfTotalErr">—</b></div>
+      <div class="model-perf-stat model-perf-wide"><span>CALIBRATION • EXPECTED VS ACTUAL</span><div class="cal-bars" aria-hidden="true"><i style="height:22%"></i><i style="height:31%"></i><i style="height:39%"></i><i style="height:47%"></i><i style="height:55%"></i><i style="height:62%"></i><i style="height:70%"></i><i style="height:78%"></i><i style="height:86%"></i></div></div>
+    </div>
+    <div class="perf-foot" id="perfGames">🏆 0 graded games</div>
+  </div>
+</div>
+
+<div class="featured-value-card" id="featuredValueCard">
+  <div class="featured-panel">
+    <div class="featured-head">⭐ FEATURED MATCHUP</div>
+    <div class="featured-body" id="featuredMatchBody"><div class="weekly-empty">Selecting the strongest current value…</div></div>
+  </div>
+  <div class="featured-panel">
+    <div class="featured-head">TEAM LOGS • LAST 5</div>
+    <div class="featured-body" id="featuredLogs"><div class="weekly-empty">Team context will appear with the featured value.</div></div>
+  </div>
+  <div class="featured-panel">
+    <div class="featured-head" id="featuredWhyTitle">WHY THE EDGE?</div>
+    <div class="featured-body"><div class="why-list" id="featuredWhy"><div class="why-item">Model and market comparison loading.</div></div></div>
+  </div>
+</div>
+<div class="weekly-edge-card" id="collegeFinalArchive">
+    <div class="weekly-edge-head"><div><b>🏆 FINAL GAME ARCHIVE</b><br><span>Frozen pregame projection vs actual final</span></div><div class="archive-tabs"><button class="archive-tab active" type="button">FINAL <span id="archiveFinalCount">0</span></button><button class="archive-tab" type="button">UPCOMING <span id="archiveUpcomingCount">0</span></button><button class="archive-tab" type="button">ALL <span id="archiveAllCount">0</span></button></div></div>
     <div id="archiveKpis" class="archive-grid"></div>
-    <div id="archiveList" class="archive-list"><div class="weekly-empty">Current pregame projections are being snapshotted automatically.</div></div>
+    <div class="archive-table-head"><span>DATE</span><span>MATCHUP</span><span>PROJ SCORE</span><span>FINAL SCORE</span><span>MARGIN ERR</span><span>TOTAL ERR</span><span>WINNER</span><span>SPREAD</span><span>TOTAL</span></div>
+    <div id="archiveList" class="archive-list"><div class="archive-empty-center"><b>0 final games yet</b>Pregame snapshots are frozen and will appear here automatically.</div></div>
+    <div class="archive-footer"><span><span class="legend-value">💎 VALUE</span> = Top model edge vs market &nbsp; • &nbsp; <span class="legend-dog">🐾 DOG</span> = Positive-EV underdog</span><span>⚡ Auto-grades when ESPN marks final</span></div>
   </div>
 
   <div class="college-days" id="collegeDays"></div>
@@ -1029,7 +1515,7 @@ loadWeek();
 
 <script>
 (function(){
- const SNAP='gridlock.college.snapshots.v22', FIN='gridlock.college.finals.v22';
+ const SNAP='gridlock.college.snapshots.v25', FIN='gridlock.college.finals.v25';
  const $=id=>document.getElementById(id); const n=v=>{if(v===null||v===undefined||v==='')return null;v=Number(v);return Number.isFinite(v)?v:null};
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const rd=k=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return[]}}, wr=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
@@ -1103,7 +1589,14 @@ function bestValueRows(){let rows=[];
     }
   }
   const m=new Map;for(const r of rows){const old=m.get(r.key);if(!old||r.edge>old.edge)m.set(r.key,r)}
-  return [...m.values()].sort((a,b)=>b.edge-a.edge).slice(0,5);
+  let vals=[...m.values()];
+  vals.forEach(r=>{r.rankScore=r.edge/(r.kind==='TOTAL'?14.5:13.5)});
+  vals.sort((a,b)=>b.rankScore-a.rankScore);
+  const f=document.getElementById('valueMarketFilter')?.value||'ALL';
+  if(f!=='ALL')return vals.filter(r=>r.kind===f).slice(0,5);
+  const chosen=[],caps={SPREAD:4,TOTAL:2},used={SPREAD:0,TOTAL:0};
+  for(const r of vals){if(chosen.length>=5)break;if((used[r.kind]||0)>=(caps[r.kind]||5))continue;chosen.push(r);used[r.kind]=(used[r.kind]||0)+1}
+  return chosen;
 }
 function pricedDogRows(){let rows=[];
   for(const g of slate()){
@@ -1168,22 +1661,38 @@ function rowLogos(r){
   const h=r.logos?.home?`<img src="${esc(r.logos.home)}" alt="">`:'';
   return `<div class="edge-logos">${a}${h}</div>`;
 }
+
+function calcConfidence(r,type){
+  if(type==='upset')return r.priced?Math.max(52,Math.min(82,55+(r.edge||0)*1.5)):Math.max(50,Math.min(72,(r.prob||.5)*100));
+  return Math.max(52,Math.min(82,54+(r.rankScore||0)*26));
+}
 function renderRows(id,rows,type){
   const el=$(id);if(!el)return;
-  if(!rows.length){
-    el.innerHTML=`<div class="weekly-empty">${type==='upset'?'No market-defined underdogs are available yet.':'No priced spread/total edges are available yet.'}</div>`;return
-  }
+  if(!rows.length){el.innerHTML=`<div class="weekly-empty">${type==='upset'?'No market-defined underdogs are available yet.':'No qualifying values for this filter.'}</div>`;return}
   el.innerHTML=rows.map((r,i)=>{
-    const valueBadge=type==='upset'?(r.priced?`<span class="fun-badge dog-badge">🐶 +EV DOG</span>`:`<span class="fun-badge watch-badge">🐾 WATCH</span>`):`<span class="fun-badge value-badge">💎 VALUE</span>`;
-    const metric=type==='upset'
-      ?(r.priced?`<b>+${r.ev.toFixed(1)}% EV</b><span>+${r.edge.toFixed(1)}% PROB EDGE</span>`:`<b>${(r.prob*100).toFixed(1)}%</b><span>GRIDLOCK WIN • ML PENDING</span>`)
-      :`<b>+${r.edge.toFixed(1)} pts</b><span>${r.kind==='TOTAL'?(r.direction+' PLAY'):(r.kind+' EDGE')}</span>`;
+    const conf=calcConfidence(r,type);
+    const logos=rowLogos(r);
+    if(type==='upset'){
+      const ml=r.priced?fmtOdds(r.odds):'PENDING';
+      const impliedTxt=r.priced?`${(implied(r.odds)*100).toFixed(1)}%`:'—';
+      return `<div class="weekly-edge-row fun-edge-row" data-edge-game="${esc(r.gameId)}">
+        <div class="weekly-edge-rank">${i+1}</div>${logos}
+        <div class="edge-copy"><div class="weekly-edge-title">${esc(r.title)}</div><div class="weekly-edge-match">${esc(r.matchup)}</div><div class="weekly-edge-sub">${esc(r.sub)}</div></div>
+        <div class="value-right">
+          <div class="edge-columns"><div><span class="ec">ML</span><span class="ev">${ml}</span></div><div><span class="ec">IMPLIED</span><span class="ev">${impliedTxt}</span></div><div><span class="ec">MODEL</span><span class="ev">${(r.prob*100).toFixed(1)}%</span></div><div><span class="ec">EDGE</span><span class="ev good">${r.priced?'+'+r.edge.toFixed(1)+'%':'WATCH'}</span></div></div>
+          <div class="value-pill dog">${r.priced?'🐾 DOG':'🐾 WATCH'}</div>
+        </div>
+      </div>`;
+    }
+    const market=r.marketValue!=null?(r.kind==='TOTAL'?Number(r.marketValue).toFixed(1):teamLineLabel(r.marketValue)):'—';
+    const model=r.modelValue!=null?(r.kind==='TOTAL'?Number(r.modelValue).toFixed(1):teamLineLabel(r.modelValue)):'—';
     return `<div class="weekly-edge-row fun-edge-row" data-edge-game="${esc(r.gameId)}">
-      <div class="weekly-edge-rank">${i+1}</div>
-      ${rowLogos(r)}
-      <div class="edge-copy"><div class="weekly-edge-title">${esc(r.title)} ${valueBadge}</div>
-      <div class="weekly-edge-match">${esc(r.matchup)}</div><div class="weekly-edge-sub">${esc(r.sub)}</div></div>
-      <div class="weekly-edge-val">${metric}</div>
+      <div class="weekly-edge-rank">${i+1}</div>${logos}
+      <div class="edge-copy"><div class="weekly-edge-title">${esc(r.title)}</div><div class="weekly-edge-match">${esc(r.matchup)}</div><div class="weekly-edge-sub">${esc(r.sub)}</div></div>
+      <div class="value-right">
+        <div class="edge-columns"><div><span class="ec">MARKET</span><span class="ev">${market}</span></div><div><span class="ec">MODEL</span><span class="ev">${model}</span></div><div><span class="ec">EDGE</span><span class="ev good">+${r.edge.toFixed(1)}</span></div><div><span class="ec">CONF</span><span class="ev">${Math.round(conf)}%</span><div class="confbar"><i style="width:${conf}%"></i></div></div></div>
+        <div class="value-pill">💎 VALUE</div>
+      </div>
     </div>`;
   }).join('');
   el.querySelectorAll('[data-edge-game]').forEach(row=>row.addEventListener('click',()=>window.GRIDLOCK_OPEN_COLLEGE_GAME?.(row.dataset.edgeGame)));
@@ -1194,13 +1703,77 @@ function renderRows(id,rows,type){
  }
  function renderArchive(snaps=rd(SNAP),fins=rd(FIN)){const fm=new Map(fins.map(x=>[x.key,x])),done=snaps.filter(x=>fm.has(x.key));let wh=0,me=0,te=0,se=0;for(const s of done){const f=fm.get(s.key),pm=s.homeProj-s.awayProj,am=f.homeFinal-f.awayFinal;if((pm>0&&am>0)||(pm<0&&am<0)||(pm===0&&am===0))wh++;me+=Math.abs(pm-am);te+=Math.abs((s.homeProj+s.awayProj)-(f.homeFinal+f.awayFinal));se+=(Math.abs(s.awayProj-f.awayFinal)+Math.abs(s.homeProj-f.homeFinal))/2}
    if($('archiveKpis'))$('archiveKpis').innerHTML=[['FINAL GAMES',done.length],['WINNER ACC.',done.length?(100*wh/done.length).toFixed(1)+'%':'—'],['AVG MARGIN ERROR',done.length?(me/done.length).toFixed(1):'—'],['AVG SCORE ERROR',done.length?(se/done.length).toFixed(1):'—']].map(x=>`<div class="archive-kpi"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('');
-   const el=$('archiveList');if(!el)return;const shown=snaps.filter(x=>fm.has(x.key)).slice(-12).reverse();el.innerHTML=shown.length?shown.map(s=>{const f=fm.get(s.key),pm=s.homeProj-s.awayProj,am=f.homeFinal-f.awayFinal;return `<div class="archive-row"><div><b>${esc(s.away)} at ${esc(s.home)}</b><small>${new Date(f.finalAt).toLocaleDateString()} • frozen pregame</small></div><div class="archive-metric"><span>PROJECTED → FINAL</span>${s.awayProj.toFixed(1)}–${s.homeProj.toFixed(1)} → ${f.awayFinal}–${f.homeFinal}</div><div class="archive-metric"><span>MARGIN ERROR</span>${Math.abs(pm-am).toFixed(1)}</div><div class="archive-metric"><span>TOTAL ERROR</span>${Math.abs((s.homeProj+s.awayProj)-(f.homeFinal+f.awayFinal)).toFixed(1)}</div></div>`}).join(''):`<div class="weekly-empty"><b>${snaps.length} pregame projection snapshots frozen.</b><br>No games from those snapshots are final yet. They will move into the visible archive automatically when ESPN marks them complete.</div>`;
+   const el=$('archiveList');if(!el)return;const shown=snaps.filter(x=>fm.has(x.key)).slice(-12).reverse();el.innerHTML=shown.length?shown.map(s=>{const f=fm.get(s.key),pm=s.homeProj-s.awayProj,am=f.homeFinal-f.awayFinal;return `<div class="archive-row"><div><b>${esc(s.away)} at ${esc(s.home)}</b><small>${new Date(f.finalAt).toLocaleDateString()} • frozen pregame</small></div><div class="archive-metric"><span>PROJECTED → FINAL</span>${s.awayProj.toFixed(1)}–${s.homeProj.toFixed(1)} → ${f.awayFinal}–${f.homeFinal}</div><div class="archive-metric"><span>MARGIN ERROR</span>${Math.abs(pm-am).toFixed(1)}</div><div class="archive-metric"><span>TOTAL ERROR</span>${Math.abs((s.homeProj+s.awayProj)-(f.homeFinal+f.awayFinal)).toFixed(1)}</div></div>`}).join(''):`<div class="archive-empty-center"><b>0 final games yet</b>${snaps.length} pregame projection snapshots frozen • Results will appear here when games complete.</div>`;
  }
- async function refresh(){try{if(typeof loadSportsbookOdds==='function'&&!window.GRIDLOCK_ODDS_LOADED)await loadSportsbookOdds(false)}catch(e){}renderRows('topValueList',bestValueRows(),'value');renderRows('upsetWatchList',dogWatchRows(),'upset');if($('topValueStamp'))$('topValueStamp').textContent=(window.GRIDLOCK_GET_ODDS_EVENTS?.().length)?'DIRECT + ESPN':'ESPN MARKET';if($('upsetStamp'))$('upsetStamp').textContent=(window.GRIDLOCK_GET_ODDS_EVENTS?.().length)?'LIVE +MONEY':'PRICED + WATCHLIST';syncArchive()}
+ 
+function featuredValue(rows){
+  const r=rows?.[0];if(!r)return;
+  const g=slate().find(x=>String(x.id)===String(r.gameId));if(!g)return;const p=projection(g);if(!p)return;
+  const a=g.away,h=g.home;
+  const ab=$('featuredMatchBody');if(ab)ab.innerHTML=`<div class="featured-match">
+    <div class="featured-team"><img src="${esc(a.logo||'')}" alt=""><div><div class="featured-name">${esc(a.name)}</div><div class="featured-meta">${esc(a.abbr||'')} • ${(n(p.away_win_prob)||0)*100>1?((n(p.away_win_prob)||0)*100).toFixed(0)+'%':''}</div></div></div>
+    <div class="featured-score"><span>GRIDLOCK PROJECTION</span><b>${Number(p.away_score).toFixed(0)} – ${Number(p.home_score).toFixed(0)}</b><span>TOTAL ${(Number(p.away_score)+Number(p.home_score)).toFixed(1)}</span><div class="featured-bet">${esc(r.title)} • +${r.edge.toFixed(1)} PTS</div></div>
+    <div class="featured-team home"><div><div class="featured-name">${esc(h.name)}</div><div class="featured-meta">${esc(h.abbr||'')}</div></div><img src="${esc(h.logo||'')}" alt=""></div></div>`;
+  const logs=$('featuredLogs');if(logs)logs.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div><div style="font-size:9px;font-weight:1000;color:#ff8d46;margin-bottom:5px">${esc(a.abbr||a.name)} OFFENSE</div><table class="team-log-table"><tr><th>METRIC</th><th>MODEL</th></tr><tr><td>Projected pts</td><td>${Number(p.away_score).toFixed(1)}</td></tr><tr><td>Win probability</td><td>${((n(p.away_win_prob)||0)*100).toFixed(1)}%</td></tr><tr><td>Team strength</td><td>${n(p.away_strength)?.toFixed?.(1)||'—'}</td></tr><tr><td>Market</td><td>${esc(g.market?.details||'—')}</td></tr></table></div>
+    <div><div style="font-size:9px;font-weight:1000;color:#7bc6ff;margin-bottom:5px">${esc(h.abbr||h.name)} DEFENSE</div><table class="team-log-table"><tr><th>METRIC</th><th>MODEL</th></tr><tr><td>Projected pts</td><td>${Number(p.home_score).toFixed(1)}</td></tr><tr><td>Win probability</td><td>${((n(p.home_win_prob)||0)*100).toFixed(1)}%</td></tr><tr><td>Team strength</td><td>${n(p.home_strength)?.toFixed?.(1)||'—'}</td></tr><tr><td>Total market</td><td>${n(g.market?.over_under)?.toFixed?.(1)||'—'}</td></tr></table></div>
+  </div>`;
+  const wt=$('featuredWhyTitle');if(wt)wt.textContent=`WHY ${r.kind==='TOTAL'?'THE '+(r.direction||'TOTAL'):'THE EDGE'}?`;
+  const why=$('featuredWhy');if(why)why.innerHTML=[
+    `GRIDLOCK projection: ${r.kind==='TOTAL'?Number(r.modelValue).toFixed(1)+' total':(r.modelValue>=0?'+':'')+Number(r.modelValue).toFixed(1)+' margin'}`,
+    `Market reference: ${r.kind==='TOTAL'?Number(r.marketValue).toFixed(1):(r.marketValue>=0?'+':'')+Number(r.marketValue).toFixed(1)}`,
+    `Model edge: +${r.edge.toFixed(1)} points`,
+    `${g.market?.provider?'Market source: '+g.market.provider:'Market source: ESPN/direct sportsbook'}`,
+    `Click the value card to open the full GameCast`
+  ].map(x=>`<div class="why-item">${esc(x)}</div>`).join('');
+}
+function syncPerformance(){
+  const snaps=rd(SNAP),fins=rd(FIN),fm=new Map(fins.map(x=>[x.key,x])),done=snaps.filter(x=>fm.has(x.key));
+  let wh=0,me=0,te=0,se=0;
+  for(const s of done){const f=fm.get(s.key),pm=s.homeProj-s.awayProj,am=f.homeFinal-f.awayFinal;if((pm>0&&am>0)||(pm<0&&am<0)||(pm===0&&am===0))wh++;me+=Math.abs(pm-am);te+=Math.abs((s.homeProj+s.awayProj)-(f.homeFinal+f.awayFinal));se+=(Math.abs(s.awayProj-f.awayFinal)+Math.abs(s.homeProj-f.homeFinal))/2}
+  if($('perfWinner'))$('perfWinner').textContent=done.length?`${wh}-${done.length-wh} • ${(100*wh/done.length).toFixed(0)}%`:'—';
+  if($('perfMargin'))$('perfMargin').textContent=done.length?(me/done.length).toFixed(1)+' PTS':'—';
+  if($('perfScore'))$('perfScore').textContent=done.length?(se/done.length).toFixed(1)+' PTS':'—';
+  if($('perfTotalErr'))$('perfTotalErr').textContent=done.length?(te/done.length).toFixed(1)+' PTS':'—';
+  if($('perfGames'))$('perfGames').textContent=`🏆 ${done.length} graded games`;
+  if($('archiveFinalCount'))$('archiveFinalCount').textContent=done.length;
+  if($('archiveUpcomingCount'))$('archiveUpcomingCount').textContent=Math.max(0,snaps.length-done.length);
+  if($('archiveAllCount'))$('archiveAllCount').textContent=snaps.length;
+}
+async function refresh(){try{if(typeof loadSportsbookOdds==='function'&&!window.GRIDLOCK_ODDS_LOADED)await loadSportsbookOdds(false)}catch(e){}const valueRows=bestValueRows();const dogRows=dogWatchRows();renderRows('topValueList',valueRows,'value');renderRows('upsetWatchList',dogRows,'upset');featuredValue(valueRows);if($('topValueStamp'))$('topValueStamp').textContent=(window.GRIDLOCK_GET_ODDS_EVENTS?.().length)?'DIRECT + ESPN':'ESPN MARKET';if($('upsetStamp'))$('upsetStamp').textContent=(window.GRIDLOCK_GET_ODDS_EVENTS?.().length)?'LIVE +MONEY':'PRICED + WATCHLIST';syncArchive();syncPerformance()}
  const oldRender=typeof render==='function'?render:null;if(oldRender){window.render=function(){const r=oldRender.apply(this,arguments);setTimeout(refresh,50);return r}}
- let bootTries=0;async function bootWhenSlateReady(){bootTries++;if(slate().length){window.GRIDLOCK_ODDS_LOADED=false;await refresh();return}if(bootTries<80)setTimeout(bootWhenSlateReady,250)}setTimeout(bootWhenSlateReady,100);setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V22={refresh,syncArchive};
+ let bootTries=0;async function bootWhenSlateReady(){bootTries++;if(slate().length){window.GRIDLOCK_ODDS_LOADED=false;await refresh();return}if(bootTries<80)setTimeout(bootWhenSlateReady,250)}setTimeout(bootWhenSlateReady,100);$('valueMarketFilter')?.addEventListener('change',refresh);
+setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V25={refresh,syncArchive};
 })();
 
 </script>
+
+<script>
+(function(){
+  const intro=document.getElementById('griddyIntro');
+  if(!intro)return;
+  let started=false;
+  function startGriddy(){
+    if(started)return;
+    started=true;
+    requestAnimationFrame(()=>intro.classList.add('run'));
+    const mascot=document.getElementById('griddyMascot');
+    const cleanup=()=>intro.classList.add('done');
+    mascot?.addEventListener('animationend',e=>{
+      if(e.animationName==='griddyExit')cleanup();
+    });
+    setTimeout(cleanup,5400);
+  }
+  function maybeStart(){
+    if(document.body.classList.contains('college-mode')) startGriddy();
+  }
+  maybeStart();
+  const obs=new MutationObserver(maybeStart);
+  obs.observe(document.body,{attributes:true,attributeFilter:['class']});
+  setTimeout(maybeStart,250);
+  setTimeout(maybeStart,900);
+})();
+</script>
+
 </body>
 </html>
