@@ -119,6 +119,31 @@ body.college-mode .p4lab{margin-top:18px}
 .picker-card .market-line{font-size:13px!important;color:#fff!important;font-weight:1000;margin:3px 0 4px}.picker-card .market-price{font-size:10px!important;color:#4fc3ff!important;font-weight:1000}.picker-card .model-edge{font-size:8px!important;color:#8fd8b7!important;margin-top:5px}.picker-card.source-gridlock{border-color:#28688d}.picker-card.source-fanduel{border-color:#1e68d7}.picker-card.source-betrivers{border-color:#f0a33a}.picker-card.source-bet365{border-color:#25a55b}.picker-card.source-espn{border-color:#8b657c}
 .picker-market-head{grid-column:1/-1;font-size:8px;font-weight:1000;color:#7190a5;letter-spacing:.06em;margin-top:2px}.odds-refresh{border:1px solid #2a5873;background:#0d2a3d;color:#dff2ff;border-radius:999px;padding:5px 8px;font-size:7px;font-weight:1000;cursor:pointer}.odds-refresh:hover{border-color:#43b9ff}
 
+
+/* GRIDLOCK V16 premium pick card + deep links */
+.share-panel{width:min(680px,96vw);border:1px solid #17384f;background:linear-gradient(180deg,#081724 0%,#06121d 100%);border-radius:18px;box-shadow:0 28px 90px rgba(0,0,0,.55)}
+.share-panel-head{padding:16px 18px;border-bottom:1px solid #17364b;color:#dcecff;letter-spacing:.08em;background:rgba(255,255,255,.015)}
+.share-panel-head span{font-size:10px;color:#8ca9bd}.share-close{background:#102c40;color:#eef8ff;border:1px solid #214c68;cursor:pointer}.share-close:hover{background:#173b54}
+.share-tabs{margin:0 0 14px}.share-modal.quick-share .share-tabs{display:none}
+.premium-pick{display:none;position:relative;overflow:hidden;border:1px solid #214a64;border-radius:16px;background:linear-gradient(145deg,#0a1d2b 0%,#071521 55%,#091b29 100%);box-shadow:inset 0 1px rgba(255,255,255,.04),0 16px 35px rgba(0,0,0,.24)}
+.share-modal.quick-share .premium-pick{display:block}
+.premium-pick::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 10% 0%,var(--pick-away-soft,rgba(25,118,210,.20)),transparent 42%),radial-gradient(circle at 95% 0%,var(--pick-home-soft,rgba(180,30,55,.18)),transparent 42%);pointer-events:none}
+.pick-top{position:relative;display:flex;justify-content:space-between;align-items:center;padding:13px 15px;border-bottom:1px solid rgba(255,255,255,.07)}
+.pick-brand{display:flex;align-items:center;gap:9px}.pick-g{width:29px;height:29px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(135deg,#1379ff,#25b3ff);font-size:13px;font-weight:1000;color:#fff;box-shadow:0 5px 16px rgba(19,121,255,.28)}
+.pick-brand b{display:block;font-size:10px;letter-spacing:.09em;color:#fff}.pick-brand small{display:block;font-size:7px;letter-spacing:.13em;color:#6f90a7;margin-top:2px}
+.pick-live{font-size:7px;font-weight:1000;letter-spacing:.08em;color:#78a0b9;border:1px solid #274d63;border-radius:999px;padding:5px 8px;background:#0a2232}
+.pick-matchup{position:relative;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:18px 16px 12px;gap:12px}
+.pick-team{min-width:0}.pick-team.home{text-align:right}.pick-team .abbr{font-size:8px;letter-spacing:.1em;color:#67879c;font-weight:1000}.pick-team .name{font-size:15px;font-weight:1000;color:#f5faff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pick-at{font-size:9px;color:#4d7188;font-weight:1000}
+.pick-market{position:relative;margin:0 16px 15px;border-radius:13px;padding:15px;border:1px solid rgba(255,255,255,.09);background:rgba(5,14,22,.68)}
+.pick-market-kicker{display:flex;align-items:center;gap:7px;font-size:7px;color:#77a0ba;font-weight:1000;letter-spacing:.09em}.pick-book{border:1px solid #2c668a;background:#0b2b3e;color:#bfe7ff;border-radius:999px;padding:4px 7px}.pick-market-main{display:flex;justify-content:space-between;gap:16px;align-items:end;margin-top:9px}.pick-selection{font-size:22px;line-height:1.05;font-weight:1000;color:#fff;letter-spacing:-.02em}.pick-price{font-size:15px;font-weight:1000;color:#54c4ff;white-space:nowrap}.pick-subline{font-size:8px;color:#7896aa;margin-top:7px}
+.pick-intel{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#17364a;border-top:1px solid #17364a}.pick-intel>div{background:#081823;padding:11px 12px}.pick-intel span{display:block;font-size:7px;font-weight:1000;letter-spacing:.08em;color:#66879c}.pick-intel b{display:block;margin-top:4px;font-size:11px;color:#eef8ff}.pick-intel b.edge-good{color:#3ee094}
+.pick-link-note{position:relative;padding:9px 14px;font-size:7px;color:#66879c;border-top:1px solid rgba(255,255,255,.05)}
+.share-modal.quick-share .play-builder>.play-preview{display:none!important}.share-modal.quick-share .play-builder>.share-row{margin-top:14px;justify-content:center;gap:9px}.share-modal.quick-share .share-btn{min-width:96px;justify-content:center;border-radius:999px;padding:10px 13px;font-size:8px;box-shadow:0 5px 15px rgba(0,0,0,.18)}
+.share-modal.quick-share .share-btn.dark{background:#050505}.share-modal.quick-share .share-btn.fb{background:#1877f2}.share-modal.quick-share .share-btn:not(.dark):not(.fb){background:#0d2738;color:#e9f7ff;border-color:#28516a}
+.share-modal.quick-share #shareStatus{text-align:center;margin-top:10px;color:#6f90a6}.picker-back{margin-bottom:10px}
+.shared-pick-badge{display:inline-flex;align-items:center;gap:5px;color:#41d895}.shared-pick-badge:before{content:"";width:6px;height:6px;border-radius:50%;background:#41d895;box-shadow:0 0 9px rgba(65,216,149,.7)}
+@media(max-width:620px){.pick-matchup{grid-template-columns:1fr auto 1fr;padding-left:12px;padding-right:12px}.pick-team .name{font-size:12px}.pick-selection{font-size:18px}.pick-intel{grid-template-columns:1fr}.share-modal.quick-share .share-row{display:grid;grid-template-columns:1fr 1fr}.share-modal.quick-share .share-btn{min-width:0}}
+
 </style>
 </head>
 <body>
@@ -316,6 +341,13 @@ body.college-mode .p4lab{margin-top:18px}
   <div class="picker-grid" id="pickerGrid"></div>
 </div>
 <button class="picker-back" id="pickerBack" type="button">← CHOOSE A DIFFERENT PLAY</button>
+<div class="premium-pick" id="premiumPickCard">
+  <div class="pick-top"><div class="pick-brand"><div class="pick-g">G</div><div><b>GRIDLOCK</b><small>FOOTBALL INTELLIGENCE</small></div></div><div class="pick-live" id="pickShareState">MODEL PICK</div></div>
+  <div class="pick-matchup"><div class="pick-team away"><div class="abbr" id="pickAwayAbbr">AWAY</div><div class="name" id="pickAwayName">Away</div></div><div class="pick-at">AT</div><div class="pick-team home"><div class="abbr" id="pickHomeAbbr">HOME</div><div class="name" id="pickHomeName">Home</div></div></div>
+  <div class="pick-market"><div class="pick-market-kicker"><span class="pick-book" id="pickBook">GRIDLOCK</span><span id="pickMarketType">PREDICTION</span></div><div class="pick-market-main"><div class="pick-selection" id="pickSelection">GRIDLOCK PICK</div><div class="pick-price" id="pickPrice"></div></div><div class="pick-subline" id="pickSubline"></div></div>
+  <div class="pick-intel"><div><span>GRIDLOCK PROJECTION</span><b id="pickProjection">—</b></div><div><span>MODEL EDGE</span><b class="edge-good" id="pickEdge">—</b></div><div><span>MARKET / SOURCE</span><b id="pickSource">—</b></div></div>
+  <div class="pick-link-note"><span class="shared-pick-badge">DEEP LINK READY</span> &nbsp; Shared links reopen this exact pick.</div>
+</div>
 <div class="play-builder">
 <div class="play-type-row"><div class="sim-field"><label>PLAY TYPE</label><select id="playType"><option value="SINGLE">SINGLE PLAY</option><option value="SGP">SAME GAME PARLAY</option><option value="PARLAY">PARLAY</option><option value="OTHER">OTHER</option></select></div><div class="sim-field"><label>SPORTSBOOK / SOURCE</label><input id="playBook" placeholder="Optional"></div></div>
 <div class="play-meta"><div class="sim-field"><label>TITLE</label><input id="playTitle" placeholder="My Week 1 play"></div><div class="sim-field"><label>COMBINED ODDS</label><input id="playOdds" placeholder="+200"></div><div class="sim-field"><label>STAKE</label><input id="playStake" placeholder="$100"></div></div>
@@ -405,7 +437,13 @@ function roomKey(){const cg=window.GRIDLOCK_ACTIVE_COLLEGE_GAME;if(cg)return `NC
 function roomLabel(){const cg=window.GRIDLOCK_ACTIVE_COLLEGE_GAME;if(cg)return `${cg.away.name} vs ${cg.home.name}`;const [a,b]=activePair();return `${tdata(a)[0]} vs ${tdata(b)[0]}`}
 function escHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function currentProjectionShareText(){const cg=window.GRIDLOCK_ACTIVE_COLLEGE_GAME;if(cg&&window.GRIDLOCK_COLLEGE_MODEL){const p=(window.GRIDLOCK_COLLEGE_PROJ_FOR?window.GRIDLOCK_COLLEGE_PROJ_FOR(cg):window.GRIDLOCK_COLLEGE_MODEL.project(cg.away.name,cg.home.name,cg.neutral,cg.market));const hw=Number(p.home_win_prob)||0, fav=hw>=.5?cg.home.name:cg.away.name,pct=(Math.max(hw,1-hw)*100).toFixed(1);return `GRIDLOCK: ${cg.away.name} ${Number(p.away_score).toFixed(1)} – ${Number(p.home_score).toFixed(1)} ${cg.home.name} | ${fav} ${pct}% win probability | Projected total ${(Number(p.away_score)+Number(p.home_score)).toFixed(1)}.`}const [a,b]=activePair(),A=tdata(a),B=tdata(b),m=matchup(a,b),ta=project(a,b,m.p),tb=project(b,a,1-m.p);const fav=m.p>=.5?A[0]:B[0],pct=(Math.max(m.p,1-m.p)*100).toFixed(1);return `GRIDLOCK: ${A[0]} ${Math.round(ta.pts)} – ${Math.round(tb.pts)} ${B[0]} | ${fav} ${pct}% win probability | Projected total ${(ta.pts+tb.pts).toFixed(1)}.`}
-function currentShareUrl(){const base=location.protocol==='file:'?'https://gridlock.football/':location.href.split('#')[0];const cg=window.GRIDLOCK_ACTIVE_COLLEGE_GAME;return cg?base+'#college-game-'+encodeURIComponent(cg.id):base}
+function pickB64Encode(obj){try{return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}catch(e){return ''}}
+function pickB64Decode(str){try{str=String(str||'').replace(/-/g,'+').replace(/_/g,'/');while(str.length%4)str+='=';return JSON.parse(decodeURIComponent(escape(atob(str))))}catch(e){return null}}
+function currentPickPayload(){
+ const o=window.GRIDLOCK_ACTIVE_SHARE_OPT||{};const g=window.GRIDLOCK_ACTIVE_COLLEGE_GAME||{};let p=null;try{p=window.GRIDLOCK_COLLEGE_PROJ_FOR&&g?.away?window.GRIDLOCK_COLLEGE_PROJ_FOR(g):null}catch(e){}
+ return {v:1,gameId:g.id||'',away:g.away?{name:g.away.name,abbr:g.away.abbr,color:g.away.color||g.away.primary||''}:null,home:g.home?{name:g.home.name,abbr:g.home.abbr,color:g.home.color||g.home.primary||''}:null,title:o.title||'',cat:o.cat||'',line:o.line||'',price:o.price||'',book:o.book||'GRIDLOCK',sub:o.sub||'',edge:o.edge||'',leg:o.leg||'',text:window.GRIDLOCK_QUICK_SHARE_TEXT||o.text||'',projection:p?`${g.away?.abbr||'AWAY'} ${Number(p.away_score).toFixed(1)} – ${Number(p.home_score).toFixed(1)} ${g.home?.abbr||'HOME'}`:'',ts:Date.now()}
+}
+function currentShareUrl(){const base=location.protocol==='file:'?'https://gridlock.football/':location.origin+location.pathname;const payload=currentPickPayload();const enc=pickB64Encode(payload);if(enc&&payload.title)return base+'?pick='+encodeURIComponent(enc);const cg=window.GRIDLOCK_ACTIVE_COLLEGE_GAME;return cg?base+'#college-game-'+encodeURIComponent(cg.id):base}
 let playLegData=[];
 function addPlayLeg(text='',odds=''){playLegData.push({text,odds});renderPlayLegs()}
 function removePlayLeg(i){playLegData.splice(i,1);renderPlayLegs()}
@@ -444,16 +482,29 @@ function renderPostedPlays(){const rows=postedRead();const graded=rows.filter(x=
 function showShareView(view){const play=view==='play',match=view==='matchup',posted=view==='posted';document.getElementById('playShareView')?.classList.toggle('active',play);document.getElementById('matchupShareView')?.classList.toggle('active',match);document.getElementById('postedShareView')?.classList.toggle('active',posted);document.getElementById('playTabBtn')?.classList.toggle('active',play);document.getElementById('matchupTabBtn')?.classList.toggle('active',match);document.getElementById('postedTabBtn')?.classList.toggle('active',posted);if(match){const t=document.getElementById('matchupShareText');if(t)t.value=currentProjectionShareText()}if(posted)renderPostedPlays()}
 function openShare(){const m=document.getElementById('shareModal');m?.classList.remove('quick-share');if(!playLegData.length)addPlayLeg('', '');showShareView('play');updatePlayPreview();m?.classList.add('open');m?.setAttribute('aria-hidden','false')}
 function closeShare(){const m=document.getElementById('shareModal');m?.classList.remove('open','quick-share','play-picker-mode');m?.setAttribute('aria-hidden','true')}
-function openQuickShare(opt){
- if(!opt)return;
+function hexToSoft(c,alpha=.18){let x=String(c||'').replace('#','');if(x.length===3)x=x.split('').map(z=>z+z).join('');if(!/^[0-9a-f]{6}$/i.test(x))return `rgba(25,118,210,${alpha})`;const n=parseInt(x,16);return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${alpha})`}
+function renderPremiumPick(opt,payload){
+ const g=window.GRIDLOCK_ACTIVE_COLLEGE_GAME||{};const away=payload?.away||g.away||{},home=payload?.home||g.home||{};
+ const set=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=val||'—'};
+ set('pickAwayName',away.name||'Away');set('pickAwayAbbr',away.abbr||'AWAY');set('pickHomeName',home.name||'Home');set('pickHomeAbbr',home.abbr||'HOME');
+ set('pickBook',payload?.book||opt?.book||'GRIDLOCK');const cat=payload?.cat||opt?.cat||'PREDICTION';set('pickMarketType',cat.replace('GAME','MONEYLINE / GAME'));
+ const rawTitle=payload?.title||opt?.title||'GRIDLOCK PICK', rawLine=payload?.line||opt?.line||'', rawLeg=payload?.leg||opt?.leg||'';let selection=rawTitle;if(cat==='SPREAD'&&rawLine)selection=rawTitle.replace(/\s*[—-]\s*spread lean/i,'').replace(/\s+spread$/i,'')+' '+rawLine;else if(cat==='TOTAL'&&rawLine)selection=rawLine;else if((cat==='GAME'||cat==='MONEYLINE')&&/moneyline/i.test(rawTitle))selection=rawTitle;else if(rawLeg)selection=rawLeg.replace(/\s*\([^)]*\)\s*$/,'');set('pickSelection',selection);set('pickPrice',payload?.price||opt?.price||'');set('pickSubline',payload?.sub||opt?.sub||opt?.title||payload?.title||'');
+ set('pickProjection',payload?.projection||'GRIDLOCK MODEL');set('pickEdge',payload?.edge||opt?.edge||'MODEL PICK');set('pickSource',payload?.book||opt?.book||'GRIDLOCK');
+ const card=document.getElementById('premiumPickCard');if(card){const ac=away.color||'#1779ff',hc=home.color||'#d5213f';card.style.setProperty('--pick-away-soft',hexToSoft(ac,.22));card.style.setProperty('--pick-home-soft',hexToSoft(hc,.20));}
+}
+function openQuickShare(opt,payload=null){
+ if(!opt&&!payload)return;
+ opt=opt||payload||{};window.GRIDLOCK_ACTIVE_SHARE_OPT=opt;
  const m=document.getElementById('shareModal');
- playLegData=[{text:opt.leg||opt.title||'GRIDLOCK prediction',odds:''}];
+ playLegData=[{text:opt.leg||opt.line||opt.title||'GRIDLOCK prediction',odds:opt.price||''}];
  const title=document.getElementById('playTitle'),note=document.getElementById('playNote'),book=document.getElementById('playBook'),odds=document.getElementById('playOdds'),stake=document.getElementById('playStake'),type=document.getElementById('playType');
- if(title)title.value=opt.title||'GRIDLOCK prediction'; if(note)note.value=opt.note||''; if(book)book.value='GRIDLOCK'; if(odds)odds.value=''; if(stake)stake.value=''; if(type)type.value='SINGLE';
+ if(title)title.value=opt.title||'GRIDLOCK prediction'; if(note)note.value=opt.note||''; if(book)book.value=opt.book||'GRIDLOCK'; if(odds)odds.value=opt.price||''; if(stake)stake.value=''; if(type)type.value='SINGLE';
  showShareView('play');renderPlayLegs();updatePlayPreview();
- if(opt.text){const t=document.getElementById('shareText');if(t)t.value=opt.text;window.GRIDLOCK_QUICK_SHARE_TEXT=opt.text}else window.GRIDLOCK_QUICK_SHARE_TEXT='';
+ const shareText=payload?.text||opt.text||`${opt.title||'GRIDLOCK PICK'}${opt.line?' • '+opt.line:''}${opt.price?' '+opt.price:''}`;const t=document.getElementById('shareText');if(t)t.value=shareText;window.GRIDLOCK_QUICK_SHARE_TEXT=shareText;
+ renderPremiumPick(opt,payload);
+ const st=document.getElementById('pickShareState');if(st)st.textContent=payload?'SHARED PICK':'READY TO SHARE';
  m?.classList.remove('play-picker-mode');m?.classList.add('open','quick-share');m?.setAttribute('aria-hidden','false');
- setShareStatus('Ready to send. No typing required.');
+ setShareStatus(payload?'This exact pick was shared with you.':'Share this exact pick. The link reopens this card.');
 }
 
 const GRIDLOCK_BOOK_ORDER=['fanduel','betrivers','betrivers_ca_on','bet365','bet365_us','bet365_ca'];
@@ -532,7 +583,7 @@ function openCollegeProjectionQuickShare(){
  openQuickShare({title:`${g.away.abbr} at ${g.home.abbr} projection`,leg:`GRIDLOCK projected score: ${g.away.name} ${Number(p.away_score).toFixed(1)} – ${Number(p.home_score).toFixed(1)} ${g.home.name}`,note:'GRIDLOCK matchup projection',text});
 }
 async function copyText(text,msg='Copied.'){try{await navigator.clipboard.writeText(text);setShareStatus(msg)}catch(e){setShareStatus('Copy is blocked by this browser. Select the prepared text manually.')}return text}
-async function copyPreparedShare(){return copyText(prepareShare(),'Play copied.')}
+async function copyPreparedShare(){const text=prepareShare();const link=document.getElementById('shareModal')?.classList.contains('quick-share')?currentShareUrl():'';return copyText(link?text+'\n\n'+link:text,'Play + direct link copied.')}
 function openShareWindow(u){const w=window.open(u,'_blank');if(w){try{w.opener=null}catch(e){}return true}setShareStatus('Popup blocked. Allow popups for GRIDLOCK and try again.');return false}
 function xIntent(text){const url=location.protocol==='file:'?'':currentShareUrl();return `https://x.com/intent/post?text=${encodeURIComponent(text)}${url?`&url=${encodeURIComponent(url)}`:''}`}
 function fbIntent(text){if(location.protocol==='file:')return 'https://www.facebook.com/';return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentShareUrl())}&quote=${encodeURIComponent(text)}`}
@@ -827,6 +878,20 @@ loadWeek();
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&byId('shareModal')?.classList.contains('open'))hardClose()});
   var topPost=byId('openShareBtn');if(topPost)topPost.addEventListener('click',function(e){if(window.GRIDLOCK_ACTIVE_COLLEGE_GAME&&typeof openCollegePlayPicker==='function'){e.preventDefault();e.stopImmediatePropagation();openCollegePlayPicker()}},true);
   window.GRIDLOCK_SHARE_CONTROLS_READY=true;
+})();
+</script>
+
+
+<script>
+(function(){
+ function bootSharedPick(){
+   const q=new URLSearchParams(location.search).get('pick');const h=location.hash||'';const raw=q||(h.startsWith('#pick=')?h.slice(6):'');if(!raw)return;const payload=window.pickB64Decode?pickB64Decode(raw):null;if(!payload)return;
+   const opt={title:payload.title||payload.leg||'Shared GRIDLOCK pick',line:payload.line||'',price:payload.price||'',book:payload.book||'GRIDLOCK',sub:payload.sub||'',edge:payload.edge||'',leg:payload.leg||payload.title||'',text:payload.text||'',cat:payload.cat||'SHARED'};
+   window.GRIDLOCK_ACTIVE_SHARE_OPT=opt;
+   setTimeout(()=>{try{openQuickShare(opt,payload)}catch(e){console.warn('GRIDLOCK shared pick',e)}},450);
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootSharedPick,{once:true});else bootSharedPick();
+ window.addEventListener('hashchange',bootSharedPick);
 })();
 </script>
 
