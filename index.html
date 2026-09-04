@@ -1203,6 +1203,244 @@ body.college-mode main.main{
 }
 .cg-drive-chip img{width:21px!important;height:21px!important}
 
+
+/* GRIDLOCK V40 — authoritative down/distance + event hero alerts */
+.cg-live-hero{height:0;overflow:visible;position:relative;z-index:30}
+.cg-hero-alert{
+  position:relative;
+  margin:10px 0 12px;
+  min-height:88px;
+  border-radius:12px;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:92px 1fr auto;
+  align-items:center;
+  gap:14px;
+  padding:12px 18px;
+  border:1px solid #2f526a;
+  background:linear-gradient(110deg,#0b2031,#0a1724);
+  box-shadow:0 16px 34px rgba(0,0,0,.28);
+  animation:cgHeroIn .35s cubic-bezier(.18,.9,.28,1) both;
+}
+.cg-hero-alert.score{border-color:#d9a928;background:linear-gradient(110deg,#3b2606,#121b26 65%)}
+.cg-hero-alert.turnover{border-color:#ef566e;background:linear-gradient(110deg,#3e101a,#121b26 65%)}
+.cg-hero-alert.touchdown{border-color:#48df8a;background:linear-gradient(110deg,#0d3b28,#121b26 65%)}
+.cg-hero-logo{width:72px;height:72px;object-fit:contain;filter:drop-shadow(0 5px 8px rgba(0,0,0,.4))}
+.cg-hero-copy span{display:block;font-size:8px;font-weight:1000;letter-spacing:.14em;color:#8ca9bb}
+.cg-hero-copy b{display:block;font-size:25px;line-height:1;margin-top:5px}
+.cg-hero-copy small{display:block;margin-top:7px;font-size:9px;line-height:1.35;color:#c7d8e4}
+.cg-hero-score{text-align:right}.cg-hero-score b{font-size:26px}.cg-hero-score span{display:block;font-size:7px;color:#829aab;font-weight:1000}
+.cg-hero-alert.leave{animation:cgHeroOut .35s ease forwards}
+@keyframes cgHeroIn{from{opacity:0;transform:translateY(-14px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes cgHeroOut{to{opacity:0;transform:translateY(-9px);max-height:0;padding-top:0;padding-bottom:0;margin:0}}
+.cg-dd-source{font-size:6px;color:#64879d;margin-top:4px;font-weight:1000;letter-spacing:.06em}
+
+/* stronger broadcast camera angle */
+.cg-field-wrap{perspective:1250px!important}
+.cg-field{
+  transform:perspective(1100px) rotateX(19deg) scaleY(.88)!important;
+  transform-origin:center 76%!important;
+  clip-path:polygon(2.5% 1%,97.5% 1%,100% 100%,0 100%)!important;
+  box-shadow:
+    inset 0 18px 32px rgba(255,255,255,.07),
+    inset 0 -28px 44px rgba(0,0,0,.25),
+    0 18px 32px rgba(0,0,0,.22)!important;
+}
+.cg-midfield-logo{transform:translate(-50%,-50%) scaleY(1.12)!important}
+.cg-endzone-logo{transform:translateY(-50%) scaleY(1.1)!important}
+.cg-market-debug{
+  margin-top:7px;
+  padding:7px 8px;
+  border-radius:6px;
+  background:#06131e;
+  border:1px dashed #23435a;
+  font-size:7px;
+  color:#7190a4;
+  line-height:1.4;
+}
+@media(max-width:780px){
+  .cg-hero-alert{grid-template-columns:58px 1fr;padding:10px 12px}
+  .cg-hero-logo{width:52px;height:52px}
+  .cg-hero-score{grid-column:2;text-align:left}
+  .cg-hero-copy b{font-size:20px}
+}
+
+
+/* GRIDLOCK V41 — directional field, scoreboard possession, field position, momentum */
+.college-score-chip{
+  position:relative!important;
+  min-width:170px!important;
+}
+.college-score-chip .chip-live-state{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  margin-bottom:3px;
+  font-size:7px;
+  font-weight:1000;
+  color:#7ea3bb;
+  white-space:nowrap;
+}
+.college-score-chip .chip-possession-ball{
+  width:12px;
+  height:8px;
+  display:inline-block;
+  border-radius:55%;
+  background:#98552c;
+  border:1px solid #e6c69d;
+  transform:rotate(-18deg);
+  flex:0 0 auto;
+}
+.college-score-chip .chip-team.possession{
+  color:#fff;
+}
+.college-score-chip .chip-team.possession .chip-side:after{
+  content:'●';
+  color:#d68a47;
+  font-size:7px;
+  margin-left:4px;
+}
+.cg-field-meta{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px;
+  margin-top:10px;
+}
+.cg-field-meta-cell{
+  padding:8px 9px;
+  background:#071724;
+  border:1px solid #17384d;
+  border-radius:7px;
+}
+.cg-field-meta-cell span{
+  display:block;
+  font-size:6px;
+  color:#7590a4;
+  font-weight:1000;
+  letter-spacing:.07em;
+}
+.cg-field-meta-cell b{
+  display:block;
+  margin-top:3px;
+  font-size:11px;
+}
+.cg-momentum-card{margin-top:12px}
+.cg-momentum-wrap{padding:2px 0}
+.cg-momentum-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:end;
+}
+.cg-momentum-team{
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+.cg-momentum-team.right{flex-direction:row-reverse;text-align:right}
+.cg-momentum-team img{width:30px;height:30px;object-fit:contain}
+.cg-momentum-team b{display:block;font-size:10px}
+.cg-momentum-team span{display:block;font-size:7px;color:#7794a7;margin-top:2px}
+.cg-momentum-track{
+  position:relative;
+  height:18px;
+  margin:11px 0 6px;
+  border-radius:999px;
+  overflow:hidden;
+  border:1px solid #23445a;
+  background:linear-gradient(90deg,rgba(39,134,255,.30),#132a39 48%,#132a39 52%,rgba(56,222,133,.28));
+}
+.cg-momentum-track:after{
+  content:'';
+  position:absolute;
+  top:-2px;
+  bottom:-2px;
+  left:50%;
+  width:2px;
+  background:rgba(255,255,255,.7);
+}
+.cg-momentum-fill-away,
+.cg-momentum-fill-home{
+  position:absolute;
+  top:0;
+  bottom:0;
+}
+.cg-momentum-fill-away{right:50%;background:linear-gradient(90deg,#168cff,#4eb0ff)}
+.cg-momentum-fill-home{left:50%;background:linear-gradient(90deg,#55e59b,#26b66f)}
+.cg-momentum-pointer{
+  position:absolute;
+  top:50%;
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  background:#eef7ff;
+  color:#071724;
+  border:2px solid #fff;
+  display:grid;
+  place-items:center;
+  font-size:8px;
+  font-weight:1000;
+  z-index:4;
+  box-shadow:0 3px 9px rgba(0,0,0,.35);
+}
+.cg-momentum-note{
+  font-size:8px;
+  color:#8ba4b5;
+  line-height:1.4;
+}
+.cg-momentum-components{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:8px;
+}
+.cg-momentum-chip{
+  padding:4px 7px;
+  border:1px solid #1d4057;
+  border-radius:999px;
+  font-size:6px;
+  color:#91a9ba;
+  background:#071824;
+}
+.cg-dir.left{left:9px!important;right:auto!important;transform:translateY(-50%) rotate(180deg)!important}
+.cg-dir.right{right:9px!important;left:auto!important}
+@media(max-width:780px){
+  .college-score-chip{min-width:155px!important}
+  .cg-field-meta{grid-template-columns:1fr 1fr}
+  .cg-field-meta-cell:last-child{grid-column:1/-1}
+}
+
+
+/* GRIDLOCK V42 — stable live scoreboard */
+.college-score-chip{
+  flex:0 0 170px!important;
+  width:170px!important;
+  min-width:170px!important;
+  contain:layout paint;
+}
+.college-score-chip .chip-live-state{
+  height:11px;
+  min-height:11px;
+  font-variant-numeric:tabular-nums;
+  overflow:hidden;
+}
+.college-score-chip .chip-score{
+  min-width:18px;
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+#scoreStrip{
+  overflow-anchor:none;
+}
+@media(max-width:780px){
+  .college-score-chip{
+    flex-basis:155px!important;
+    width:155px!important;
+    min-width:155px!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1350,9 +1588,16 @@ body.college-mode main.main{
     <b>COMPARE TO PREGAME</b>
   </div>
 
+  <div id="cgLiveHero" class="cg-live-hero" aria-live="polite"></div>
+
   <div class="cg-card cg-field-card">
     <div class="cg-card-head">LIVE FIELD STATE <span class="cg-pbp-source">ESPN GAME STATE</span></div>
     <div class="cg-card-body" id="cgFieldState"><div class="cg-live-empty">Field position activates when ESPN publishes possession and situation data.</div></div>
+  </div>
+
+  <div class="cg-card cg-momentum-card">
+    <div class="cg-card-head">MOMENTUM <span class="cg-pbp-source">LIVE GAME STATE</span></div>
+    <div class="cg-card-body" id="cgMomentum"><div class="cg-live-empty">Momentum activates after live stats and plays begin to populate.</div></div>
   </div>
 
   <div class="cg-live-grid">
@@ -1990,6 +2235,37 @@ function cgParseFieldFromPlay(play,state,g){
   }
   return null;
 }
+
+function cgValidDown(v){
+  v=Number(v);return Number.isInteger(v)&&v>=1&&v<=4?v:null;
+}
+function cgValidDistance(v){
+  v=Number(v);return Number.isFinite(v)&&v>=0&&v<=99?v:null;
+}
+function cgParseDownDistanceText(...vals){
+  for(const raw of vals){
+    const s=String(raw||'').trim();
+    if(!s)continue;
+    let m=s.match(/\b([1-4])(?:ST|ND|RD|TH)?\s*(?:&|AND)\s*(GOAL|[0-9]{1,2})\b/i);
+    if(m)return {down:Number(m[1]),distance:String(m[2]).toUpperCase()==='GOAL'?0:Number(m[2]),goal:/GOAL/i.test(m[2]),source:'ESPN DOWN/DISTANCE TEXT'};
+  }
+  return null;
+}
+function cgNextStateFromPlay(play){
+  if(!play)return null;
+  const e=play.end||{},s=play.start||{};
+  let d=cgValidDown(e.down),dist=cgValidDistance(e.distance);
+  if(d!==null)return {down:d,distance:dist??0,source:'ESPN PLAY END'};
+  // If ESPN only gives the starting state, infer only on clearly ordinary plays.
+  const sd=cgValidDown(s.down),sDist=cgValidDistance(s.distance),txt=String(play.text||'').toLowerCase();
+  const gain=Number(play.statYardage);
+  if(sd!==null && Number.isFinite(gain) && !/touchdown|field goal|punt|intercept|fumble|penalty|no play|kickoff/.test(txt)){
+    if(sDist!==null && gain>=sDist)return {down:1,distance:10,source:'INFERRED FIRST DOWN'};
+    const nd=sd+1;
+    if(nd<=4)return {down:nd,distance:Math.max(1,(sDist??10)-gain),source:'INFERRED FROM LAST PLAY'};
+  }
+  return null;
+}
 function cgLiveGameState(summary,g){
   try{
     const comp=summary?.header?.competitions?.[0]||{}, status=comp.status||summary?.header?.status||{};
@@ -2022,8 +2298,16 @@ function cgLiveGameState(summary,g){
     if(!Number.isFinite(yardsToEndzone))yardsToEndzone=Number(curDrive?.yardsToEndzone);
     if(!Number.isFinite(yardsToEndzone))yardsToEndzone=Number(lastObj?.end?.yardsToEndzone);
 
-    let down=Number(situation.down||lastObj?.end?.down||lastObj?.start?.down||0);
-    let distance=Number(situation.distance||lastObj?.end?.distance||lastObj?.start?.distance||0);
+    const textDD=cgParseDownDistanceText(
+      situation.downDistanceText,
+      situation.shortDownDistanceText,
+      situation.possessionText,
+      curDrive?.displayResult
+    );
+    const playDD=cgNextStateFromPlay(lastObj);
+    let down=textDD?.down ?? cgValidDown(situation.down) ?? playDD?.down ?? null;
+    let distance=textDD?.distance ?? cgValidDistance(situation.distance) ?? playDD?.distance ?? null;
+    const ddSource=textDD?.source || (cgValidDown(situation.down)!==null?'ESPN SITUATION':playDD?.source||'UNAVAILABLE');
 
     const lastPlay=String(lastObj?.text||situation.lastPlay?.text||'');
     const base={
@@ -2035,7 +2319,7 @@ function cgLiveGameState(summary,g){
       situation,currentDrive:curDrive,possessionId,
       possessionAbbr,possessionName,possessionLogo,
       yardsToEndzone:Number.isFinite(yardsToEndzone)?yardsToEndzone:null,
-      down,distance,lastPlay,lastPlayObj:lastObj
+      down,distance,ddSource,lastPlay,lastPlayObj:lastObj
     };
     if(base.yardsToEndzone===null){
       const parsed=cgParseFieldFromPlay(lastObj,base,g);
@@ -2230,7 +2514,7 @@ function cgLiveProjectionModel(g,p,state,market,summary){
   else fieldAdj=0;
 
   // A small live-market stabilizer if genuine in-game lines are available.
-  if(market?.total!=null && market?.homeSpread!=null){
+  if(market?.available && market?.total!=null && market?.homeSpread!=null){
     const mt=Number(market.total),mm=-Number(market.homeSpread);
     if(Number.isFinite(mt)&&Number.isFinite(mm)){
       const marketHome=(mt+mm)/2,marketAway=(mt-mm)/2;
@@ -2286,6 +2570,52 @@ function cgExtractPlays(summary){
   });
   return out.slice(0,30);
 }
+
+let GRIDLOCK_LAST_HERO_PLAY='';
+let GRIDLOCK_HERO_TIMER=null;
+function cgEventType(play){
+  const t=String(play?.text||play?.shortText||'').toLowerCase();
+  if(/touchdown/.test(t))return {key:'TOUCHDOWN',cls:'touchdown'};
+  if(/intercept/.test(t))return {key:'TURNOVER • INTERCEPTION',cls:'turnover'};
+  if(/fumble.*(lost|recovered by)/.test(t)||/turnover on downs/.test(t))return {key:'TURNOVER',cls:'turnover'};
+  if(/field goal.*good/.test(t))return {key:'FIELD GOAL',cls:'score'};
+  if(/safety/.test(t))return {key:'SAFETY',cls:'score'};
+  return null;
+}
+function cgPlayTeam(summary,g,play){
+  const id=String(play?.start?.team?.id||play?.end?.team?.id||'');
+  const comps=summary?.header?.competitions?.[0]?.competitors||[];
+  const c=comps.find(x=>String(x.id||x.team?.id||'')===id);
+  const abbr=c?.team?.abbreviation||'';
+  if(abbr===g.away.abbr)return g.away;
+  if(abbr===g.home.abbr)return g.home;
+  const txt=String(play?.text||'');
+  if(txt.includes(g.away.abbr))return g.away;
+  if(txt.includes(g.home.abbr))return g.home;
+  return null;
+}
+function cgRenderHeroAlert(summary,g,state){
+  const el=$('cgLiveHero');if(!el)return;
+  const plays=cgExtractPlays(summary);
+  const p=plays[0];if(!p)return;
+  const type=cgEventType(p);if(!type)return;
+  const id=String(p.id||`${p.period?.number}|${p.clock?.displayValue}|${p.text}`);
+  if(id===GRIDLOCK_LAST_HERO_PLAY)return;
+  GRIDLOCK_LAST_HERO_PLAY=id;
+  const team=cgPlayTeam(summary,g,p);
+  const text=String(p.text||p.shortText||'');
+  el.style.height='auto';
+  el.innerHTML=`<div class="cg-hero-alert ${type.cls}">
+    <div>${team?.logo?`<img class="cg-hero-logo" src="${team.logo}" alt="">`:''}</div>
+    <div class="cg-hero-copy"><span>GRIDLOCK LIVE ALERT</span><b>${type.key}</b><small>${text.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}</small></div>
+    <div class="cg-hero-score"><b>${state?.awayScore??0} – ${state?.homeScore??0}</b><span>${g.away.abbr} / ${g.home.abbr}</span></div>
+  </div>`;
+  if(GRIDLOCK_HERO_TIMER)clearTimeout(GRIDLOCK_HERO_TIMER);
+  GRIDLOCK_HERO_TIMER=setTimeout(()=>{
+    const box=el.querySelector('.cg-hero-alert');if(box)box.classList.add('leave');
+    setTimeout(()=>{el.innerHTML='';el.style.height='0'},400);
+  },6500);
+}
 function cgRenderPBP(summary){
   const el=$('cgPlayByPlay');if(!el)return;
   const plays=cgExtractPlays(summary);
@@ -2301,6 +2631,7 @@ function cgRenderPBP(summary){
 
 
 
+
 function cgRenderFieldState(g,state){
   const el=$('cgFieldState');if(!el)return;
   if(!state||(!state.period&&!state.complete)){
@@ -2312,34 +2643,40 @@ function cgRenderFieldState(g,state){
   const isAway=poss===g.away.abbr;
   const isHome=poss===g.home.abbr;
 
+  // Physical field orientation is fixed:
+  // away end zone = LEFT, home end zone = RIGHT.
+  // Offense must always advance toward the OPPONENT end zone.
+  // Therefore away offense drives RIGHT; home offense drives LEFT.
+  const driveRight=isAway || (!isAway&&!isHome);
   let pct=50,label='FIELD POSITION WAITING FOR ESPN';
+
   if(state.yardsToEndzone!==null){
-    // Field is always drawn left-to-right for the possessing offense.
-    pct=Math.max(8,Math.min(92,100-state.yardsToEndzone));
-    if(state.territory&&state.yardLine!=null) label=`BALL: ${state.territory} ${state.yardLine}`;
-    else label=`${state.possessionAbbr||'OFF'} • ${state.yardsToEndzone} YDS TO END ZONE`;
+    const progress=100-state.yardsToEndzone;
+    pct=driveRight
+      ? Math.max(8,Math.min(92,8 + progress*.84))
+      : Math.max(8,Math.min(92,92 - progress*.84));
+    if(state.territory&&state.yardLine!=null)label=`BALL: ${state.territory} ${state.yardLine}`;
+    else label=`${state.possessionAbbr||'OFF'} • ${state.yardsToEndzone} YDS TO ${driveRight?g.home.abbr:g.away.abbr} END ZONE`;
   }
 
   const downSuffix=d=>d===1?'ST':d===2?'ND':d===3?'RD':'TH';
-  const dd=state.down?`${state.down}${downSuffix(state.down)} & ${state.distance||0}`:'DOWN/DISTANCE WAITING';
-  const fdPct=state.yardsToEndzone!==null && state.distance
-    ? Math.max(8,Math.min(92,pct + (state.distance/100)*84))
+  const validDown=cgValidDown(state.down),validDist=cgValidDistance(state.distance);
+  const dd=validDown!==null?`${validDown}${downSuffix(validDown)} & ${validDist===0?'GOAL':(validDist??'?')}`:'DOWN/DISTANCE WAITING';
+
+  const fdPct=state.yardsToEndzone!==null && validDown!==null && validDist!==null && validDist>0
+    ? Math.max(8,Math.min(92,pct + (driveRight?1:-1)*(validDist/100)*84))
     : null;
 
-  const lines=[10,20,30,40,50,60,70,80,90]
-    .map(x=>`<i class="cg-field-line" style="left:${x}%"></i>`).join('');
-  const ticks=Array.from({length:19},(_,i)=>5+i*5)
-    .map(x=>`<i class="cg-yard-tick" style="left:${x}%"></i>`).join('');
-  const nums=[
-    [20,20],[40,40],[50,50],[60,40],[80,20]
-  ].map(([x,n])=>`<span class="cg-field-num" style="left:${x}%">${n}</span>`).join('');
+  const lines=[10,20,30,40,50,60,70,80,90].map(x=>`<i class="cg-field-line" style="left:${x}%"></i>`).join('');
+  const ticks=Array.from({length:19},(_,i)=>5+i*5).map(x=>`<i class="cg-yard-tick" style="left:${x}%"></i>`).join('');
+  const nums=[[20,20],[40,40],[50,50],[60,40],[80,20]].map(([x,n])=>`<span class="cg-field-num" style="left:${x}%">${n}</span>`).join('');
 
-  const possLogo=state.possessionLogo||(
-    isAway?g.away.logo:isHome?g.home.logo:''
-  );
-  const possName=state.possessionName||(
-    isAway?g.away.name:isHome?g.home.name:'Possession pending'
-  );
+  const possLogo=state.possessionLogo||(isAway?g.away.logo:isHome?g.home.logo:'');
+  const possName=state.possessionName||(isAway?g.away.name:isHome?g.home.name:'Possession pending');
+
+  const fieldPos=state.yardsToEndzone!==null
+    ? `${state.yardsToEndzone} YDS FROM ${driveRight?g.home.abbr:g.away.abbr} END ZONE`
+    : 'WAITING FOR FIELD POSITION';
 
   el.innerHTML=`<div class="cg-field-wrap">
     <div>
@@ -2348,7 +2685,14 @@ function cgRenderFieldState(g,state){
         <div><b>${possName}</b><span>${poss?'HAS THE BALL':'POSSESSION PENDING'}</span></div>
       </div>
       <div class="cg-situation">${dd}</div>
+      <div class="cg-dd-source">${state.ddSource||''}</div>
       <div class="cg-last-play">${state.lastPlay||'Waiting for the next live play…'}</div>
+
+      <div class="cg-field-meta">
+        <div class="cg-field-meta-cell"><span>FIELD POSITION</span><b>${fieldPos}</b></div>
+        <div class="cg-field-meta-cell"><span>GAME CLOCK</span><b>${state.clock||'—'} • Q${state.period||'—'}</b></div>
+        <div class="cg-field-meta-cell"><span>DIRECTION</span><b>${poss||'OFF'} → ${driveRight?g.home.abbr:g.away.abbr}</b></div>
+      </div>
     </div>
 
     <div class="cg-field">
@@ -2357,11 +2701,11 @@ function cgRenderFieldState(g,state){
       ${g.home.logo?`<img class="cg-endzone-logo home" src="${g.home.logo}" alt="">`:''}
       ${g.home.logo?`<img class="cg-midfield-logo" src="${g.home.logo}" alt="">`:''}
       <i class="cg-hash top"></i><i class="cg-hash bottom"></i>
-      <span class="cg-dir right">➜</span>
+      <span class="cg-dir ${driveRight?'right':'left'}">${driveRight?'➜':'➜'}</span>
       ${state.yardsToEndzone!==null?`<span class="cg-line-of-scrimmage" style="left:${pct}%"></span>`:''}
       ${fdPct!==null?`<span class="cg-firstdown-line" style="left:${fdPct}%"></span>`:''}
       <span class="cg-ball" style="left:${pct}%"></span>
-      ${possLogo?`<span class="cg-drive-chip" style="left:${Math.min(76,Math.max(10,pct+4))}%"><img src="${possLogo}" alt=""></span>`:''}
+      ${possLogo?`<span class="cg-drive-chip" style="left:${Math.min(86,Math.max(10,pct+(driveRight?4:-4)))}%"><img src="${possLogo}" alt=""></span>`:''}
       <span class="cg-field-label">${label}${state.fieldSource?` • ${state.fieldSource}`:''}</span>
     </div>
   </div>`;
@@ -2372,14 +2716,19 @@ function cgTeamMatch(a,b){
   return a===b||a.includes(b)||b.includes(a)||a.split(' ').some(x=>x.length>4&&b.includes(x));
 }
 
+
 async function cgFetchLiveMarket(g){
   try{
     const r=await fetch('/api/odds?live=1&_='+Date.now(),{cache:'no-store'});
-    if(!r.ok)return null;
-    const j=await r.json(),events=j?.events||[];
-    const ev=events.find(e=>(cgTeamMatch(e.home_team,g.home.name)&&cgTeamMatch(e.away_team,g.away.name))||(cgTeamMatch(e.home_team,g.away.name)&&cgTeamMatch(e.away_team,g.home.name)));
-    if(!ev)return null;
-
+    let j=null;
+    try{j=await r.json()}catch(e){}
+    if(!r.ok)return {available:false,reason:`ODDS API HTTP ${r.status}`,diagnostics:j||{}};
+    const events=j?.events||[];
+    const exact=events.find(e=>(cgTeamMatch(e.home_team,g.home.name)&&cgTeamMatch(e.away_team,g.away.name))||(cgTeamMatch(e.home_team,g.away.name)&&cgTeamMatch(e.away_team,g.home.name)));
+    if(!exact){
+      return {available:false,reason:'GAME NOT RETURNED BY LIVE ODDS FEED',diagnostics:{mode:j?.mode||'',events:events.length,requests_remaining:j?.requests_remaining||''}};
+    }
+    const ev=exact;
     const candidates=[];
     for(const b of (ev.bookmakers||[])){
       const spreads=(b.markets||[]).find(m=>m.key==='spreads');
@@ -2393,14 +2742,16 @@ async function cgFetchLiveMarket(g){
       const completeness=[ho,over,homeML].filter(Boolean).length;
       if(!completeness)continue;
       candidates.push({
-        book:b.title||b.key||'Sportsbook',
-        bookKey:b.key||'',
+        available:true,
+        book:b.title||b.key||'Sportsbook',bookKey:b.key||'',
         homeSpread:ho?.point??null,awaySpread:ao?.point??null,
-        total:over?.point??null,
-        homeML:homeML?.price??null,awayML:awayML?.price??null,
-        updated:b.last_update||ev.last_update||j.updated_at||'',
-        completeness
+        total:over?.point??null,homeML:homeML?.price??null,awayML:awayML?.price??null,
+        updated:b.last_update||ev.last_update||j.updated_at||'',completeness,
+        diagnostics:{mode:j?.mode||'',books:(ev.bookmakers||[]).length,events:events.length,requests_remaining:j?.requests_remaining||''}
       });
+    }
+    if(!candidates.length){
+      return {available:false,reason:'GAME FOUND • NO BOOK POSTING LIVE SPREAD/TOTAL/ML',diagnostics:{mode:j?.mode||'',books:(ev.bookmakers||[]).length,events:events.length,requests_remaining:j?.requests_remaining||''}};
     }
     candidates.sort((a,b)=>{
       if(b.completeness!==a.completeness)return b.completeness-a.completeness;
@@ -2408,14 +2759,20 @@ async function cgFetchLiveMarket(g){
       const ai=pref.indexOf(a.bookKey),bi=pref.indexOf(b.bookKey);
       return (ai<0?999:ai)-(bi<0?999:bi);
     });
-    return candidates[0]||null;
-  }catch(e){return null}
+    return candidates[0];
+  }catch(e){
+    return {available:false,reason:'LIVE ODDS REQUEST FAILED',diagnostics:{error:String(e?.message||e)}};
+  }
 }
 function cgOddsFmt(v){v=Number(v);return Number.isFinite(v)?(v>0?'+':'')+Math.round(v):'—'}
+
 function cgRenderLiveMarket(g,m){
   const el=$('cgLiveMarket');if(!el)return;
-  if(!m){
-    el.innerHTML=`<div class="cg-market-title"><b>LIVE BETTING MARKET</b><span>NO BOOK CURRENTLY RETURNING IN-GAME PRICE</span></div><div class="cg-market-book">GRIDLOCK checked the full U.S. live book feed. Pregame reference: ${g.market?.details||'—'}${g.market?.over_under?` • O/U ${g.market.over_under}`:''}</div>`;
+  const d=m?.diagnostics||{};
+  if(!m?.available){
+    el.innerHTML=`<div class="cg-market-title"><b>LIVE BETTING MARKET</b><span>${m?.reason||'UNAVAILABLE'}</span></div>
+      <div class="cg-market-book">Pregame reference: ${g.market?.details||'—'}${g.market?.over_under?` • O/U ${g.market.over_under}`:''}</div>
+      <div class="cg-market-debug">Odds API: ${d.mode||'no mode'} • events ${d.events??'—'} • books for this game ${d.books??'—'}${d.requests_remaining!==undefined?` • requests remaining ${d.requests_remaining}`:''}${d.error?` • ${d.error}`:''}</div>`;
     return;
   }
   const spread=m.homeSpread!=null?`${g.home.abbr} ${Number(m.homeSpread)>0?'+':''}${Number(m.homeSpread).toFixed(1)}`:'—';
@@ -2425,9 +2782,82 @@ function cgRenderLiveMarket(g,m){
       <div class="cg-market-cell"><span>LIVE TOTAL</span><b>${m.total!=null?Number(m.total).toFixed(1):'—'}</b></div>
       <div class="cg-market-cell"><span>LIVE MONEYLINE</span><b>${g.home.abbr} ${cgOddsFmt(m.homeML)} / ${g.away.abbr} ${cgOddsFmt(m.awayML)}</b></div>
     </div>
-    <div class="cg-market-book">Direct sportsbook feed${m.updated?' • updated '+new Date(m.updated).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}):''}</div>`;
+    <div class="cg-market-book">Direct sportsbook feed${m.updated?' • updated '+new Date(m.updated).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}):''}</div>
+    <div class="cg-market-debug">Odds API: ${d.mode||'—'} • ${d.books??'—'} books returned for game • ${d.events??'—'} NCAAF events in live response${d.requests_remaining!==undefined?` • ${d.requests_remaining} requests remaining`:''}</div>`;
 }
 
+function cgRecentPlayMomentum(summary,g){
+  const plays=cgExtractPlays(summary).slice(0,12);
+  let home=0,away=0,notes=[];
+  for(const p of plays){
+    const txt=String(p?.text||'').toLowerCase();
+    const team=cgPlayTeam(summary,g,p);
+    if(!team)continue;
+    const side=team.abbr===g.home.abbr?'home':'away';
+    let val=0;
+    if(/touchdown/.test(txt))val+=4.5;
+    else if(/field goal.*good/.test(txt))val+=2.2;
+    if(/intercept|fumble.*lost|turnover on downs/.test(txt))val-=3.8;
+    const yd=Number(p?.statYardage);
+    if(Number.isFinite(yd))val+=Math.max(-1.2,Math.min(1.8,yd/14));
+    if(/1st down|first down/.test(txt))val+=.55;
+    if(side==='home')home+=val;else away+=val;
+  }
+  return {edge:home-away,home,away};
+}
+function cgMomentumModel(summary,g,state){
+  const stats=cgExtractLiveTeamStats(summary,g);
+  const statAdj=cgLiveStatAdjustment(stats,cgElapsedFraction(state));
+  const recent=cgRecentPlayMomentum(summary,g);
+
+  const scoreEdge=(Number(state.homeScore)-Number(state.awayScore))*.22;
+  let fieldEdge=0;
+  if(state.possessionAbbr&&state.yardsToEndzone!==null){
+    const fp=Math.max(0,100-state.yardsToEndzone)/100;
+    fieldEdge=(state.possessionAbbr===g.home.abbr?1:-1)*(0.6+fp*2.0);
+  }
+
+  let edge=statAdj.homeEdge*.65 + recent.edge*.55 + scoreEdge + fieldEdge;
+  edge=Math.max(-12,Math.min(12,edge));
+
+  // map -12..12 to 0..100, 50 neutral
+  const homePct=Math.max(2,Math.min(98,50+(edge/12)*48));
+  const awayPct=100-homePct;
+  const leader=homePct>=awayPct?g.home:g.away;
+  const intensity=Math.abs(homePct-50);
+  const descriptor=intensity<8?'EVEN':intensity<20?'LEAN':intensity<34?'STRONG':'SURGE';
+
+  return {
+    homePct,awayPct,leader,descriptor,
+    statSummary:statAdj.summary,
+    recentEdge:recent.edge,
+    fieldEdge,
+    scoreEdge
+  };
+}
+function cgRenderMomentum(summary,g,state){
+  const el=$('cgMomentum');if(!el||!state)return;
+  const m=cgMomentumModel(summary,g,state);
+  const awayW=Math.max(0,50-m.awayPct/2);
+  const homeW=Math.max(0,m.homePct/2);
+  el.innerHTML=`<div class="cg-momentum-wrap">
+    <div class="cg-momentum-head">
+      <div class="cg-momentum-team">${g.away.logo?`<img src="${g.away.logo}" alt="">`:''}<div><b>${g.away.abbr} ${m.awayPct.toFixed(0)}%</b><span>${m.leader.abbr===g.away.abbr?m.descriptor:'LIVE MOMENTUM'}</span></div></div>
+      <div class="cg-momentum-team right">${g.home.logo?`<img src="${g.home.logo}" alt="">`:''}<div><b>${g.home.abbr} ${m.homePct.toFixed(0)}%</b><span>${m.leader.abbr===g.home.abbr?m.descriptor:'LIVE MOMENTUM'}</span></div></div>
+    </div>
+    <div class="cg-momentum-track">
+      <i class="cg-momentum-fill-away" style="width:${Math.max(0,m.awayPct-50)}%"></i>
+      <i class="cg-momentum-fill-home" style="width:${Math.max(0,m.homePct-50)}%"></i>
+      <span class="cg-momentum-pointer" style="left:${m.homePct}%">${m.leader.abbr}</span>
+    </div>
+    <div class="cg-momentum-note">${m.leader.name} currently has the stronger live momentum profile. This measures recent plays, live efficiency, turnovers, score pressure and current field position — not win probability.</div>
+    <div class="cg-momentum-components">
+      <span class="cg-momentum-chip">${m.statSummary}</span>
+      <span class="cg-momentum-chip">Recent-play edge ${m.recentEdge>=0?g.home.abbr:g.away.abbr} ${Math.abs(m.recentEdge).toFixed(1)}</span>
+      <span class="cg-momentum-chip">Field-pos edge ${m.fieldEdge>=0?g.home.abbr:g.away.abbr} ${Math.abs(m.fieldEdge).toFixed(1)}</span>
+    </div>
+  </div>`;
+}
 function cgRenderTopLiveProb(g,lp,state){
   const el=$('cgTopLiveProb'),stamp=$('cgTopLiveStamp');if(!el||!lp||!state)return;
   const hp=Math.max(.001,Math.min(.999,lp.homeWin));
@@ -2511,7 +2941,9 @@ async function cgRefreshLiveGame(g){
     const liveMarket=await cgFetchLiveMarket(g);
     if(token!==GRIDLOCK_COLLEGE_LIVE_TOKEN||!selectedCollegeGame||String(selectedCollegeGame.id)!==String(g.id))return;
     cgRenderPBP(summary);
+    cgRenderHeroAlert(summary,g,state);
     cgRenderFieldState(g,state);
+    cgRenderMomentum(summary,g,state);
     cgRenderLiveMarket(g,liveMarket);
     cgRenderLiveProjection(g,p,summary,liveMarket);
     if(state){
@@ -2719,7 +3151,7 @@ loadWeek();
 
 <script>
 (function(){
- const SNAP='gridlock.college.snapshots.v39', FIN='gridlock.college.finals.v39';
+ const SNAP='gridlock.college.snapshots.v42', FIN='gridlock.college.finals.v42';
  const $=id=>document.getElementById(id); const n=v=>{if(v===null||v===undefined||v==='')return null;v=Number(v);return Number.isFinite(v)?v:null};
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const rd=k=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return[]}}, wr=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
@@ -2947,7 +3379,7 @@ function syncPerformance(){
 async function refresh(){try{if(typeof loadSportsbookOdds==='function'&&!window.GRIDLOCK_ODDS_LOADED)await loadSportsbookOdds(false)}catch(e){}const valueRows=bestValueRows();const dogRows=dogWatchRows();renderRows('topValueList',valueRows,'value');renderRows('upsetWatchList',dogRows,'upset');featuredValue(valueRows);if($('topValueStamp'))$('topValueStamp').textContent=(window.GRIDLOCK_GET_ODDS_EVENTS?.().length)?'DIRECT + ESPN':'ESPN MARKET';if($('upsetStamp'))$('upsetStamp').textContent=(window.GRIDLOCK_GET_ODDS_EVENTS?.().length)?'LIVE +MONEY':'PRICED + WATCHLIST';syncArchive();syncPerformance()}
  const oldRender=typeof render==='function'?render:null;if(oldRender){window.render=function(){const r=oldRender.apply(this,arguments);setTimeout(refresh,50);return r}}
  let bootTries=0;async function bootWhenSlateReady(){bootTries++;if(slate().length){window.GRIDLOCK_ODDS_LOADED=false;await refresh();return}if(bootTries<80)setTimeout(bootWhenSlateReady,250)}setTimeout(bootWhenSlateReady,100);$('valueMarketFilter')?.addEventListener('change',refresh);
-setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V39={refresh,syncArchive};
+setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V42={refresh,syncArchive};
 })();
 
 </script>
@@ -3015,24 +3447,121 @@ setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V39={refres
       ? '<select aria-label="League"><option>COLLEGE</option></select><select aria-label="Week"><option>Week 1</option></select>'
       : '<select aria-label="League"><option>NFL</option></select><select aria-label="Week"><option>Week 1</option></select>';
   }
-  function renderCollegeStrip(){
-    if(!document.body.classList.contains('college-mode'))return;
-    setControl('college');
-    scoreStrip.querySelectorAll('.game-chip').forEach(x=>x.remove());
-    const arr=currentCollegeWindow();
-    for(const g of arr){
-      const el=document.createElement('div');
-      el.className='game-chip college-score-chip';
-      const away=g.away||{},home=g.home||{};
-      const status=gameStatus(g);
-      el.innerHTML=`<div class="when">${esc(status)}</div>
-        <div class="chip-team"><span class="chip-side">${away.logo?`<img class="chip-logo" src="${esc(away.logo)}" alt="">`:''}<span>${esc(away.abbr||away.name||'AWAY')}</span></span><span class="chip-score">${score(away.score)}</span></div>
-        <div class="chip-team"><span class="chip-side">${home.logo?`<img class="chip-logo" src="${esc(home.logo)}" alt="">`:''}<span>${esc(home.abbr||home.name||'HOME')}</span></span><span class="chip-score">${score(home.score)}</span></div>`;
-      el.addEventListener('click',()=>window.GRIDLOCK_OPEN_COLLEGE_GAME?.(g.id));
-      scoreStrip.appendChild(el);
-    }
+  
+
+const GRIDLOCK_COLLEGE_SCORE_CACHE=new Map();
+let GRIDLOCK_COLLEGE_STRIP_BUSY=false;
+let GRIDLOCK_COLLEGE_STRIP_LAST=0;
+
+function cgStripIsLive(g){
+  if(g?.complete)return false;
+  const s=String(g?.status||'');
+  return /quarter|half|ot|live|in progress|[1-4](st|nd|rd|th)|\d+:\d+/.test(s.toLowerCase());
+}
+function cgStripStatus(g,state){
+  if(state?.complete)return 'FINAL';
+  if(state?.period){
+    const clk=state.clock||'';
+    return `${clk}${clk?' • ':''}Q${state.period}`;
   }
-  function renderNFLStrip(){
+  return gameStatus(g);
+}
+function cgUpdateScoreChip(el,g,state){
+  const away=g.away||{},home=g.home||{};
+  const poss=state?.possessionAbbr||'';
+  const status=cgStripStatus(g,state);
+  const awayScore=score(state?.awayScore??away.score);
+  const homeScore=score(state?.homeScore??home.score);
+
+  const next={
+    status,poss,awayScore,homeScore,
+    awayAbbr:away.abbr||away.name||'AWAY',
+    homeAbbr:home.abbr||home.name||'HOME',
+    awayLogo:away.logo||'',homeLogo:home.logo||''
+  };
+  const prev=GRIDLOCK_COLLEGE_SCORE_CACHE.get(String(g.id));
+  if(prev && JSON.stringify(prev)===JSON.stringify(next))return;
+
+  GRIDLOCK_COLLEGE_SCORE_CACHE.set(String(g.id),next);
+  el.innerHTML=`<div class="chip-live-state">${poss?'<span class="chip-possession-ball"></span>':''}<span>${esc(status)}</span></div>
+    <div class="chip-team ${poss===away.abbr?'possession':''}">
+      <span class="chip-side">${away.logo?`<img class="chip-logo" src="${esc(away.logo)}" alt="">`:''}<span>${esc(next.awayAbbr)}</span></span>
+      <span class="chip-score">${awayScore}</span>
+    </div>
+    <div class="chip-team ${poss===home.abbr?'possession':''}">
+      <span class="chip-side">${home.logo?`<img class="chip-logo" src="${esc(home.logo)}" alt="">`:''}<span>${esc(next.homeAbbr)}</span></span>
+      <span class="chip-score">${homeScore}</span>
+    </div>`;
+}
+
+async function cgFetchStripState(g){
+  const id=String(g.id);
+  const cached=GRIDLOCK_COLLEGE_SCORE_CACHE.get(`state:${id}`);
+  const now=Date.now();
+  if(cached && now-cached.at<5500)return cached.state;
+  try{
+    const rr=await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/college-football/summary?event=${encodeURIComponent(g.id)}`,{cache:'no-store'});
+    if(!rr.ok)return null;
+    const sj=await rr.json();
+    const state=cgLiveGameState(sj,g);
+    GRIDLOCK_COLLEGE_SCORE_CACHE.set(`state:${id}`,{at:now,state});
+    return state;
+  }catch(e){return null}
+}
+
+async function renderCollegeStrip(force=false){
+  if(!document.body.classList.contains('college-mode'))return;
+  const now=Date.now();
+  if(GRIDLOCK_COLLEGE_STRIP_BUSY)return;
+  if(!force && now-GRIDLOCK_COLLEGE_STRIP_LAST<4500)return;
+  GRIDLOCK_COLLEGE_STRIP_BUSY=true;
+  GRIDLOCK_COLLEGE_STRIP_LAST=now;
+
+  try{
+    setControl('college');
+    const arr=currentCollegeWindow();
+    const ids=new Set(arr.map(g=>String(g.id)));
+
+    // Remove only chips that are no longer in the current slate window.
+    scoreStrip.querySelectorAll('.college-score-chip[data-game-id]').forEach(el=>{
+      if(!ids.has(String(el.dataset.gameId)))el.remove();
+    });
+
+    // Create missing chips once. Never rebuild the entire strip.
+    const fragment=document.createDocumentFragment();
+    for(const g of arr){
+      let el=scoreStrip.querySelector(`.college-score-chip[data-game-id="${CSS.escape(String(g.id))}"]`);
+      if(!el){
+        el=document.createElement('div');
+        el.className='game-chip college-score-chip';
+        el.dataset.gameId=String(g.id);
+        el.addEventListener('click',()=>window.GRIDLOCK_OPEN_COLLEGE_GAME?.(g.id));
+        fragment.appendChild(el);
+        cgUpdateScoreChip(el,g,null);
+      }
+    }
+    if(fragment.childNodes.length)scoreStrip.appendChild(fragment);
+
+    // Preserve horizontal scroll while updating live text.
+    const savedScroll=scoreStrip.scrollLeft;
+
+    // Only call summary endpoint for games actually live.
+    const liveGames=arr.filter(cgStripIsLive);
+    const liveStates=await Promise.all(liveGames.map(async g=>[String(g.id),await cgFetchStripState(g)]));
+    const stateMap=new Map(liveStates);
+
+    for(const g of arr){
+      const el=scoreStrip.querySelector(`.college-score-chip[data-game-id="${CSS.escape(String(g.id))}"]`);
+      if(!el)continue;
+      cgUpdateScoreChip(el,g,stateMap.get(String(g.id))||null);
+    }
+
+    requestAnimationFrame(()=>{scoreStrip.scrollLeft=savedScroll});
+  } finally {
+    GRIDLOCK_COLLEGE_STRIP_BUSY=false;
+  }
+}
+function renderNFLStrip(){
     try{if(typeof renderStrip==='function')renderStrip()}catch(e){}
     setControl('nfl');
   }
@@ -3041,7 +3570,7 @@ setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V39={refres
     buttons.forEach(btn=>btn.classList.toggle('active',
       college ? btn.dataset.mobileLeague==='college' : btn.dataset.mobileLeague==='nfl'
     ));
-    if(college)renderCollegeStrip(); else renderNFLStrip();
+    if(college)renderCollegeStrip(false); else renderNFLStrip();
   }
   buttons.forEach(btn=>btn.addEventListener('click',()=>{
     if(btn.dataset.mobileLeague==='college'){
@@ -3062,16 +3591,10 @@ setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V39={refres
   const mo=new MutationObserver(sync);
   mo.observe(document.body,{attributes:true,attributeFilter:['class']});
 
-  // College schedule is loaded asynchronously, so refresh scoreboard until games arrive,
-  // then keep live scores/status fresh.
-  let tries=0;
-  const boot=setInterval(()=>{
-    tries++;
-    if(document.body.classList.contains('college-mode'))renderCollegeStrip();
-    if(tries>80)clearInterval(boot);
-  },250);
-  setInterval(()=>{if(document.body.classList.contains('college-mode'))renderCollegeStrip()},10000);
-  setTimeout(sync,100);
+  // Initial draw once schedule has had a moment to populate, then stable polling.
+  setTimeout(()=>{sync(); if(document.body.classList.contains('college-mode'))renderCollegeStrip(true)},250);
+  setTimeout(()=>{if(document.body.classList.contains('college-mode'))renderCollegeStrip(true)},1200);
+  setInterval(()=>{if(document.body.classList.contains('college-mode'))renderCollegeStrip(false)},6000);
 })();
 </script>
 
