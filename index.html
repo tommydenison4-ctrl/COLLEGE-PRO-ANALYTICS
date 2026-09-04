@@ -1441,6 +1441,105 @@ body.college-mode main.main{
   }
 }
 
+
+/* GRIDLOCK V43 — college-only top strip + clean possession ribbon */
+body.college-mode #scoreStrip .game-chip:not(.college-score-chip){
+  display:none!important;
+}
+body.college-mode #scoreStrip .nfl-score-chip,
+body.college-mode #scoreStrip [data-nfl-game]{
+  display:none!important;
+}
+body.college-mode #scoreStrip .college-score-chip{
+  display:block!important;
+}
+
+/* Clean broadcast possession ribbon */
+.cg-field-ribbon{
+  display:grid;
+  grid-template-columns:minmax(190px,1.2fr) auto auto auto;
+  align-items:center;
+  gap:0;
+  border:1px solid #20445c;
+  border-radius:10px;
+  overflow:hidden;
+  background:linear-gradient(90deg,#0a1c2b,#081723);
+  margin-bottom:12px;
+}
+.cg-field-ribbon > div{
+  min-height:72px;
+  padding:10px 14px;
+  display:flex;
+  align-items:center;
+  border-left:1px solid #17384d;
+}
+.cg-field-ribbon > div:first-child{border-left:0}
+.cg-ribbon-team{gap:10px}
+.cg-ribbon-team img{width:46px;height:46px;object-fit:contain}
+.cg-ribbon-team b{display:block;font-size:12px}
+.cg-ribbon-team span{display:block;font-size:7px;color:#73a1bc;margin-top:3px;font-weight:1000}
+.cg-ribbon-primary{
+  flex-direction:column;
+  justify-content:center;
+  align-items:flex-start!important;
+  min-width:120px;
+}
+.cg-ribbon-primary b{font-size:23px;line-height:1}
+.cg-ribbon-primary span,
+.cg-ribbon-small span{display:block;font-size:6px;color:#7894a8;font-weight:1000;letter-spacing:.08em}
+.cg-ribbon-small{
+  flex-direction:column;
+  justify-content:center;
+  align-items:flex-start!important;
+  min-width:112px;
+}
+.cg-ribbon-small b{font-size:12px;margin-top:4px}
+.cg-ribbon-direction b{color:#64c7ff}
+.cg-field-meta{display:none!important}
+
+/* Score-strip ball marker clearer */
+.college-score-chip .chip-possession-ball{
+  width:14px!important;
+  height:9px!important;
+  border:2px solid #efcf9f!important;
+  background:#8a4b24!important;
+  box-shadow:0 0 0 2px rgba(255,255,255,.08);
+}
+.college-score-chip .chip-team.possession{
+  background:linear-gradient(90deg,rgba(244,171,86,.09),transparent)!important;
+}
+.college-score-chip .chip-team.possession .chip-side:after{
+  content:'BALL'!important;
+  font-size:6px!important;
+  color:#f0b46d!important;
+  margin-left:5px!important;
+  font-weight:1000!important;
+}
+
+/* Live market made visually impossible to miss */
+.cg-live-market{
+  border:1px solid #2a526b!important;
+  border-radius:9px!important;
+  padding:10px!important;
+  background:linear-gradient(180deg,#091d2c,#071622)!important;
+}
+.cg-market-title b{font-size:10px!important;color:#fff!important}
+.cg-market-title span{color:#63c1ff!important;font-weight:1000!important}
+.cg-market-grid{margin-top:7px}
+.cg-market-cell{
+  min-height:56px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+@media(max-width:780px){
+  .cg-field-ribbon{
+    grid-template-columns:1fr 1fr;
+  }
+  .cg-field-ribbon > div:nth-child(3){border-left:0}
+  .cg-ribbon-primary,.cg-ribbon-small{min-width:0}
+}
+
 </style>
 </head>
 <body>
@@ -2632,6 +2731,7 @@ function cgRenderPBP(summary){
 
 
 
+
 function cgRenderFieldState(g,state){
   const el=$('cgFieldState');if(!el)return;
   if(!state||(!state.period&&!state.complete)){
@@ -2642,30 +2742,21 @@ function cgRenderFieldState(g,state){
   const poss=state.possessionAbbr||'';
   const isAway=poss===g.away.abbr;
   const isHome=poss===g.home.abbr;
-
-  // Physical field orientation is fixed:
-  // away end zone = LEFT, home end zone = RIGHT.
-  // Offense must always advance toward the OPPONENT end zone.
-  // Therefore away offense drives RIGHT; home offense drives LEFT.
   const driveRight=isAway || (!isAway&&!isHome);
-  let pct=50,label='FIELD POSITION WAITING FOR ESPN';
 
+  let pct=50,label='FIELD POSITION WAITING FOR ESPN';
   if(state.yardsToEndzone!==null){
     const progress=100-state.yardsToEndzone;
-    pct=driveRight
-      ? Math.max(8,Math.min(92,8 + progress*.84))
-      : Math.max(8,Math.min(92,92 - progress*.84));
-    if(state.territory&&state.yardLine!=null)label=`BALL: ${state.territory} ${state.yardLine}`;
-    else label=`${state.possessionAbbr||'OFF'} • ${state.yardsToEndzone} YDS TO ${driveRight?g.home.abbr:g.away.abbr} END ZONE`;
+    pct=driveRight?Math.max(8,Math.min(92,8+progress*.84)):Math.max(8,Math.min(92,92-progress*.84));
+    if(state.territory&&state.yardLine!=null)label=`${state.territory} ${state.yardLine}`;
+    else label=`${state.yardsToEndzone} YDS TO ${driveRight?g.home.abbr:g.away.abbr} END ZONE`;
   }
 
   const downSuffix=d=>d===1?'ST':d===2?'ND':d===3?'RD':'TH';
   const validDown=cgValidDown(state.down),validDist=cgValidDistance(state.distance);
-  const dd=validDown!==null?`${validDown}${downSuffix(validDown)} & ${validDist===0?'GOAL':(validDist??'?')}`:'DOWN/DISTANCE WAITING';
-
-  const fdPct=state.yardsToEndzone!==null && validDown!==null && validDist!==null && validDist>0
-    ? Math.max(8,Math.min(92,pct + (driveRight?1:-1)*(validDist/100)*84))
-    : null;
+  const dd=validDown!==null?`${validDown}${downSuffix(validDown)} & ${validDist===0?'GOAL':(validDist??'?')}`:'DOWN & DISTANCE';
+  const fdPct=state.yardsToEndzone!==null&&validDown!==null&&validDist!==null&&validDist>0
+    ?Math.max(8,Math.min(92,pct+(driveRight?1:-1)*(validDist/100)*84)):null;
 
   const lines=[10,20,30,40,50,60,70,80,90].map(x=>`<i class="cg-field-line" style="left:${x}%"></i>`).join('');
   const ticks=Array.from({length:19},(_,i)=>5+i*5).map(x=>`<i class="cg-yard-tick" style="left:${x}%"></i>`).join('');
@@ -2674,25 +2765,15 @@ function cgRenderFieldState(g,state){
   const possLogo=state.possessionLogo||(isAway?g.away.logo:isHome?g.home.logo:'');
   const possName=state.possessionName||(isAway?g.away.name:isHome?g.home.name:'Possession pending');
 
-  const fieldPos=state.yardsToEndzone!==null
-    ? `${state.yardsToEndzone} YDS FROM ${driveRight?g.home.abbr:g.away.abbr} END ZONE`
-    : 'WAITING FOR FIELD POSITION';
-
-  el.innerHTML=`<div class="cg-field-wrap">
-    <div>
-      <div class="cg-possession">
+  el.innerHTML=`
+    <div class="cg-field-ribbon">
+      <div class="cg-ribbon-team">
         ${possLogo?`<img src="${possLogo}" alt="">`:''}
-        <div><b>${possName}</b><span>${poss?'HAS THE BALL':'POSSESSION PENDING'}</span></div>
+        <div><b>${possName}</b><span>${poss?'POSSESSION':'POSSESSION PENDING'}</span></div>
       </div>
-      <div class="cg-situation">${dd}</div>
-      <div class="cg-dd-source">${state.ddSource||''}</div>
-      <div class="cg-last-play">${state.lastPlay||'Waiting for the next live play…'}</div>
-
-      <div class="cg-field-meta">
-        <div class="cg-field-meta-cell"><span>FIELD POSITION</span><b>${fieldPos}</b></div>
-        <div class="cg-field-meta-cell"><span>GAME CLOCK</span><b>${state.clock||'—'} • Q${state.period||'—'}</b></div>
-        <div class="cg-field-meta-cell"><span>DIRECTION</span><b>${poss||'OFF'} → ${driveRight?g.home.abbr:g.away.abbr}</b></div>
-      </div>
+      <div class="cg-ribbon-primary"><span>DOWN & DISTANCE</span><b>${dd}</b></div>
+      <div class="cg-ribbon-small"><span>FIELD POSITION</span><b>${label}</b></div>
+      <div class="cg-ribbon-small cg-ribbon-direction"><span>GAME STATE</span><b>${state.clock||'—'} • Q${state.period||'—'} • ${poss||'OFF'} → ${driveRight?g.home.abbr:g.away.abbr}</b></div>
     </div>
 
     <div class="cg-field">
@@ -2701,25 +2782,39 @@ function cgRenderFieldState(g,state){
       ${g.home.logo?`<img class="cg-endzone-logo home" src="${g.home.logo}" alt="">`:''}
       ${g.home.logo?`<img class="cg-midfield-logo" src="${g.home.logo}" alt="">`:''}
       <i class="cg-hash top"></i><i class="cg-hash bottom"></i>
-      <span class="cg-dir ${driveRight?'right':'left'}">${driveRight?'➜':'➜'}</span>
+      <span class="cg-dir ${driveRight?'right':'left'}">➜</span>
       ${state.yardsToEndzone!==null?`<span class="cg-line-of-scrimmage" style="left:${pct}%"></span>`:''}
       ${fdPct!==null?`<span class="cg-firstdown-line" style="left:${fdPct}%"></span>`:''}
       <span class="cg-ball" style="left:${pct}%"></span>
       ${possLogo?`<span class="cg-drive-chip" style="left:${Math.min(86,Math.max(10,pct+(driveRight?4:-4)))}%"><img src="${possLogo}" alt=""></span>`:''}
       <span class="cg-field-label">${label}${state.fieldSource?` • ${state.fieldSource}`:''}</span>
     </div>
-  </div>`;
+
+    <div class="cg-last-play" style="margin-top:10px">${state.lastPlay||'Waiting for the next live play…'}</div>`;
 }
 function cgNormTeam(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').replace(/\b(university|college|state university)\b/g,' ').trim()}
 function cgTeamMatch(a,b){
   a=cgNormTeam(a);b=cgNormTeam(b);if(!a||!b)return false;
-  return a===b||a.includes(b)||b.includes(a)||a.split(' ').some(x=>x.length>4&&b.includes(x));
+  if(a===b||a.includes(b)||b.includes(a))return true;
+  const aa=a.split(' ').filter(Boolean),bb=b.split(' ').filter(Boolean);
+  const common=aa.filter(x=>x.length>=4&&bb.includes(x));
+  if(common.length)return true;
+  const aliases={
+    'massachusetts':'umass','umass':'massachusetts',
+    'connecticut':'uconn','uconn':'connecticut',
+    'central florida':'ucf','ucf':'central florida',
+    'southern california':'usc','usc':'southern california'
+  };
+  for(const [x,y] of Object.entries(aliases)){
+    if((a.includes(x)&&b.includes(y))||(a.includes(y)&&b.includes(x)))return true;
+  }
+  return false;
 }
 
 
 async function cgFetchLiveMarket(g){
   try{
-    const r=await fetch('/api/odds?live=1&_='+Date.now(),{cache:'no-store'});
+    const r=await fetch(`/api/odds?live=1&home=${encodeURIComponent(g.home.name)}&away=${encodeURIComponent(g.away.name)}&_=${Date.now()}`,{cache:'no-store'});
     let j=null;
     try{j=await r.json()}catch(e){}
     if(!r.ok)return {available:false,reason:`ODDS API HTTP ${r.status}`,diagnostics:j||{}};
@@ -2772,7 +2867,7 @@ function cgRenderLiveMarket(g,m){
   if(!m?.available){
     el.innerHTML=`<div class="cg-market-title"><b>LIVE BETTING MARKET</b><span>${m?.reason||'UNAVAILABLE'}</span></div>
       <div class="cg-market-book">Pregame reference: ${g.market?.details||'—'}${g.market?.over_under?` • O/U ${g.market.over_under}`:''}</div>
-      <div class="cg-market-debug">Odds API: ${d.mode||'no mode'} • events ${d.events??'—'} • books for this game ${d.books??'—'}${d.requests_remaining!==undefined?` • requests remaining ${d.requests_remaining}`:''}${d.error?` • ${d.error}`:''}</div>`;
+      <div class="cg-market-debug">Odds API: ${d.mode||'no mode'} • events ${d.events??'—'} • books for this game ${d.books??'—'} • US + US2 searched${d.requests_remaining!==undefined?` • requests remaining ${d.requests_remaining}`:''}${d.error?` • ${d.error}`:''}</div>`;
     return;
   }
   const spread=m.homeSpread!=null?`${g.home.abbr} ${Number(m.homeSpread)>0?'+':''}${Number(m.homeSpread).toFixed(1)}`:'—';
@@ -3151,7 +3246,7 @@ loadWeek();
 
 <script>
 (function(){
- const SNAP='gridlock.college.snapshots.v42', FIN='gridlock.college.finals.v42';
+ const SNAP='gridlock.college.snapshots.v43', FIN='gridlock.college.finals.v43';
  const $=id=>document.getElementById(id); const n=v=>{if(v===null||v===undefined||v==='')return null;v=Number(v);return Number.isFinite(v)?v:null};
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const rd=k=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return[]}}, wr=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
@@ -3379,7 +3474,7 @@ function syncPerformance(){
 async function refresh(){try{if(typeof loadSportsbookOdds==='function'&&!window.GRIDLOCK_ODDS_LOADED)await loadSportsbookOdds(false)}catch(e){}const valueRows=bestValueRows();const dogRows=dogWatchRows();renderRows('topValueList',valueRows,'value');renderRows('upsetWatchList',dogRows,'upset');featuredValue(valueRows);if($('topValueStamp'))$('topValueStamp').textContent=(window.GRIDLOCK_GET_ODDS_EVENTS?.().length)?'DIRECT + ESPN':'ESPN MARKET';if($('upsetStamp'))$('upsetStamp').textContent=(window.GRIDLOCK_GET_ODDS_EVENTS?.().length)?'LIVE +MONEY':'PRICED + WATCHLIST';syncArchive();syncPerformance()}
  const oldRender=typeof render==='function'?render:null;if(oldRender){window.render=function(){const r=oldRender.apply(this,arguments);setTimeout(refresh,50);return r}}
  let bootTries=0;async function bootWhenSlateReady(){bootTries++;if(slate().length){window.GRIDLOCK_ODDS_LOADED=false;await refresh();return}if(bootTries<80)setTimeout(bootWhenSlateReady,250)}setTimeout(bootWhenSlateReady,100);$('valueMarketFilter')?.addEventListener('change',refresh);
-setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V42={refresh,syncArchive};
+setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V43={refresh,syncArchive};
 })();
 
 </script>
@@ -3509,6 +3604,23 @@ async function cgFetchStripState(g){
   }catch(e){return null}
 }
 
+
+function cgLikelyActiveNow(g){
+  if(g?.complete)return false;
+  const s=String(g?.status||'').toLowerCase();
+  if(/quarter|half|ot|live|in progress|[1-4](st|nd|rd|th)|\d+:\d+/.test(s))return true;
+  // ESPN schedule state can lag behind. Treat games with a nonzero score as active.
+  const as=Number(g?.away?.score||0),hs=Number(g?.home?.score||0);
+  if(as>0||hs>0)return true;
+  // Current game window: if kickoff is within roughly the last 4.5 hours.
+  const dt=new Date(g?.date||g?.start||g?.commence_time||0);
+  if(!Number.isNaN(dt.getTime())){
+    const d=Date.now()-dt.getTime();
+    if(d>=-10*60*1000 && d<=4.5*60*60*1000)return true;
+  }
+  return false;
+}
+
 async function renderCollegeStrip(force=false){
   if(!document.body.classList.contains('college-mode'))return;
   const now=Date.now();
@@ -3519,15 +3631,17 @@ async function renderCollegeStrip(force=false){
 
   try{
     setControl('college');
+
+    // College mode owns this strip. Purge anything created by the NFL renderer.
+    scoreStrip.querySelectorAll('.game-chip:not(.college-score-chip)').forEach(el=>el.remove());
+
     const arr=currentCollegeWindow();
     const ids=new Set(arr.map(g=>String(g.id)));
 
-    // Remove only chips that are no longer in the current slate window.
     scoreStrip.querySelectorAll('.college-score-chip[data-game-id]').forEach(el=>{
       if(!ids.has(String(el.dataset.gameId)))el.remove();
     });
 
-    // Create missing chips once. Never rebuild the entire strip.
     const fragment=document.createDocumentFragment();
     for(const g of arr){
       let el=scoreStrip.querySelector(`.college-score-chip[data-game-id="${CSS.escape(String(g.id))}"]`);
@@ -3542,11 +3656,10 @@ async function renderCollegeStrip(force=false){
     }
     if(fragment.childNodes.length)scoreStrip.appendChild(fragment);
 
-    // Preserve horizontal scroll while updating live text.
     const savedScroll=scoreStrip.scrollLeft;
 
-    // Only call summary endpoint for games actually live.
-    const liveGames=arr.filter(cgStripIsLive);
+    // Fetch game-state for likely active games. This no longer depends only on stale schedule status.
+    const liveGames=arr.filter(cgLikelyActiveNow).slice(0,10);
     const liveStates=await Promise.all(liveGames.map(async g=>[String(g.id),await cgFetchStripState(g)]));
     const stateMap=new Map(liveStates);
 
@@ -3557,11 +3670,13 @@ async function renderCollegeStrip(force=false){
     }
 
     requestAnimationFrame(()=>{scoreStrip.scrollLeft=savedScroll});
-  } finally {
+  }finally{
     GRIDLOCK_COLLEGE_STRIP_BUSY=false;
   }
 }
 function renderNFLStrip(){
+    if(document.body.classList.contains('college-mode'))return;
+
     try{if(typeof renderStrip==='function')renderStrip()}catch(e){}
     setControl('nfl');
   }
