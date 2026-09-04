@@ -14,13 +14,24 @@ module.exports = async function handler(req,res){
     if(!r.ok)throw new Error(`Odds provider ${r.status}: ${txt.slice(0,240)}`);
     return {events:JSON.parse(txt),remaining:r.headers.get('x-requests-remaining')||'',used:r.headers.get('x-requests-used')||''};
   }
+
+  function norm(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').replace(/\b(university|college|state university|the)\b/g,' ').trim();}
+  function teamScore(a,b){
+    a=norm(a);b=norm(b);if(!a||!b)return 0;
+    if(a===b)return 100;
+    let score=0;
+    const aa=a.split(' ').filter(Boolean),bb=b.split(' ').filter(Boolean);
+    for(const x of aa)if(x.length>=4&&bb.includes(x))score+=12;
+    if(a.includes(b)||b.includes(a))score+=45;
+    return score;
+  }
   try{
     let data,mode;
     if(live){
       // In-game: query full U.S. market. Preferred books are sorted first,
       // but do not discard DraftKings/Caesars/other books if they are the only ones posting live.
-      data=await ask({regions:'us'});
-      mode='regions=us live';
+      data=await ask({regions:'us,us2'});
+      mode='regions=us,us2 live';
       let events=(data.events||[]).map(e=>{
         const books=[...(e.bookmakers||[])].sort((a,b)=>{
           const ai=preferred.indexOf(a.key),bi=preferred.indexOf(b.key);
@@ -29,7 +40,19 @@ module.exports = async function handler(req,res){
         });
         return {...e,bookmakers:books};
       }).filter(e=>e.bookmakers.length);
-      return res.end(JSON.stringify({source:'The Odds API',mode,live_requested:true,updated_at:new Date().toISOString(),event_count:events.length,requests_remaining:data.remaining,requests_used:data.used,events}));
+      const qh=String(req.query?.home||''),qa=String(req.query?.away||'');
+      let matched_event=null;
+      if(qh&&qa){
+        let best=null,bestScore=-1;
+        for(const e of events){
+          const s1=teamScore(e.home_team,qh)+teamScore(e.away_team,qa);
+          const s2=teamScore(e.home_team,qa)+teamScore(e.away_team,qh);
+          const s=Math.max(s1,s2);
+          if(s>bestScore){bestScore=s;best=e;}
+        }
+        if(bestScore>=24)matched_event=best;
+      }
+      return res.end(JSON.stringify({source:'The Odds API',mode,live_requested:true,updated_at:new Date().toISOString(),event_count:events.length,matched_event_id:matched_event?.id||null,matched_event_score:matched_event?bestScore:null,requests_remaining:data.remaining,requests_used:data.used,events:matched_event?[matched_event]:events}));
     }
     mode='bookmakers=fanduel,betrivers';
     try{data=await ask({bookmakers:'fanduel,betrivers'});}catch(first){data=await ask({regions:'us'});mode='regions=us fallback';}
