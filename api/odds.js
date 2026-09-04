@@ -1,5 +1,7 @@
 module.exports = async function handler(req,res){
   res.setHeader('Content-Type','application/json');
+  const live=String(req.query?.live||'')==='1';
+
   if(String(req.query?.health||'')==='1'){
     return res.end(JSON.stringify({
       ok:true,
@@ -10,86 +12,106 @@ module.exports = async function handler(req,res){
       timestamp:new Date().toISOString()
     }));
   }
-  const live=String(req.query?.live||'')==='1';
-  res.setHeader('Cache-Control',live?'s-maxage=15, stale-while-revalidate=20':'s-maxage=45, stale-while-revalidate=90');
-  const key=process.env.ODDS_API_KEY;
-  if(!key){res.statusCode=503;return res.end(JSON.stringify({ok:false,error:'ODDS_API_KEY_MISSING',detail:'ODDS_API_KEY is not configured in Vercel'}));}
-  const preferred=['fanduel','betrivers','bet365','bet365_us','draftkings','caesars'];
-  const wanted=new Set(preferred);
-  const base={apiKey:key,markets:'h2h,spreads,totals',oddsFormat:'american',dateFormat:'iso'};
-  async function ask(extra){
-    const params=new URLSearchParams({...base,...extra});
-    const url='https://api.the-odds-api.com/v4/sports/americanfootball_ncaaf/odds/?'+params.toString();
-    const ctl=new AbortController();
-    const timer=setTimeout(()=>ctl.abort(),7000);
-    let r,txt;
-    try{
-      r=await fetch(url,{headers:{accept:'application/json'},signal:ctl.signal});
-      txt=await r.text();
-    }finally{clearTimeout(timer)}
-    if(!r.ok)throw new Error(`Odds provider ${r.status}: ${txt.slice(0,240)}`);
-    return {events:JSON.parse(txt),remaining:r.headers.get('x-requests-remaining')||'',used:r.headers.get('x-requests-used')||''};
+
+  res.setHeader('Cache-Control',live?'s-maxage=25, stale-while-revalidate=25':'s-maxage=60, stale-while-revalidate=90');
+
+  const key=String(process.env.ODDS_API_KEY||'').trim();
+  if(!key){
+    res.statusCode=503;
+    return res.end(JSON.stringify({ok:false,error:'ODDS_API_KEY_MISSING',detail:'ODDS_API_KEY is not configured in Vercel'}));
   }
 
-  function norm(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').replace(/\b(university|college|state university|the)\b/g,' ').trim();}
+  const home=String(req.query?.home||'').trim();
+  const away=String(req.query?.away||'').trim();
+
+  function norm(s){
+    return String(s||'').toLowerCase()
+      .replace(/&/g,' and ')
+      .replace(/[^a-z0-9]+/g,' ')
+      .replace(/\b(university|college|state university|the)\b/g,' ')
+      .trim();
+  }
+  const aliases={
+    'massachusetts':'umass','umass':'massachusetts',
+    'central florida':'ucf','ucf':'central florida',
+    'connecticut':'uconn','uconn':'connecticut',
+    'southern california':'usc','usc':'southern california'
+  };
   function teamScore(a,b){
     a=norm(a);b=norm(b);if(!a||!b)return 0;
     if(a===b)return 100;
     let score=0;
+    if(a.includes(b)||b.includes(a))score+=50;
     const aa=a.split(' ').filter(Boolean),bb=b.split(' ').filter(Boolean);
-    for(const x of aa)if(x.length>=4&&bb.includes(x))score+=12;
-    if(a.includes(b)||b.includes(a))score+=45;
+    for(const x of aa)if(x.length>=4&&bb.includes(x))score+=14;
+    for(const [x,y] of Object.entries(aliases)){
+      if((a.includes(x)&&b.includes(y))||(a.includes(y)&&b.includes(x)))score+=65;
+    }
     return score;
   }
+
+  const params=new URLSearchParams();
+  params.set('apiKey',key);
+  params.set('regions','us');
+  params.set('markets','h2h,spreads,totals');
+  params.set('oddsFormat','american');
+  params.set('dateFormat','iso');
+
+  // Match the provider's documented example exactly: no trailing slash before ?.
+  const url=`https://api.the-odds-api.com/v4/sports/americanfootball_ncaaf/odds?${params.toString()}`;
+
+  const ctl=new AbortController();
+  const timer=setTimeout(()=>ctl.abort(),8000);
   try{
-    let data,mode;
-    if(live){
-      data=await ask({regions:'us,us2'});
-      mode='regions=us,us2 live';
-      let events=(data.events||[]).map(e=>{
-        const books=[...(e.bookmakers||[])].sort((a,b)=>{
-          const ai=preferred.indexOf(a.key),bi=preferred.indexOf(b.key);
-          return (ai<0?999:ai)-(bi<0?999:bi);
-        });
-        return {...e,bookmakers:books};
-      }).filter(e=>e.bookmakers.length);
-
-      const qh=String(req.query?.home||''),qa=String(req.query?.away||'');
-      let matched_event=null,bestScore=-1;
-      if(qh&&qa){
-        for(const e of events){
-          const s1=teamScore(e.home_team,qh)+teamScore(e.away_team,qa);
-          const s2=teamScore(e.home_team,qa)+teamScore(e.away_team,qh);
-          const s=Math.max(s1,s2);
-          if(s>bestScore){bestScore=s;matched_event=e;}
-        }
-        if(bestScore<24)matched_event=null;
-      }
-
-      let event_specific=null,event_specific_error='';
-      if(matched_event?.id){
-        try{
-          const params=new URLSearchParams({apiKey:key,regions:'us,us2',markets:'h2h,spreads,totals',oddsFormat:'american',dateFormat:'iso'});
-          const ctl=new AbortController();
-          const timer=setTimeout(()=>ctl.abort(),7000);
-          let er,et;
-          try{
-            er=await fetch(`https://api.the-odds-api.com/v4/sports/americanfootball_ncaaf/events/${matched_event.id}/odds?${params.toString()}`,{headers:{accept:'application/json'},signal:ctl.signal});
-            et=await er.text();
-          }finally{clearTimeout(timer)}
-          if(er.ok)event_specific=JSON.parse(et); else event_specific_error=`${er.status}: ${et.slice(0,180)}`;
-        }catch(e){event_specific_error=String(e?.message||e)}
-      }
-      const resultEvent=event_specific||matched_event;
+    const r=await fetch(url,{headers:{accept:'application/json'},signal:ctl.signal});
+    const text=await r.text();
+    if(!r.ok){
+      res.statusCode=502;
       return res.end(JSON.stringify({
-        ok:true,source:'The Odds API',mode:event_specific?'event-specific us,us2':'league live us,us2',live_requested:true,updated_at:new Date().toISOString(),
-        event_count:events.length,matched_event_id:matched_event?.id||null,matched_event_score:matched_event?bestScore:null,event_specific_used:!!event_specific,event_specific_error,
-        requests_remaining:data.remaining,requests_used:data.used,events:resultEvent?[resultEvent]:events
+        ok:false,
+        error:'ODDS_PROVIDER_FAILED',
+        provider_status:r.status,
+        detail:text.slice(0,500),
+        request_shape:'americanfootball_ncaaf / regions=us / h2h,spreads,totals',
+        url_length:url.length
       }));
     }
-    mode='bookmakers=fanduel,betrivers';
-    try{data=await ask({bookmakers:'fanduel,betrivers'});}catch(first){data=await ask({regions:'us'});mode='regions=us fallback';}
-    let events=(data.events||[]).map(e=>({...e,bookmakers:(e.bookmakers||[]).filter(b=>wanted.has(b.key))})).filter(e=>e.bookmakers.length);
-    return res.end(JSON.stringify({ok:true,source:'The Odds API',mode,live_requested:false,updated_at:new Date().toISOString(),requests_remaining:data.remaining,requests_used:data.used,events}));
-  }catch(err){res.statusCode=502;return res.end(JSON.stringify({ok:false,error:'ODDS_PROVIDER_FAILED',detail:err?.message||String(err)}));}
+
+    const events=JSON.parse(text);
+    let matched=null,bestScore=-1;
+    if(home&&away){
+      for(const e of events){
+        const direct=teamScore(e.home_team,home)+teamScore(e.away_team,away);
+        const flipped=teamScore(e.home_team,away)+teamScore(e.away_team,home);
+        const s=Math.max(direct,flipped);
+        if(s>bestScore){bestScore=s;matched=e;}
+      }
+      if(bestScore<35)matched=null;
+    }
+
+    return res.end(JSON.stringify({
+      ok:true,
+      source:'The Odds API',
+      mode:'documented regions=us feed',
+      live_requested:live,
+      fetched_at:new Date().toISOString(),
+      event_count:Array.isArray(events)?events.length:0,
+      matched:!!matched,
+      matched_score:bestScore,
+      requests_remaining:r.headers.get('x-requests-remaining')||'',
+      requests_used:r.headers.get('x-requests-used')||'',
+      events:matched?[matched]:(home&&away?[]:events)
+    }));
+  }catch(err){
+    res.statusCode=502;
+    return res.end(JSON.stringify({
+      ok:false,
+      error:'ODDS_PROVIDER_REQUEST_FAILED',
+      detail:err?.name==='AbortError'?'timeout':(err?.message||String(err)),
+      request_shape:'americanfootball_ncaaf / regions=us / h2h,spreads,totals',
+      url_length:url.length
+    }));
+  }finally{
+    clearTimeout(timer);
+  }
 };
