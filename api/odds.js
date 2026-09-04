@@ -28,31 +28,43 @@ module.exports = async function handler(req,res){
   try{
     let data,mode;
     if(live){
-      // In-game: query full U.S. market. Preferred books are sorted first,
-      // but do not discard DraftKings/Caesars/other books if they are the only ones posting live.
       data=await ask({regions:'us,us2'});
       mode='regions=us,us2 live';
       let events=(data.events||[]).map(e=>{
         const books=[...(e.bookmakers||[])].sort((a,b)=>{
           const ai=preferred.indexOf(a.key),bi=preferred.indexOf(b.key);
-          const av=ai<0?999:ai,bv=bi<0?999:bi;
-          return av-bv;
+          return (ai<0?999:ai)-(bi<0?999:bi);
         });
         return {...e,bookmakers:books};
       }).filter(e=>e.bookmakers.length);
+
       const qh=String(req.query?.home||''),qa=String(req.query?.away||'');
-      let matched_event=null;
+      let matched_event=null,bestScore=-1;
       if(qh&&qa){
-        let best=null,bestScore=-1;
         for(const e of events){
           const s1=teamScore(e.home_team,qh)+teamScore(e.away_team,qa);
           const s2=teamScore(e.home_team,qa)+teamScore(e.away_team,qh);
           const s=Math.max(s1,s2);
-          if(s>bestScore){bestScore=s;best=e;}
+          if(s>bestScore){bestScore=s;matched_event=e;}
         }
-        if(bestScore>=24)matched_event=best;
+        if(bestScore<24)matched_event=null;
       }
-      return res.end(JSON.stringify({source:'The Odds API',mode,live_requested:true,updated_at:new Date().toISOString(),event_count:events.length,matched_event_id:matched_event?.id||null,matched_event_score:matched_event?bestScore:null,requests_remaining:data.remaining,requests_used:data.used,events:matched_event?[matched_event]:events}));
+
+      let event_specific=null,event_specific_error='';
+      if(matched_event?.id){
+        try{
+          const params=new URLSearchParams({apiKey:key,regions:'us,us2',markets:'h2h,spreads,totals',oddsFormat:'american',dateFormat:'iso'});
+          const er=await fetch(`https://api.the-odds-api.com/v4/sports/americanfootball_ncaaf/events/${matched_event.id}/odds?${params.toString()}`,{headers:{accept:'application/json'}});
+          const et=await er.text();
+          if(er.ok)event_specific=JSON.parse(et); else event_specific_error=`${er.status}: ${et.slice(0,180)}`;
+        }catch(e){event_specific_error=String(e?.message||e)}
+      }
+      const resultEvent=event_specific||matched_event;
+      return res.end(JSON.stringify({
+        source:'The Odds API',mode:event_specific?'event-specific us,us2':'league live us,us2',live_requested:true,updated_at:new Date().toISOString(),
+        event_count:events.length,matched_event_id:matched_event?.id||null,matched_event_score:matched_event?bestScore:null,event_specific_used:!!event_specific,event_specific_error,
+        requests_remaining:data.remaining,requests_used:data.used,events:resultEvent?[resultEvent]:events
+      }));
     }
     mode='bookmakers=fanduel,betrivers';
     try{data=await ask({bookmakers:'fanduel,betrivers'});}catch(first){data=await ask({regions:'us'});mode='regions=us fallback';}
