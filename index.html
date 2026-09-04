@@ -2225,7 +2225,7 @@ async function loadSportsbookOdds(force=false){
   window.GRIDLOCK_ODDS_GAME_ID=gameId;
 
   if(status){
-    status.textContent='DIRECT BOOK FEED UNAVAILABLE';
+    status.textContent='DIRECT BOOK FEED UNAVAILABLE • /api/odds';
     status.title=window.GRIDLOCK_ODDS_ERROR;
   }
   if(wrap)wrap.classList.add('off');
@@ -3003,24 +3003,26 @@ function cgTeamMatch(a,b){
 
 
 let GRIDLOCK_MARKET_HEALTH=null;
+
 async function cgCheckMarketHealth(){
-  if(GRIDLOCK_MARKET_HEALTH && Date.now()-GRIDLOCK_MARKET_HEALTH.at<60000)return GRIDLOCK_MARKET_HEALTH;
   try{
-    const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),5000);
+    const ctl=new AbortController();
+    const timer=setTimeout(()=>ctl.abort(),5000);
     let r;
-    try{r=await fetch(`/api/odds?health=1&_=${Date.now()}`,{cache:'no-store',signal:ctl.signal})}
-    finally{clearTimeout(timer)}
-    const j=await r.json();
-    GRIDLOCK_MARKET_HEALTH={at:Date.now(),ok:r.ok&&j?.ok,data:j,http:r.status};
+    try{
+      r=await fetch(`/api/odds?health=1&_=${Date.now()}`,{cache:'no-store',signal:ctl.signal});
+    }finally{clearTimeout(timer)}
+    let j=null;
+    try{j=await r.json()}catch(e){}
+    return {at:Date.now(),ok:!!(r.ok&&j?.ok),http:r.status,data:j,error:(!r.ok?(j?.error||`HTTP ${r.status}`):'')};
   }catch(e){
-    GRIDLOCK_MARKET_HEALTH={at:Date.now(),ok:false,error:String(e?.message||e)};
+    return {at:Date.now(),ok:false,error:String(e?.message||e),http:0};
   }
-  return GRIDLOCK_MARKET_HEALTH;
 }
 async function cgFetchLiveMarket(g){
   const health=await cgCheckMarketHealth();
   if(!health?.ok){
-    return {available:false,reason:'SPORTSBOOK API ROUTE UNREACHABLE',diagnostics:{health_error:health?.error||'',http_status:health?.http??'—'}};
+    return {available:false,reason:'SPORTSBOOK API /api/odds UNREACHABLE',diagnostics:{health_error:health?.error||'',http_status:health?.http??'—'}};
   }
   if(health?.data?.key_configured===false){
     return {available:false,reason:'ODDS_API_KEY_MISSING',diagnostics:{health:'route reachable',key_configured:false}};
@@ -3492,7 +3494,7 @@ loadWeek();
 
 <script>
 (function(){
- const SNAP='gridlock.college.snapshots.v51', FIN='gridlock.college.finals.v51';
+ const SNAP='gridlock.college.snapshots.v52', FIN='gridlock.college.finals.v52';
  const $=id=>document.getElementById(id); const n=v=>{if(v===null||v===undefined||v==='')return null;v=Number(v);return Number.isFinite(v)?v:null};
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const rd=k=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return[]}}, wr=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
@@ -3720,7 +3722,7 @@ function syncPerformance(){
 async function refresh(){try{if(typeof loadSportsbookOdds==='function'&&!window.GRIDLOCK_ODDS_LOADED)await loadSportsbookOdds(false)}catch(e){}const valueRows=bestValueRows();const dogRows=dogWatchRows();renderRows('topValueList',valueRows,'value');renderRows('upsetWatchList',dogRows,'upset');featuredValue(valueRows);if($('topValueStamp'))$('topValueStamp').textContent=(window.GRIDLOCK_GET_ODDS_EVENTS?.().length)?'DIRECT + ESPN':'ESPN MARKET';if($('upsetStamp'))$('upsetStamp').textContent=(window.GRIDLOCK_GET_ODDS_EVENTS?.().length)?'LIVE +MONEY':'PRICED + WATCHLIST';syncArchive();syncPerformance()}
  const oldRender=typeof render==='function'?render:null;if(oldRender){window.render=function(){const r=oldRender.apply(this,arguments);setTimeout(refresh,50);return r}}
  let bootTries=0;async function bootWhenSlateReady(){bootTries++;if(slate().length){window.GRIDLOCK_ODDS_LOADED=false;await refresh();return}if(bootTries<80)setTimeout(bootWhenSlateReady,250)}setTimeout(bootWhenSlateReady,100);$('valueMarketFilter')?.addEventListener('change',refresh);
-setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V51={refresh,syncArchive};
+setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V52={refresh,syncArchive};
 })();
 
 </script>
