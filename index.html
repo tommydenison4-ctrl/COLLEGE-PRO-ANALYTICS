@@ -1540,6 +1540,20 @@ body.college-mode #scoreStrip .college-score-chip{
   .cg-ribbon-primary,.cg-ribbon-small{min-width:0}
 }
 
+
+/* GRIDLOCK V44 — possession ball, current play emphasis, richer hero alerts */
+.chip-inline-ball{display:inline-block;width:13px;height:8px;margin-left:5px;border-radius:55%;background:#8b4c25;border:1.5px solid #f0d0a5;transform:rotate(-18deg);vertical-align:middle;box-shadow:0 0 0 1px rgba(255,255,255,.08)}
+.college-score-chip .chip-team.possession .chip-side:after{display:none!important}
+.college-score-chip .chip-live-state .chip-possession-ball{display:none!important}
+.cg-pbp-row.current{background:linear-gradient(90deg,rgba(25,167,255,.14),rgba(25,167,255,.035))!important;border-left:3px solid #1aa7ff!important;padding-left:9px!important}
+.cg-pbp-row.current .cg-pbp-meta{font-size:8px!important;color:#76caff!important}
+.cg-pbp-row.current .cg-pbp-text{font-size:12px!important;line-height:1.45!important;font-weight:900!important;color:#f3f8fc!important}
+.cg-pbp-row:not(.current) .cg-pbp-text{font-size:9px!important}
+.cg-hero-player{display:inline-block;margin-top:5px;font-size:12px;font-weight:1000;color:#fff}
+.cg-hero-tag{display:inline-block;margin-top:6px;padding:4px 7px;border-radius:999px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.16);font-size:7px;font-weight:1000;letter-spacing:.06em}
+.cg-hero-alert.firstdown{border-color:#3299ff;background:linear-gradient(110deg,#0b3152,#121b26 65%)}
+.cg-hero-alert.explosive{border-color:#f0b346;background:linear-gradient(110deg,#4a2b08,#121b26 65%)}
+
 </style>
 </head>
 <body>
@@ -2296,7 +2310,7 @@ function resetCollegePickState(clearRoute=true){
  const t=document.getElementById('shareText');if(t)t.value='';
  if(clearRoute){try{const u=new URL(location.href);['league','game','date','market','side','line','odds','book','pick'].forEach(k=>u.searchParams.delete(k));history.replaceState({},'',u.pathname+(u.searchParams.toString()?'?'+u.searchParams.toString():'')+u.hash)}catch(e){}}
 }
-function openCollegeGame(g,opts={}){resetCollegePickState(!opts.preserveSharedRoute);selectedCollegeGame=g;window.GRIDLOCK_ACTIVE_COLLEGE_GAME=g;applyCollegeColors(g);if(window.GRIDLOCK_SCOPE_P4_GAME)window.GRIDLOCK_SCOPE_P4_GAME(g);const p=projFor(g);$('collegeSlate').style.display='none';$('collegeGamecast').classList.add('open');$('collegeSpatialLab').style.display='none';$('cgAwayName').textContent=g.away.name;$('cgHomeName').textContent=g.home.name;$('cgAwayMeta').textContent=(g.away.conf||g.away.abbr)+(g.neutral?' • NEUTRAL':' • AWAY');$('cgHomeMeta').textContent=(g.home.conf||g.home.abbr)+(g.neutral?' • NEUTRAL':' • HOME');$('cgAwayLogo').src=g.away.logo||'';$('cgHomeLogo').src=g.home.logo||'';$('cgDate').textContent=fmtDate(g.date)+' • '+fmtTime(g.date);$('cgNetwork').textContent=[g.network,g.venue].filter(Boolean).join(' • ');$('cgStatus').textContent=(g.status||'PREGAME').toUpperCase();$('cgMarket').textContent=g.market?.details?`MARKET ${g.market.details}${g.market.over_under?` • O/U ${g.market.over_under}`:''}`:'MARKET LINE UNAVAILABLE';$('cgAwayScore').textContent=p?Number(p.away_score).toFixed(1):'—';$('cgHomeScore').textContent=p?Number(p.home_score).toFixed(1):'—';renderCollegeDetail(g,p);setCGTab('gamecast');renderCGChat();cgStartLiveRefresh(g);window.scrollTo({top:0,behavior:'smooth'})}
+function openCollegeGame(g,opts={}){GRIDLOCK_HERO_SEEN.clear();GRIDLOCK_HERO_INITIALIZED=false;resetCollegePickState(!opts.preserveSharedRoute);selectedCollegeGame=g;window.GRIDLOCK_ACTIVE_COLLEGE_GAME=g;applyCollegeColors(g);if(window.GRIDLOCK_SCOPE_P4_GAME)window.GRIDLOCK_SCOPE_P4_GAME(g);const p=projFor(g);$('collegeSlate').style.display='none';$('collegeGamecast').classList.add('open');$('collegeSpatialLab').style.display='none';$('cgAwayName').textContent=g.away.name;$('cgHomeName').textContent=g.home.name;$('cgAwayMeta').textContent=(g.away.conf||g.away.abbr)+(g.neutral?' • NEUTRAL':' • AWAY');$('cgHomeMeta').textContent=(g.home.conf||g.home.abbr)+(g.neutral?' • NEUTRAL':' • HOME');$('cgAwayLogo').src=g.away.logo||'';$('cgHomeLogo').src=g.home.logo||'';$('cgDate').textContent=fmtDate(g.date)+' • '+fmtTime(g.date);$('cgNetwork').textContent=[g.network,g.venue].filter(Boolean).join(' • ');$('cgStatus').textContent=(g.status||'PREGAME').toUpperCase();$('cgMarket').textContent=g.market?.details?`MARKET ${g.market.details}${g.market.over_under?` • O/U ${g.market.over_under}`:''}`:'MARKET LINE UNAVAILABLE';$('cgAwayScore').textContent=p?Number(p.away_score).toFixed(1):'—';$('cgHomeScore').textContent=p?Number(p.home_score).toFixed(1):'—';renderCollegeDetail(g,p);setCGTab('gamecast');renderCGChat();cgStartLiveRefresh(g);window.scrollTo({top:0,behavior:'smooth'})}
 
 let GRIDLOCK_COLLEGE_LIVE_TIMER=null;
 let GRIDLOCK_COLLEGE_LIVE_TOKEN=0;
@@ -2670,68 +2684,77 @@ function cgExtractPlays(summary){
   return out.slice(0,30);
 }
 
-let GRIDLOCK_LAST_HERO_PLAY='';
+
+const GRIDLOCK_HERO_SEEN=new Set();
+let GRIDLOCK_HERO_INITIALIZED=false;
 let GRIDLOCK_HERO_TIMER=null;
-function cgEventType(play){
-  const t=String(play?.text||play?.shortText||'').toLowerCase();
-  if(/touchdown/.test(t))return {key:'TOUCHDOWN',cls:'touchdown'};
-  if(/intercept/.test(t))return {key:'TURNOVER • INTERCEPTION',cls:'turnover'};
-  if(/fumble.*(lost|recovered by)/.test(t)||/turnover on downs/.test(t))return {key:'TURNOVER',cls:'turnover'};
-  if(/field goal.*good/.test(t))return {key:'FIELD GOAL',cls:'score'};
-  if(/safety/.test(t))return {key:'SAFETY',cls:'score'};
+function cgPlayId(p){return String(p?.id||`${p?.period?.number}|${p?.clock?.displayValue}|${p?.text}`)}
+function cgExtractPlayerName(text){
+  const s=String(text||'');
+  let m=s.match(/#\d+\s+([A-Z][A-Za-z.'-]*(?:\s+[A-Z][A-Za-z.'-]*){0,3})/);
+  if(m)return m[1].trim();
+  m=s.match(/\b([A-Z]\.[A-Z][A-Za-z.'-]+(?:\s+(?:II|III|IV|Jr\.?))?)\b/);
+  return m?m[1].trim():'';
+}
+function cgPlayYards(p){
+  const direct=Number(p?.statYardage);
+  if(Number.isFinite(direct))return direct;
+  const m=String(p?.text||'').match(/\bfor\s+(-?\d+)\s+yards?\b/i);
+  return m?Number(m[1]):null;
+}
+function cgClassifyHero(p){
+  const text=String(p?.text||p?.shortText||''),low=text.toLowerCase(),yards=cgPlayYards(p),player=cgExtractPlayerName(text);
+  if(/touchdown/.test(low))return {key:'TOUCHDOWN',cls:'touchdown',player,tag:yards!==null?`${yards} YARDS`:'SCORING PLAY',priority:100};
+  if(/intercept/.test(low))return {key:'TURNOVER • INTERCEPTION',cls:'turnover',player,tag:'TAKEAWAY',priority:95};
+  if(/fumble/.test(low)&&/(lost|recovered by)/.test(low))return {key:'TURNOVER • FUMBLE',cls:'turnover',player,tag:'TAKEAWAY',priority:94};
+  if(/turnover on downs/.test(low))return {key:'TURNOVER ON DOWNS',cls:'turnover',player,tag:'DEFENSIVE STOP',priority:93};
+  if(/field goal.*good/.test(low))return {key:'FIELD GOAL',cls:'score',player,tag:'SCORING PLAY',priority:85};
+  if(/safety/.test(low))return {key:'SAFETY',cls:'score',player,tag:'SCORING PLAY',priority:85};
+  if(yards!==null&&yards>=20)return {key:'EXPLOSIVE PLAY',cls:'explosive',player,tag:`${yards} YARDS`,priority:75};
+  if(/1st down|first down/.test(low))return {key:'FIRST DOWN',cls:'firstdown',player,tag:'CHAINS MOVED',priority:60};
   return null;
 }
 function cgPlayTeam(summary,g,play){
-  const id=String(play?.start?.team?.id||play?.end?.team?.id||'');
-  const comps=summary?.header?.competitions?.[0]?.competitors||[];
-  const c=comps.find(x=>String(x.id||x.team?.id||'')===id);
-  const abbr=c?.team?.abbreviation||'';
-  if(abbr===g.away.abbr)return g.away;
-  if(abbr===g.home.abbr)return g.home;
-  const txt=String(play?.text||'');
-  if(txt.includes(g.away.abbr))return g.away;
-  if(txt.includes(g.home.abbr))return g.home;
-  return null;
+  const id=String(play?.start?.team?.id||play?.end?.team?.id||''),comps=summary?.header?.competitions?.[0]?.competitors||[];
+  const c=comps.find(x=>String(x.id||x.team?.id||'')===id),abbr=c?.team?.abbreviation||'';
+  if(abbr===g.away.abbr)return g.away;if(abbr===g.home.abbr)return g.home;
+  const txt=String(play?.text||'');if(txt.includes(g.away.abbr))return g.away;if(txt.includes(g.home.abbr))return g.home;return null;
 }
-function cgRenderHeroAlert(summary,g,state){
-  const el=$('cgLiveHero');if(!el)return;
-  const plays=cgExtractPlays(summary);
-  const p=plays[0];if(!p)return;
-  const type=cgEventType(p);if(!type)return;
-  const id=String(p.id||`${p.period?.number}|${p.clock?.displayValue}|${p.text}`);
-  if(id===GRIDLOCK_LAST_HERO_PLAY)return;
-  GRIDLOCK_LAST_HERO_PLAY=id;
-  const team=cgPlayTeam(summary,g,p);
-  const text=String(p.text||p.shortText||'');
+function cgShowHero(el,summary,g,state,p,type){
+  const team=cgPlayTeam(summary,g,p),text=String(p.text||p.shortText||'');
   el.style.height='auto';
   el.innerHTML=`<div class="cg-hero-alert ${type.cls}">
     <div>${team?.logo?`<img class="cg-hero-logo" src="${team.logo}" alt="">`:''}</div>
-    <div class="cg-hero-copy"><span>GRIDLOCK LIVE ALERT</span><b>${type.key}</b><small>${text.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}</small></div>
+    <div class="cg-hero-copy"><span>GRIDLOCK LIVE ALERT</span><b>${type.key}</b>${type.player?`<div class="cg-hero-player">${type.player}</div>`:''}<div class="cg-hero-tag">${type.tag}</div><small>${text.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}</small></div>
     <div class="cg-hero-score"><b>${state?.awayScore??0} – ${state?.homeScore??0}</b><span>${g.away.abbr} / ${g.home.abbr}</span></div>
   </div>`;
   if(GRIDLOCK_HERO_TIMER)clearTimeout(GRIDLOCK_HERO_TIMER);
-  GRIDLOCK_HERO_TIMER=setTimeout(()=>{
-    const box=el.querySelector('.cg-hero-alert');if(box)box.classList.add('leave');
-    setTimeout(()=>{el.innerHTML='';el.style.height='0'},400);
-  },6500);
+  GRIDLOCK_HERO_TIMER=setTimeout(()=>{const box=el.querySelector('.cg-hero-alert');if(box)box.classList.add('leave');setTimeout(()=>{el.innerHTML='';el.style.height='0'},400)},5200);
+}
+function cgRenderHeroAlert(summary,g,state){
+  const el=$('cgLiveHero');if(!el)return;
+  const plays=cgExtractPlays(summary);if(!plays.length)return;
+  if(!GRIDLOCK_HERO_INITIALIZED){plays.forEach(p=>GRIDLOCK_HERO_SEEN.add(cgPlayId(p)));GRIDLOCK_HERO_INITIALIZED=true;return}
+  const fresh=plays.filter(p=>!GRIDLOCK_HERO_SEEN.has(cgPlayId(p)));
+  fresh.forEach(p=>GRIDLOCK_HERO_SEEN.add(cgPlayId(p)));
+  if(!fresh.length)return;
+  const candidates=fresh.map(p=>({p,type:cgClassifyHero(p)})).filter(x=>x.type);
+  if(!candidates.length)return;
+  candidates.sort((a,b)=>b.type.priority-a.type.priority);
+  cgShowHero(el,summary,g,state,candidates[0].p,candidates[0].type);
 }
 function cgRenderPBP(summary){
   const el=$('cgPlayByPlay');if(!el)return;
   const plays=cgExtractPlays(summary);
   if(!plays.length){el.innerHTML='<div class="cg-live-empty">No play-by-play is available from the live feed yet.</div>';return}
-  el.innerHTML=plays.map(p=>{
+  el.innerHTML=plays.map((p,idx)=>{
     const q=p?.period?.number?`Q${p.period.number}`:'',clk=p?.clock?.displayValue||'';
     const text=String(p?.text||p?.shortText||'Play');
     const low=text.toLowerCase();
     const cls=/touchdown|field goal|safety|extra point/.test(low)?'score':/intercept|fumble|turnover/.test(low)?'turnover':'';
-    return `<div class="cg-pbp-row ${cls}"><div class="cg-pbp-meta">${q} ${clk}</div><div class="cg-pbp-text">${text.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}</div></div>`;
+    return `<div class="cg-pbp-row ${cls} ${idx===0?'current':''}"><div class="cg-pbp-meta">${idx===0?'CURRENT • ':''}${q} ${clk}</div><div class="cg-pbp-text">${text.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}</div></div>`;
   }).join('');
 }
-
-
-
-
-
 function cgRenderFieldState(g,state){
   const el=$('cgFieldState');if(!el)return;
   if(!state||(!state.period&&!state.complete)){
@@ -3246,7 +3269,7 @@ loadWeek();
 
 <script>
 (function(){
- const SNAP='gridlock.college.snapshots.v43', FIN='gridlock.college.finals.v43';
+ const SNAP='gridlock.college.snapshots.v45', FIN='gridlock.college.finals.v45';
  const $=id=>document.getElementById(id); const n=v=>{if(v===null||v===undefined||v==='')return null;v=Number(v);return Number.isFinite(v)?v:null};
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const rd=k=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return[]}}, wr=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
@@ -3474,7 +3497,7 @@ function syncPerformance(){
 async function refresh(){try{if(typeof loadSportsbookOdds==='function'&&!window.GRIDLOCK_ODDS_LOADED)await loadSportsbookOdds(false)}catch(e){}const valueRows=bestValueRows();const dogRows=dogWatchRows();renderRows('topValueList',valueRows,'value');renderRows('upsetWatchList',dogRows,'upset');featuredValue(valueRows);if($('topValueStamp'))$('topValueStamp').textContent=(window.GRIDLOCK_GET_ODDS_EVENTS?.().length)?'DIRECT + ESPN':'ESPN MARKET';if($('upsetStamp'))$('upsetStamp').textContent=(window.GRIDLOCK_GET_ODDS_EVENTS?.().length)?'LIVE +MONEY':'PRICED + WATCHLIST';syncArchive();syncPerformance()}
  const oldRender=typeof render==='function'?render:null;if(oldRender){window.render=function(){const r=oldRender.apply(this,arguments);setTimeout(refresh,50);return r}}
  let bootTries=0;async function bootWhenSlateReady(){bootTries++;if(slate().length){window.GRIDLOCK_ODDS_LOADED=false;await refresh();return}if(bootTries<80)setTimeout(bootWhenSlateReady,250)}setTimeout(bootWhenSlateReady,100);$('valueMarketFilter')?.addEventListener('change',refresh);
-setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V43={refresh,syncArchive};
+setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V45={refresh,syncArchive};
 })();
 
 </script>
@@ -3580,11 +3603,11 @@ function cgUpdateScoreChip(el,g,state){
   GRIDLOCK_COLLEGE_SCORE_CACHE.set(String(g.id),next);
   el.innerHTML=`<div class="chip-live-state">${poss?'<span class="chip-possession-ball"></span>':''}<span>${esc(status)}</span></div>
     <div class="chip-team ${poss===away.abbr?'possession':''}">
-      <span class="chip-side">${away.logo?`<img class="chip-logo" src="${esc(away.logo)}" alt="">`:''}<span>${esc(next.awayAbbr)}</span></span>
+      <span class="chip-side">${away.logo?`<img class="chip-logo" src="${esc(away.logo)}" alt="">`:''}<span>${esc(next.awayAbbr)}${poss===away.abbr?'<i class="chip-inline-ball"></i>':''}</span></span>
       <span class="chip-score">${awayScore}</span>
     </div>
     <div class="chip-team ${poss===home.abbr?'possession':''}">
-      <span class="chip-side">${home.logo?`<img class="chip-logo" src="${esc(home.logo)}" alt="">`:''}<span>${esc(next.homeAbbr)}</span></span>
+      <span class="chip-side">${home.logo?`<img class="chip-logo" src="${esc(home.logo)}" alt="">`:''}<span>${esc(next.homeAbbr)}${poss===home.abbr?'<i class="chip-inline-ball"></i>':''}</span></span>
       <span class="chip-score">${homeScore}</span>
     </div>`;
 }
