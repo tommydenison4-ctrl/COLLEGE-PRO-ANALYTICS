@@ -30,7 +30,8 @@ function project(away,home,neutral,market){
  }
 
  let margin=internalMargin, total=internalTotal, marketUsed=false;
- const mm=Number(market?.home_margin), ou=Number(market?.over_under);
+ const toNum=v=>(v===null||v===undefined||v===''?null:Number(v));
+ const mm=toNum(market?.home_margin), ou=toNum(market?.over_under);
  if(Number.isFinite(mm)){
    // Early-season market is a much stronger strength-of-team prior than a raw
    // one-season efficiency model. GRIDLOCK still moves the number, but does not
@@ -53,5 +54,5 @@ function project(away,home,neutral,market){
  return {away_score:+ap2.toFixed(1),home_score:+hp2.toFixed(1),home_win_prob:+homewp.toFixed(4),away_win_prob:+(1-homewp).toFixed(4),
  source:marketUsed?'GRIDLOCK + MARKET':'GRIDLOCK MODEL',confidence,away_rating:ar,home_rating:hr,internal_margin:+internalMargin.toFixed(1),market_margin:Number.isFinite(mm)?mm:null,market_total:Number.isFinite(ou)?ou:null};
 }
-return {mean:MEAN,ratings:RATINGS,rating,project,version:'GRIDLOCK calibrated v6 • play-level efficiency + market prior + FBS/FCS tier prior'};
+return {mean:MEAN,ratings:RATINGS,rating,project,version:'GRIDLOCK calibrated v7 • play-level efficiency + market prior + FBS/FCS tier prior'};
 })();

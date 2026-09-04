@@ -874,6 +874,335 @@ body.college-mode .p4lab{margin-top:18px}
  .cg-market-grid{grid-template-columns:1fr 1fr 1fr}
 }
 
+
+/* GRIDLOCK V36 — College scoreboard always visible + broadcast field */
+body.college-mode .score-strip-wrap{
+  display:block!important;
+}
+body.college-mode main.main{
+  padding-top:18px!important;
+}
+
+/* Premium 3D field */
+.cg-field-card{overflow:hidden}
+.cg-field-wrap{
+  grid-template-columns:205px minmax(0,1fr)!important;
+  gap:16px!important;
+}
+.cg-possession{
+  padding:10px;
+  border:1px solid #1f435a;
+  border-radius:10px;
+  background:linear-gradient(180deg,#0b1d2c,#071622);
+}
+.cg-possession img{width:44px!important;height:44px!important}
+.cg-possession b{font-size:13px!important}
+.cg-possession span{font-size:7px!important;color:#6f9ebc!important}
+.cg-situation{
+  font-size:13px!important;
+  color:#fff!important;
+  margin-top:10px!important;
+  letter-spacing:.02em;
+}
+.cg-last-play{
+  font-size:8px!important;
+  line-height:1.45!important;
+  margin-top:7px!important;
+  color:#9cb4c5!important;
+}
+.cg-field{
+  height:152px!important;
+  border:1px solid #4c8c5c!important;
+  border-radius:12px!important;
+  overflow:hidden!important;
+  perspective:700px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.08),rgba(0,0,0,.12)),
+    repeating-linear-gradient(90deg,#23683a 0 10%,#205f36 10% 20%)!important;
+  box-shadow:
+    inset 0 15px 28px rgba(255,255,255,.05),
+    inset 0 -20px 32px rgba(0,0,0,.20),
+    0 10px 25px rgba(0,0,0,.18);
+}
+.cg-field:before,.cg-field:after{
+  width:8%!important;
+  background:
+    repeating-linear-gradient(135deg,rgba(255,255,255,.06) 0 4px,transparent 4px 8px),
+    #173f27!important;
+  z-index:1;
+}
+.cg-field-line{
+  background:rgba(255,255,255,.28)!important;
+  box-shadow:1px 0 0 rgba(0,0,0,.14);
+}
+.cg-field-num{
+  top:10px!important;
+  font-size:9px!important;
+  color:rgba(255,255,255,.80)!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.55);
+  z-index:2;
+}
+.cg-yard-tick{
+  position:absolute;
+  top:30px;
+  bottom:30px;
+  width:1px;
+  background:rgba(255,255,255,.13);
+  z-index:1;
+}
+.cg-hash{
+  position:absolute;
+  left:8%;
+  right:8%;
+  height:1px;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.40) 0 5px,transparent 5px 18px);
+  z-index:2;
+}
+.cg-hash.top{top:42%}.cg-hash.bottom{top:58%}
+.cg-line-of-scrimmage{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:3px;
+  background:#2ba8ff;
+  box-shadow:0 0 9px rgba(43,168,255,.75);
+  z-index:3;
+}
+.cg-firstdown-line{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:3px;
+  background:#f4d13f;
+  box-shadow:0 0 9px rgba(244,209,63,.65);
+  z-index:3;
+}
+.cg-ball{
+  width:27px!important;
+  height:18px!important;
+  border:2px solid #f3d2a7!important;
+  background:linear-gradient(180deg,#9f5a2e,#673418)!important;
+  box-shadow:0 0 0 4px rgba(255,255,255,.14),0 7px 15px rgba(0,0,0,.45)!important;
+  z-index:5!important;
+}
+.cg-ball:before{
+  content:'';
+  position:absolute;
+  width:34px;height:34px;
+  border-radius:50%;
+  left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  border:1px solid rgba(255,255,255,.22);
+}
+.cg-dir{
+  font-size:25px!important;
+  color:#eaffef!important;
+  text-shadow:0 2px 5px rgba(0,0,0,.5);
+  z-index:5!important;
+}
+.cg-field-label{
+  bottom:8px!important;
+  font-size:8px!important;
+  padding:5px 9px!important;
+  background:rgba(2,18,11,.62)!important;
+  border:1px solid rgba(255,255,255,.16);
+  z-index:6!important;
+}
+.cg-drive-chip{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:6;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  background:rgba(3,16,25,.76);
+  border:1px solid rgba(255,255,255,.17);
+  border-radius:999px;
+  padding:5px 7px;
+  font-size:7px;
+  font-weight:1000;
+}
+.cg-drive-chip img{width:18px;height:18px;object-fit:contain}
+@media(max-width:780px){
+  .cg-field-wrap{grid-template-columns:1fr!important}
+  .cg-field{height:120px!important}
+}
+
+
+/* GRIDLOCK V37 — end-zone team labels + stronger live prior */
+.cg-endzone-label{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:8%;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
+  font-size:10px;
+  font-weight:1000;
+  letter-spacing:.08em;
+  color:rgba(255,255,255,.82);
+  text-shadow:0 2px 4px rgba(0,0,0,.6);
+  pointer-events:none;
+}
+.cg-endzone-label.away{
+  left:0;
+  transform:rotate(180deg);
+}
+.cg-endzone-label.home{
+  right:0;
+}
+
+
+/* GRIDLOCK V38 — live state estimator + logo field */
+.cg-endzone-logo{
+  position:absolute;
+  top:50%;
+  width:6.2%;
+  height:62%;
+  object-fit:contain;
+  transform:translateY(-50%);
+  opacity:.88;
+  z-index:3;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.55));
+}
+.cg-endzone-logo.away{left:.9%}
+.cg-endzone-logo.home{right:.9%}
+.cg-midfield-logo{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:62px;
+  height:62px;
+  object-fit:contain;
+  transform:translate(-50%,-50%);
+  opacity:.58;
+  z-index:2;
+  filter:drop-shadow(0 3px 5px rgba(0,0,0,.35));
+}
+.cg-live-formula{
+  margin-top:9px;
+  padding:9px 10px;
+  border:1px solid #1a4058;
+  border-radius:8px;
+  background:#071824;
+}
+.cg-live-formula-title{
+  font-size:7px;
+  font-weight:1000;
+  color:#69bfff;
+  letter-spacing:.08em;
+  margin-bottom:6px;
+}
+.cg-live-formula-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
+}
+.cg-formula-cell{
+  border-left:1px solid #17384d;
+  padding:2px 7px;
+  min-width:0;
+}
+.cg-formula-cell:first-child{border-left:0}
+.cg-formula-cell span{
+  display:block;
+  font-size:6px;
+  color:#7490a4;
+  font-weight:1000;
+}
+.cg-formula-cell b{
+  display:block;
+  margin-top:3px;
+  font-size:10px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.cg-stat-edge{
+  margin-top:6px;
+  font-size:7px;
+  color:#8ca6b8;
+  line-height:1.35;
+}
+@media(max-width:780px){
+  .cg-live-formula-grid{grid-template-columns:1fr 1fr}
+  .cg-formula-cell:nth-child(3){border-left:0}
+  .cg-midfield-logo{width:48px;height:48px}
+}
+
+
+/* GRIDLOCK V39 — top live probability + stronger field perspective */
+.cg-top-live-sep{
+  height:1px;
+  background:#17384d;
+  margin:12px 0 10px;
+}
+.cg-live-prob-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  font-size:8px;
+  font-weight:1000;
+  margin-bottom:6px;
+}
+.cg-live-prob-head .leader{color:#55e59b}
+.cg-live-prob-head .trailer{color:#ff8090}
+.cg-live-prob-bar{
+  height:12px;
+  border-radius:999px;
+  overflow:hidden;
+  display:flex;
+  background:#183043;
+  border:1px solid #24465e;
+}
+.cg-live-prob-bar i{
+  display:block;
+  height:100%;
+}
+.cg-live-prob-bar .away{background:var(--cgAway)}
+.cg-live-prob-bar .home{background:var(--cgHome)}
+.cg-live-prob-note{
+  display:flex;
+  justify-content:space-between;
+  margin-top:6px;
+  font-size:7px;
+  color:#7f99aa;
+}
+.cg-live-prob-title{
+  font-size:7px;
+  font-weight:1000;
+  color:#6abfff;
+  letter-spacing:.08em;
+  margin-bottom:7px;
+}
+
+/* broadcast-like sightline */
+.cg-field{
+  transform:perspective(950px) rotateX(12deg) scaleY(.93)!important;
+  transform-origin:center bottom!important;
+  margin-top:-5px!important;
+  margin-bottom:-2px!important;
+}
+.cg-field-wrap{
+  perspective:1100px;
+}
+.cg-field:before,.cg-field:after{
+  box-shadow:inset 0 0 18px rgba(0,0,0,.22);
+}
+/* remove vertical school-name text; logos carry the end zones */
+.cg-endzone-label{display:none!important}
+.cg-drive-chip{
+  padding:5px!important;
+  min-width:28px;
+  justify-content:center;
+}
+.cg-drive-chip img{width:21px!important;height:21px!important}
+
 </style>
 </head>
 <body>
@@ -1007,7 +1336,13 @@ body.college-mode .p4lab{margin-top:18px}
   <div class="cg-section-label">PREGAME ANALYTICS</div>
   <div class="cg-grid">
     <div class="cg-card"><div class="cg-card-head">GAME CENTER <span class="cg-live-pill" id="cgStatus">PREGAME</span></div><div class="cg-card-body" id="cgGameCenter"></div></div>
-    <div class="cg-card"><div class="cg-card-head">PREGAME WIN PROBABILITY</div><div class="cg-card-body" id="cgWinProb"></div></div>
+    <div class="cg-card"><div class="cg-card-head">WIN PROBABILITY • PREGAME VS LIVE <span class="cg-live-pill" id="cgTopLiveStamp">PREGAME</span></div>
+       <div class="cg-card-body">
+         <div id="cgWinProb"></div>
+         <div class="cg-top-live-sep"></div>
+         <div id="cgTopLiveProb"><div class="cg-live-empty">Live win probability activates after kickoff.</div></div>
+       </div>
+     </div>
   </div>
 
   <div class="cg-live-divider">
@@ -1627,6 +1962,34 @@ function cgClockSeconds(clock){
   return m?Number(m[1])*60+Number(m[2]):0;
 }
 
+
+function cgParseFieldFromPlay(play,state,g){
+  if(!play)return null;
+  const end=play.end||{},start=play.start||{};
+  let yte=Number(end.yardsToEndzone);
+  if(!Number.isFinite(yte))yte=Number(start.yardsToEndzone);
+  let yard=Number(end.yardLine);
+  if(!Number.isFinite(yard))yard=Number(start.yardLine);
+  const poss=state?.possessionAbbr||'';
+  const txt=String(play.text||play.shortText||'');
+
+  if(Number.isFinite(yte))return {yardsToEndzone:yte,source:'ESPN PLAY POSITION'};
+
+  // ESPN often provides explicit territory/yardline text such as "BCU23".
+  const matches=[...txt.matchAll(/\b([A-Z]{2,5})\s*([0-9]{1,2})\b/g)];
+  if(matches.length){
+    const m=matches[matches.length-1];
+    const territory=m[1],yl=Number(m[2]);
+    if(Number.isFinite(yl)){
+      const y=territory===poss ? 100-yl : yl;
+      return {yardsToEndzone:Math.max(1,Math.min(99,y)),territory,yardLine:yl,source:'PLAY TEXT'};
+    }
+  }
+  if(Number.isFinite(yard)){
+    return {yardsToEndzone:Math.max(1,Math.min(99,100-yard)),yardLine:yard,source:'ESPN YARDLINE'};
+  }
+  return null;
+}
 function cgLiveGameState(summary,g){
   try{
     const comp=summary?.header?.competitions?.[0]||{}, status=comp.status||summary?.header?.status||{};
@@ -1636,28 +1999,54 @@ function cgLiveGameState(summary,g){
     const away=find('away'),home=find('home');
     const situation=comp.situation||summary?.situation||{};
     const curDrive=summary?.drives?.current||null;
-    const possessionId=String(situation.possession||curDrive?.team?.id||'');
+    const drivePlays=Array.isArray(curDrive?.plays)?curDrive.plays:[];
+    const lastDrivePlay=drivePlays.length?drivePlays[drivePlays.length-1]:null;
+    const globalPlays=Array.isArray(summary?.plays)?summary.plays:[];
+    const lastGlobal=globalPlays.length?globalPlays[globalPlays.length-1]:null;
+    const lastObj=situation.lastPlay||lastDrivePlay||lastGlobal||null;
+
+    const possessionId=String(
+      situation.possession||
+      curDrive?.team?.id||
+      lastObj?.start?.team?.id||
+      lastObj?.end?.team?.id||
+      ''
+    );
     const possComp=comps.find(x=>String(x.id||x.team?.id||'')===possessionId);
-    let yardsToEndzone=Number(curDrive?.yardsToEndzone);
-    if(!Number.isFinite(yardsToEndzone))yardsToEndzone=Number(situation.yardsToEndzone);
-    const lastPlay=situation.lastPlay?.text||curDrive?.plays?.slice?.(-1)?.[0]?.text||'';
-    return {
+
+    const possessionAbbr=possComp?.team?.abbreviation||curDrive?.team?.abbreviation||'';
+    const possessionName=possComp?.team?.displayName||curDrive?.team?.displayName||'';
+    const possessionLogo=possComp?.team?.logo||curDrive?.team?.logo||'';
+
+    let yardsToEndzone=Number(situation.yardsToEndzone);
+    if(!Number.isFinite(yardsToEndzone))yardsToEndzone=Number(curDrive?.yardsToEndzone);
+    if(!Number.isFinite(yardsToEndzone))yardsToEndzone=Number(lastObj?.end?.yardsToEndzone);
+
+    let down=Number(situation.down||lastObj?.end?.down||lastObj?.start?.down||0);
+    let distance=Number(situation.distance||lastObj?.end?.distance||lastObj?.start?.distance||0);
+
+    const lastPlay=String(lastObj?.text||situation.lastPlay?.text||'');
+    const base={
       period,clock,
       awayScore:Number(away?.score??g?.away?.score??0),
       homeScore:Number(home?.score??g?.home?.score??0),
       complete:!!status.type?.completed,
       statusText:status.type?.shortDetail||status.type?.description||g?.status||'',
-      situation,
-      currentDrive:curDrive,
-      possessionId,
-      possessionAbbr:possComp?.team?.abbreviation||curDrive?.team?.abbreviation||'',
-      possessionName:possComp?.team?.displayName||curDrive?.team?.displayName||'',
-      possessionLogo:possComp?.team?.logo||curDrive?.team?.logo||'',
+      situation,currentDrive:curDrive,possessionId,
+      possessionAbbr,possessionName,possessionLogo,
       yardsToEndzone:Number.isFinite(yardsToEndzone)?yardsToEndzone:null,
-      down:Number(situation.down||curDrive?.plays?.slice?.(-1)?.[0]?.start?.down||0),
-      distance:Number(situation.distance||curDrive?.plays?.slice?.(-1)?.[0]?.start?.distance||0),
-      lastPlay
+      down,distance,lastPlay,lastPlayObj:lastObj
     };
+    if(base.yardsToEndzone===null){
+      const parsed=cgParseFieldFromPlay(lastObj,base,g);
+      if(parsed){
+        base.yardsToEndzone=parsed.yardsToEndzone;
+        base.fieldSource=parsed.source;
+        base.territory=parsed.territory||'';
+        base.yardLine=parsed.yardLine??null;
+      }
+    }
+    return base;
   }catch(e){return null}
 }
 function cgElapsedFraction(state){
@@ -1678,73 +2067,200 @@ function cgFieldEP(state){
   if(y<=70)return .20;
   return 0;
 }
-function cgLiveProjectionModel(g,p,state,market){
+
+
+function cgNum(v){
+  if(v===null||v===undefined||v==='')return null;
+  v=Number(v);return Number.isFinite(v)?v:null;
+}
+function cgParseMarketDetails(details,g){
+  const s=String(details||'').toUpperCase();
+  let homeMargin=null,total=null;
+  const tm=s.match(/O\/?U\s*([0-9]+(?:\.[0-9]+)?)/);
+  if(tm)total=Number(tm[1]);
+  const m=s.match(/([A-Z0-9]+)\s*([+-]?\d+(?:\.\d+)?)/);
+  if(m){
+    const fav=m[1],line=Math.abs(Number(m[2]));
+    if(fav===String(g.home.abbr||'').toUpperCase())homeMargin=line;
+    else if(fav===String(g.away.abbr||'').toUpperCase())homeMargin=-line;
+  }
+  return {homeMargin,total};
+}
+function cgFrozenPregame(g,p){
+  // First use the projection's attached market, then current schedule market,
+  // then search every prior GRIDLOCK snapshot key so live ESPN odds disappearing
+  // after kickoff does not erase the original line.
+  let hm=cgNum(p?.market_margin);
+  let total=cgNum(p?.market_total);
+  let source=hm!==null?'PROJECTION MARKET':'';
+  if(hm===null){
+    hm=cgNum(g?.market?.home_margin);
+    total=total??cgNum(g?.market?.over_under);
+    if(hm!==null)source='SCHEDULE MARKET';
+  }
+  if(hm===null && g?.market?.details){
+    const z=cgParseMarketDetails(g.market.details,g);
+    hm=z.homeMargin;total=total??z.total;
+    if(hm!==null)source='SCHEDULE DETAILS';
+  }
+  try{
+    const keys=[];
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(/^gridlock\.college\.snapshots\.v\d+$/.test(k||''))keys.push(k);
+    }
+    keys.sort((a,b)=>{
+      const av=Number((a.match(/v(\d+)$/)||[])[1]||0);
+      const bv=Number((b.match(/v(\d+)$/)||[])[1]||0);
+      return bv-av;
+    });
+    for(const k of keys){
+      const arr=JSON.parse(localStorage.getItem(k)||'[]');
+      const s=arr.find(x=>String(x.id)===String(g.id)||String(x.key)===`NCAA-${g.id}`);
+      if(!s)continue;
+      let sh=cgNum(s.market?.home_margin),st=cgNum(s.market?.over_under);
+      if(sh===null && s.market?.details){
+        const z=cgParseMarketDetails(s.market.details,g);sh=z.homeMargin;st=st??z.total;
+      }
+      if(hm===null&&sh!==null){hm=sh;source=`FROZEN ${k.match(/v\d+$/)?.[0]||'SNAPSHOT'}`}
+      if(total===null&&st!==null)total=st;
+      if(hm!==null&&total!==null)break;
+    }
+  }catch(e){}
+  const modelMargin=(Number(p.home_score)||0)-(Number(p.away_score)||0);
+  const modelTotal=(Number(p.home_score)||0)+(Number(p.away_score)||0);
+  // Market is the strongest pregame team-strength prior when present.
+  const priorMargin=hm!==null ? .78*hm+.22*modelMargin : modelMargin;
+  const priorTotal=total!==null ? .72*total+.28*modelTotal : modelTotal;
+  return {marketMargin:hm,marketTotal:total,modelMargin,modelTotal,priorMargin,priorTotal,source:source||'GRIDLOCK MODEL'};
+}
+function cgExtractLiveTeamStats(summary,g){
+  const out={away:{},home:{}};
+  try{
+    const teams=summary?.boxscore?.teams||[];
+    for(const t of teams){
+      const team=t.team||{},abbr=team.abbreviation||'';
+      const side=abbr===g.away.abbr?'away':abbr===g.home.abbr?'home':null;
+      if(!side)continue;
+      const vals={};
+      for(const s of (t.statistics||[])){
+        const key=String(s.name||s.label||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+        vals[key]=s.displayValue??s.value;
+      }
+      const num=(...ks)=>{
+        for(const k of ks){
+          const v=vals[k];if(v===undefined)continue;
+          const x=Number(String(v).replace(/[^0-9.\-]/g,''));
+          if(Number.isFinite(x))return x;
+        }return null;
+      };
+      out[side].totalYards=num('totalyards','yards');
+      out[side].firstDowns=num('firstdowns');
+      out[side].turnovers=num('turnovers');
+      out[side].plays=num('totalplays','plays');
+      out[side].yardsPerPlay=num('yardsperplay');
+      if(out[side].yardsPerPlay===null && out[side].totalYards!==null && out[side].plays){
+        out[side].yardsPerPlay=out[side].totalYards/out[side].plays;
+      }
+    }
+  }catch(e){}
+  return out;
+}
+function cgLiveStatAdjustment(stats,f){
+  const a=stats?.away||{},h=stats?.home||{};
+  const yppA=cgNum(a.yardsPerPlay),yppH=cgNum(h.yardsPerPlay);
+  const fdA=cgNum(a.firstDowns),fdH=cgNum(h.firstDowns);
+  const toA=cgNum(a.turnovers),toH=cgNum(h.turnovers);
+  let edge=0,parts=[];
+  if(yppA!==null&&yppH!==null){
+    const d=yppH-yppA;
+    edge+=Math.max(-4,Math.min(4,d*1.15));
+    parts.push(`YPP ${yppH.toFixed(1)}–${yppA.toFixed(1)}`);
+  }
+  if(fdA!==null&&fdH!==null){
+    const d=fdH-fdA;
+    edge+=Math.max(-2.5,Math.min(2.5,d*.28));
+    parts.push(`1D ${fdH}–${fdA}`);
+  }
+  if(toA!==null&&toH!==null){
+    const d=toA-toH; // positive helps home
+    edge+=Math.max(-4.5,Math.min(4.5,d*2.25));
+    parts.push(`TO ${toH}–${toA}`);
+  }
+  // Statistics become more trustworthy as sample grows, but stay bounded.
+  const sampleWt=Math.min(.70,.18+.72*Math.pow(Math.max(.01,f),.8));
+  return {homeEdge:Math.max(-7,Math.min(7,edge))*sampleWt,summary:parts.join(' • ')||'Live team stats still sparse'};
+}
+
+function cgLiveProjectionModel(g,p,state,market,summary){
   if(!p||!state)return null;
   const f=cgElapsedFraction(state),remain=1-f;
-  const preA=Number(p.away_score)||0,preH=Number(p.home_score)||0;
   const curA=Number(state.awayScore)||0,curH=Number(state.homeScore)||0;
-  if(state.complete)return {away:curA,home:curH,total:curA+curH,margin:curH-curA,homeWin:curH>curA?1:curH<curA?0:.5,reason1:'The game is final.',reason2:'GRIDLOCK is showing the actual final score.',f};
-
-  // Base = points already scored + pregame expected points remaining.
-  const remA=preA*remain, remH=preH*remain;
-  const expNowA=preA*f,expNowH=preH*f;
-  const deltaA=curA-expNowA,deltaH=curH-expNowH;
-
-  // Only a modest fraction of over/under-performance carries forward.
-  // The multiplier rises later, but is bounded to avoid first-quarter explosions.
-  const carry=.10 + .25*f;
-  let finalA=curA+remA+Math.max(-4.5,Math.min(4.5,deltaA*carry));
-  let finalH=curH+remH+Math.max(-4.5,Math.min(4.5,deltaH*carry));
-
-  // Current field position can move the possessing team's expectation by at most ~2.3 pts.
-  const ep=cgFieldEP(state)*(0.55+0.45*remain);
-  if(state.possessionAbbr===g.away.abbr)finalA+=ep;
-  if(state.possessionAbbr===g.home.abbr)finalH+=ep;
-
-  // Stabilize late-game estimates with score-state reality.
-  if(f>.75){
-    const late=(f-.75)/.25;
-    finalA=(1-late*.25)*finalA+(late*.25)*(curA+remA);
-    finalH=(1-late*.25)*finalH+(late*.25)*(curH+remH);
+  if(state.complete){
+    return {away:curA,home:curH,total:curA+curH,margin:curH-curA,homeWin:curH>curA?1:curH<curA?0:.5,
+      reason1:'The game is final.',reason2:'GRIDLOCK is showing the actual final score.',f,
+      prior:cgFrozenPregame(g,p),statAdj:{homeEdge:0,summary:''},fieldAdj:0};
   }
 
-  // Optional small market anchor (15%) when actual LIVE book total/spread exists.
-  // GRIDLOCK remains 85% model so it remains an independent projection.
+  const prior=cgFrozenPregame(g,p);
+  const stats=cgExtractLiveTeamStats(summary,g);
+  const statAdj=cgLiveStatAdjustment(stats,f);
+
+  // Convert frozen prior total/margin into expected full-game team points.
+  let priorHome=(prior.priorTotal+prior.priorMargin)/2;
+  let priorAway=(prior.priorTotal-prior.priorMargin)/2;
+  priorHome=Math.max(3,priorHome);priorAway=Math.max(3,priorAway);
+
+  // Core equation:
+  // current score + expected remaining points from pregame strength.
+  let remHome=priorHome*remain;
+  let remAway=priorAway*remain;
+
+  // Live stats only modify REMAINING scoring. They never rewrite points already scored.
+  // Positive homeEdge adds to home remaining and subtracts from away remaining.
+  const statPts=statAdj.homeEdge*remain;
+  remHome+=statPts/2;
+  remAway-=statPts/2;
+
+  // Field position = small expected-points bump to current possession.
+  let fieldAdj=cgFieldEP(state)*(0.42+0.18*remain);
+  fieldAdj=Math.max(0,Math.min(2.2,fieldAdj));
+  if(state.possessionAbbr===g.home.abbr)remHome+=fieldAdj;
+  else if(state.possessionAbbr===g.away.abbr)remAway+=fieldAdj;
+  else fieldAdj=0;
+
+  // A small live-market stabilizer if genuine in-game lines are available.
   if(market?.total!=null && market?.homeSpread!=null){
-    const marketTotal=Number(market.total);
-    const marketHomeMargin=-Number(market.homeSpread);
-    if(Number.isFinite(marketTotal)&&Number.isFinite(marketHomeMargin)){
-      const marketH=(marketTotal+marketHomeMargin)/2,marketA=(marketTotal-marketHomeMargin)/2;
-      finalA=.85*finalA+.15*marketA;
-      finalH=.85*finalH+.15*marketH;
+    const mt=Number(market.total),mm=-Number(market.homeSpread);
+    if(Number.isFinite(mt)&&Number.isFinite(mm)){
+      const marketHome=(mt+mm)/2,marketAway=(mt-mm)/2;
+      const marketRemH=Math.max(0,marketHome-curH);
+      const marketRemA=Math.max(0,marketAway-curA);
+      const w=.10+.08*f;
+      remHome=(1-w)*remHome+w*marketRemH;
+      remAway=(1-w)*remAway+w*marketRemA;
     }
   }
 
-  finalA=Math.max(curA,finalA);finalH=Math.max(curH,finalH);
-  const liveTotal=finalA+finalH,liveMargin=finalH-finalA;
-  const preTotal=preA+preH,preMargin=preH-preA;
-  const paceDelta=(curA+curH)-preTotal*f;
-  const marginDelta=(curH-curA)-preMargin*f;
+  remHome=Math.max(0,remHome);
+  remAway=Math.max(0,remAway);
+  let finalH=curH+remHome;
+  let finalA=curA+remAway;
 
-  // Win probability depends heavily on current score late and projected margin early.
-  const currentMargin=curH-curA;
-  const blendedMargin=(1-f)*liveMargin+f*currentMargin;
-  const scale=Math.max(2.8,8.5*(1-f)+2.4);
-  const homeWin=1/(1+Math.exp(-blendedMargin/scale));
+  const liveMargin=finalH-finalA,liveTotal=finalH+finalA;
 
-  let reason1=Math.abs(paceDelta)>=4
-    ? (paceDelta>0?`The game is ${Math.abs(paceDelta).toFixed(0)} points ahead of GRIDLOCK's pregame scoring pace.`:`The game is ${Math.abs(paceDelta).toFixed(0)} points behind GRIDLOCK's pregame scoring pace.`)
-    : `The scoring pace is still close to the pregame expectation.`;
-  let reason2='';
-  if(state.yardsToEndzone!==null&&state.possessionAbbr){
-    reason2=`${state.possessionAbbr} has the ball ${state.yardsToEndzone<=35?'in scoring territory':'with '+state.yardsToEndzone+' yards to the end zone'}, which is included as a small field-position adjustment.`;
-  }else if(Math.abs(marginDelta)>=4){
-    const side=marginDelta>0?g.home.abbr:g.away.abbr;
-    reason2=`${side} is ${Math.abs(marginDelta).toFixed(0)} points ahead of its expected margin at this stage, moving the live projection toward ${side}.`;
-  }else{
-    reason2=`The margin is near expectation, so most of the pregame team-strength view remains intact.`;
-  }
-  return {away:finalA,home:finalH,total:liveTotal,margin:liveMargin,homeWin,reason1,reason2,f};
+  // Win probability comes from projected final margin plus remaining-game uncertainty.
+  // This naturally respects both current score and pregame strength.
+  const sigma=Math.max(2.5,9.5*Math.sqrt(remain)+1.8);
+  const homeWin=1/(1+Math.exp(-liveMargin/sigma));
+
+  const priorFav=prior.priorMargin>=0?g.home.abbr:g.away.abbr;
+  const currentLeader=curH>curA?g.home.abbr:curA>curH?g.away.abbr:'TIE';
+  let reason1=`${currentLeader} owns the current score, but remaining scoring is still based on the frozen pregame baseline (${priorFav} by ${Math.abs(prior.priorMargin).toFixed(1)}).`;
+  let reason2=`Live stats adjust only the points still to be played (${statAdj.summary}); ${state.possessionAbbr&&fieldAdj?`${state.possessionAbbr} field position adds ${fieldAdj.toFixed(1)} expected pts.`:'field position has little/no adjustment right now.'}`;
+
+  return {away:finalA,home:finalH,total:liveTotal,margin:liveMargin,homeWin,reason1,reason2,f,prior,statAdj,fieldAdj,
+    remAway,remHome};
 }
 function cgExtractPlays(summary){
   let plays=[];
@@ -1784,24 +2300,70 @@ function cgRenderPBP(summary){
 }
 
 
+
 function cgRenderFieldState(g,state){
   const el=$('cgFieldState');if(!el)return;
-  if(!state||(!state.period&&!state.complete)){el.innerHTML='<div class="cg-live-empty">Field position activates after kickoff.</div>';return}
-  let pct=50,label='FIELD POSITION UNAVAILABLE';
-  if(state.yardsToEndzone!==null){
-    pct=Math.max(8,Math.min(92,100-state.yardsToEndzone));
-    label=`${state.possessionAbbr||'OFF'} • ${state.yardsToEndzone} YDS TO END ZONE`;
+  if(!state||(!state.period&&!state.complete)){
+    el.innerHTML='<div class="cg-live-empty">Field position activates after kickoff.</div>';
+    return;
   }
-  const dd=state.down?`${state.down}${state.down===1?'ST':state.down===2?'ND':state.down===3?'RD':'TH'} & ${state.distance||0}`:'';
-  const lines=[10,20,30,40,50,60,70,80,90].map(x=>`<i class="cg-field-line" style="left:${x}%"></i>`).join('');
-  const nums=[20,40,50,40,20].map((n,i)=>`<span class="cg-field-num" style="left:${[20,40,50,60,80][i]}%">${n}</span>`).join('');
+
+  const poss=state.possessionAbbr||'';
+  const isAway=poss===g.away.abbr;
+  const isHome=poss===g.home.abbr;
+
+  let pct=50,label='FIELD POSITION WAITING FOR ESPN';
+  if(state.yardsToEndzone!==null){
+    // Field is always drawn left-to-right for the possessing offense.
+    pct=Math.max(8,Math.min(92,100-state.yardsToEndzone));
+    if(state.territory&&state.yardLine!=null) label=`BALL: ${state.territory} ${state.yardLine}`;
+    else label=`${state.possessionAbbr||'OFF'} • ${state.yardsToEndzone} YDS TO END ZONE`;
+  }
+
+  const downSuffix=d=>d===1?'ST':d===2?'ND':d===3?'RD':'TH';
+  const dd=state.down?`${state.down}${downSuffix(state.down)} & ${state.distance||0}`:'DOWN/DISTANCE WAITING';
+  const fdPct=state.yardsToEndzone!==null && state.distance
+    ? Math.max(8,Math.min(92,pct + (state.distance/100)*84))
+    : null;
+
+  const lines=[10,20,30,40,50,60,70,80,90]
+    .map(x=>`<i class="cg-field-line" style="left:${x}%"></i>`).join('');
+  const ticks=Array.from({length:19},(_,i)=>5+i*5)
+    .map(x=>`<i class="cg-yard-tick" style="left:${x}%"></i>`).join('');
+  const nums=[
+    [20,20],[40,40],[50,50],[60,40],[80,20]
+  ].map(([x,n])=>`<span class="cg-field-num" style="left:${x}%">${n}</span>`).join('');
+
+  const possLogo=state.possessionLogo||(
+    isAway?g.away.logo:isHome?g.home.logo:''
+  );
+  const possName=state.possessionName||(
+    isAway?g.away.name:isHome?g.home.name:'Possession pending'
+  );
+
   el.innerHTML=`<div class="cg-field-wrap">
     <div>
-      <div class="cg-possession">${state.possessionLogo?`<img src="${state.possessionLogo}" alt="">`:''}<div><b>${state.possessionName||state.possessionAbbr||'Possession unavailable'}</b><span>${state.possessionAbbr?'HAS THE BALL':'LIVE GAME STATE'}</span></div></div>
-      <div class="cg-situation">${dd||state.statusText||''}</div>
-      <div class="cg-last-play">${state.lastPlay||'Waiting for the next play…'}</div>
+      <div class="cg-possession">
+        ${possLogo?`<img src="${possLogo}" alt="">`:''}
+        <div><b>${possName}</b><span>${poss?'HAS THE BALL':'POSSESSION PENDING'}</span></div>
+      </div>
+      <div class="cg-situation">${dd}</div>
+      <div class="cg-last-play">${state.lastPlay||'Waiting for the next live play…'}</div>
     </div>
-    <div class="cg-field">${lines}${nums}<span class="cg-dir right">→</span><span class="cg-ball" style="left:${pct}%"></span><span class="cg-field-label">${label}</span></div>
+
+    <div class="cg-field">
+      ${lines}${ticks}${nums}
+      ${g.away.logo?`<img class="cg-endzone-logo away" src="${g.away.logo}" alt="">`:''}
+      ${g.home.logo?`<img class="cg-endzone-logo home" src="${g.home.logo}" alt="">`:''}
+      ${g.home.logo?`<img class="cg-midfield-logo" src="${g.home.logo}" alt="">`:''}
+      <i class="cg-hash top"></i><i class="cg-hash bottom"></i>
+      <span class="cg-dir right">➜</span>
+      ${state.yardsToEndzone!==null?`<span class="cg-line-of-scrimmage" style="left:${pct}%"></span>`:''}
+      ${fdPct!==null?`<span class="cg-firstdown-line" style="left:${fdPct}%"></span>`:''}
+      <span class="cg-ball" style="left:${pct}%"></span>
+      ${possLogo?`<span class="cg-drive-chip" style="left:${Math.min(76,Math.max(10,pct+4))}%"><img src="${possLogo}" alt=""></span>`:''}
+      <span class="cg-field-label">${label}${state.fieldSource?` • ${state.fieldSource}`:''}</span>
+    </div>
   </div>`;
 }
 function cgNormTeam(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').replace(/\b(university|college|state university)\b/g,' ').trim()}
@@ -1809,6 +2371,7 @@ function cgTeamMatch(a,b){
   a=cgNormTeam(a);b=cgNormTeam(b);if(!a||!b)return false;
   return a===b||a.includes(b)||b.includes(a)||a.split(' ').some(x=>x.length>4&&b.includes(x));
 }
+
 async function cgFetchLiveMarket(g){
   try{
     const r=await fetch('/api/odds?live=1&_='+Date.now(),{cache:'no-store'});
@@ -1816,8 +2379,9 @@ async function cgFetchLiveMarket(g){
     const j=await r.json(),events=j?.events||[];
     const ev=events.find(e=>(cgTeamMatch(e.home_team,g.home.name)&&cgTeamMatch(e.away_team,g.away.name))||(cgTeamMatch(e.home_team,g.away.name)&&cgTeamMatch(e.away_team,g.home.name)));
     if(!ev)return null;
-    const books=ev.bookmakers||[];
-    for(const b of books){
+
+    const candidates=[];
+    for(const b of (ev.bookmakers||[])){
       const spreads=(b.markets||[]).find(m=>m.key==='spreads');
       const totals=(b.markets||[]).find(m=>m.key==='totals');
       const h2h=(b.markets||[]).find(m=>m.key==='h2h');
@@ -1826,22 +2390,32 @@ async function cgFetchLiveMarket(g){
       const over=(totals?.outcomes||[]).find(o=>String(o.name).toLowerCase()==='over');
       const homeML=(h2h?.outcomes||[]).find(o=>cgTeamMatch(o.name,g.home.name));
       const awayML=(h2h?.outcomes||[]).find(o=>cgTeamMatch(o.name,g.away.name));
-      if(ho||over||homeML)return {
+      const completeness=[ho,over,homeML].filter(Boolean).length;
+      if(!completeness)continue;
+      candidates.push({
         book:b.title||b.key||'Sportsbook',
+        bookKey:b.key||'',
         homeSpread:ho?.point??null,awaySpread:ao?.point??null,
         total:over?.point??null,
         homeML:homeML?.price??null,awayML:awayML?.price??null,
-        updated:b.last_update||ev.last_update||j.updated_at||''
-      };
+        updated:b.last_update||ev.last_update||j.updated_at||'',
+        completeness
+      });
     }
-  }catch(e){}
-  return null;
+    candidates.sort((a,b)=>{
+      if(b.completeness!==a.completeness)return b.completeness-a.completeness;
+      const pref=['fanduel','draftkings','caesars','betrivers','bet365','bet365_us'];
+      const ai=pref.indexOf(a.bookKey),bi=pref.indexOf(b.bookKey);
+      return (ai<0?999:ai)-(bi<0?999:bi);
+    });
+    return candidates[0]||null;
+  }catch(e){return null}
 }
 function cgOddsFmt(v){v=Number(v);return Number.isFinite(v)?(v>0?'+':'')+Math.round(v):'—'}
 function cgRenderLiveMarket(g,m){
   const el=$('cgLiveMarket');if(!el)return;
   if(!m){
-    el.innerHTML=`<div class="cg-market-title"><b>LIVE BETTING MARKET</b><span>NO IN-GAME PRICE AVAILABLE</span></div><div class="cg-market-book">Pregame reference: ${g.market?.details||'—'}${g.market?.over_under?` • O/U ${g.market.over_under}`:''}</div>`;
+    el.innerHTML=`<div class="cg-market-title"><b>LIVE BETTING MARKET</b><span>NO BOOK CURRENTLY RETURNING IN-GAME PRICE</span></div><div class="cg-market-book">GRIDLOCK checked the full U.S. live book feed. Pregame reference: ${g.market?.details||'—'}${g.market?.over_under?` • O/U ${g.market.over_under}`:''}</div>`;
     return;
   }
   const spread=m.homeSpread!=null?`${g.home.abbr} ${Number(m.homeSpread)>0?'+':''}${Number(m.homeSpread).toFixed(1)}`:'—';
@@ -1853,6 +2427,21 @@ function cgRenderLiveMarket(g,m){
     </div>
     <div class="cg-market-book">Direct sportsbook feed${m.updated?' • updated '+new Date(m.updated).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}):''}</div>`;
 }
+
+function cgRenderTopLiveProb(g,lp,state){
+  const el=$('cgTopLiveProb'),stamp=$('cgTopLiveStamp');if(!el||!lp||!state)return;
+  const hp=Math.max(.001,Math.min(.999,lp.homeWin));
+  const ap=1-hp;
+  const awayLead=ap>=hp,homeLead=hp>ap;
+  if(stamp)stamp.textContent=(state.statusText||`Q${state.period} ${state.clock}`||'LIVE').toUpperCase();
+  el.innerHTML=`<div class="cg-live-prob-title">LIVE NOW</div>
+    <div class="cg-live-prob-head">
+      <span class="${awayLead?'leader':'trailer'}">${g.away.abbr} ${(ap*100).toFixed(1)}%</span>
+      <span class="${homeLead?'leader':'trailer'}">${g.home.abbr} ${(hp*100).toFixed(1)}%</span>
+    </div>
+    <div class="cg-live-prob-bar"><i class="away" style="width:${(ap*100).toFixed(1)}%"></i><i class="home" style="width:${(hp*100).toFixed(1)}%"></i></div>
+    <div class="cg-live-prob-note"><span>Live state estimator</span><span>Current score + pregame prior + stats + field position</span></div>`;
+}
 function cgRenderLiveProjection(g,p,summary,market){
   const el=$('cgLiveProjection'),stamp=$('cgLiveProjectionStamp');if(!el||!p)return;
   const state=cgLiveGameState(summary,g);
@@ -1861,8 +2450,9 @@ function cgRenderLiveProjection(g,p,summary,market){
     el.innerHTML='<div class="cg-live-empty">Live projection activates after kickoff. The pregame analysis above remains unchanged for comparison.</div>';
     return;
   }
-  const lp=cgLiveProjectionModel(g,p,state,market);if(!lp)return;
+  const lp=cgLiveProjectionModel(g,p,state,market,summary);if(!lp)return;
   stamp.textContent=state.complete?'FINAL':(state.statusText||`Q${state.period} ${state.clock}`).toUpperCase();
+  cgRenderTopLiveProb(g,lp,state);
 
   const preA=Number(p.away_score)||0, preH=Number(p.home_score)||0;
   const preTotal=preA+preH, preMargin=preH-preA;
@@ -1896,6 +2486,16 @@ function cgRenderLiveProjection(g,p,summary,market){
     <div class="cg-delta"><span>PREGAME FAVORITE</span><b>${favPre}</b></div>
   </div>
 
+  <div class="cg-live-formula">
+    <div class="cg-live-formula-title">LIVE PROJECTION MATH</div>
+    <div class="cg-live-formula-grid">
+      <div class="cg-formula-cell"><span>CURRENT SCORE</span><b>${g.away.abbr} ${state.awayScore} – ${state.homeScore} ${g.home.abbr}</b></div>
+      <div class="cg-formula-cell"><span>FROZEN PREGAME</span><b>${lp.prior.priorMargin>=0?g.home.abbr:g.away.abbr} ${Math.abs(lp.prior.priorMargin).toFixed(1)} • ${lp.prior.priorTotal.toFixed(1)}</b></div>
+      <div class="cg-formula-cell"><span>LIVE STAT ADJ.</span><b>${lp.statAdj.homeEdge>=0?g.home.abbr:g.away.abbr} ${Math.abs(lp.statAdj.homeEdge).toFixed(1)}</b></div>
+      <div class="cg-formula-cell"><span>FIELD POSITION</span><b>${lp.fieldAdj?`${state.possessionAbbr} +${lp.fieldAdj.toFixed(1)}`:'0.0'}</b></div>
+    </div>
+    <div class="cg-stat-edge">${lp.prior.source}${lp.prior.marketMargin!==null?` • original market home margin ${lp.prior.marketMargin>=0?'+':''}${lp.prior.marketMargin.toFixed(1)}`:''} • ${lp.statAdj.summary}</div>
+  </div>
   <div class="cg-live-reason"><strong>WHY IT MOVED:</strong> ${lp.reason1}<br>${lp.reason2}</div>`;
 }
 async function cgRefreshLiveGame(g){
@@ -1933,7 +2533,7 @@ function cgStartLiveRefresh(g){
 }
 function closeCollegeGame(){if(GRIDLOCK_COLLEGE_LIVE_TIMER){clearInterval(GRIDLOCK_COLLEGE_LIVE_TIMER);GRIDLOCK_COLLEGE_LIVE_TIMER=null}GRIDLOCK_COLLEGE_LIVE_TOKEN++;resetCollegePickState(true);selectedCollegeGame=null;window.GRIDLOCK_ACTIVE_COLLEGE_GAME=null;window.GRIDLOCK_LAST_COLLEGE_SIM=null;if(window.GRIDLOCK_SCOPE_P4_GAME)window.GRIDLOCK_SCOPE_P4_GAME(null);$('collegeGamecast').classList.remove('open');$('collegeSlate').style.display='grid';$('collegeSpatialLab').style.display='block';window.scrollTo({top:0,behavior:'smooth'})}
 function setCGTab(id){document.querySelectorAll('.cg-tab').forEach(x=>x.classList.toggle('active',x.dataset.cg===id));document.querySelectorAll('.cg-panel').forEach(x=>x.classList.toggle('active',x.dataset.cgPanel===id));if(id==='simulator')runCGSim();if(id==='chat')renderCGChat()}
-function renderCollegeDetail(g,p){if(!p){$('cgGameCenter').innerHTML='Projection unavailable.';return}let hp=+p.home_win_prob,ap=1-hp,margin=p.home_score-p.away_score,total=p.home_score+p.away_score;let ar=p.away_rating,hr=p.home_rating;$('cgGameCenter').innerHTML=cgRow('Matchup',`${g.away.name} at ${g.home.name}`)+cgRow('GRIDLOCK projected score',`${p.away_score} – ${p.home_score}`)+cgRow('Projected margin',`${margin>=0?g.home.abbr:g.away.abbr} ${Math.abs(margin).toFixed(1)}`)+cgRow('Projected total',total.toFixed(1))+cgRow('Model confidence',p.confidence||'—')+cgRow('Venue',g.venue|| (g.neutral?'Neutral site':'—'));$('cgWinProb').innerHTML=`<div style="display:flex;justify-content:space-between;font-size:11px;font-weight:1000"><span style="color:var(--cgAway)">${g.away.abbr} ${pct(ap)}</span><span style="color:var(--cgHome)">${g.home.abbr} ${pct(hp)}</span></div><div class="cg-team-bar"><i class="away" style="width:${(ap*100).toFixed(1)}%"></i><i class="home" style="width:${(hp*100).toFixed(1)}%"></i></div>`+cgRow('Most likely winner',hp>=.5?g.home.name:g.away.name)+cgRow('Win probability',pct(Math.max(hp,ap)));$('cgProjectionKpis').innerHTML=[['AWAY',p.away_score,'away-accent'],['HOME',p.home_score,'home-accent'],['TOTAL',total.toFixed(1),''],['MARGIN',margin.toFixed(1),margin>=0?'home-accent':'away-accent']].map(x=>`<div class="cg-kpi ${x[2]}"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('');$('cgModelInputs').innerHTML=cgRow(`${g.away.abbr} offense`,ar?ar.off.toFixed(1):'Tier prior')+cgRow(`${g.away.abbr} defense`,ar?ar.def.toFixed(1):'Tier prior')+cgRow(`${g.home.abbr} offense`,hr?hr.off.toFixed(1):'Tier prior')+cgRow(`${g.home.abbr} defense`,hr?hr.def.toFixed(1):'Tier prior')+cgRow('Internal model margin',p.internal_margin!=null?p.internal_margin.toFixed(1):'—');$('cgCalibration').innerHTML=cgRow('Model source',p.source||'GRIDLOCK MODEL')+cgRow('Market spread',g.market?.details||'—')+cgRow('Market total',g.market?.over_under||'—')+cgRow('Market home margin',p.market_margin!=null?p.market_margin.toFixed(1):'—')+cgRow('Confidence',p.confidence||'—');renderTeamStrength(g,p);renderCGPredictions(g,p)}
+function renderCollegeDetail(g,p){if(!p){$('cgGameCenter').innerHTML='Projection unavailable.';return}let hp=+p.home_win_prob,ap=1-hp,margin=p.home_score-p.away_score,total=p.home_score+p.away_score;let ar=p.away_rating,hr=p.home_rating;$('cgGameCenter').innerHTML=cgRow('Matchup',`${g.away.name} at ${g.home.name}`)+cgRow('GRIDLOCK projected score',`${p.away_score} – ${p.home_score}`)+cgRow('Projected margin',`${margin>=0?g.home.abbr:g.away.abbr} ${Math.abs(margin).toFixed(1)}`)+cgRow('Projected total',total.toFixed(1))+cgRow('Model confidence',p.confidence||'—')+cgRow('Market calibration',p.market_margin!=null?`Home margin ${Number(p.market_margin).toFixed(1)}`:'No market line attached')+cgRow('Venue',g.venue|| (g.neutral?'Neutral site':'—'));$('cgWinProb').innerHTML=`<div style="display:flex;justify-content:space-between;font-size:11px;font-weight:1000"><span style="color:var(--cgAway)">${g.away.abbr} ${pct(ap)}</span><span style="color:var(--cgHome)">${g.home.abbr} ${pct(hp)}</span></div><div class="cg-team-bar"><i class="away" style="width:${(ap*100).toFixed(1)}%"></i><i class="home" style="width:${(hp*100).toFixed(1)}%"></i></div>`+cgRow('Most likely winner',hp>=.5?g.home.name:g.away.name)+cgRow('Win probability',pct(Math.max(hp,ap)));$('cgProjectionKpis').innerHTML=[['AWAY',p.away_score,'away-accent'],['HOME',p.home_score,'home-accent'],['TOTAL',total.toFixed(1),''],['MARGIN',margin.toFixed(1),margin>=0?'home-accent':'away-accent']].map(x=>`<div class="cg-kpi ${x[2]}"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('');$('cgModelInputs').innerHTML=cgRow(`${g.away.abbr} offense`,ar?ar.off.toFixed(1):'Tier prior')+cgRow(`${g.away.abbr} defense`,ar?ar.def.toFixed(1):'Tier prior')+cgRow(`${g.home.abbr} offense`,hr?hr.off.toFixed(1):'Tier prior')+cgRow(`${g.home.abbr} defense`,hr?hr.def.toFixed(1):'Tier prior')+cgRow('Internal model margin',p.internal_margin!=null?p.internal_margin.toFixed(1):'—');$('cgCalibration').innerHTML=cgRow('Model source',p.source||'GRIDLOCK MODEL')+cgRow('Market spread',g.market?.details||'—')+cgRow('Market total',g.market?.over_under||'—')+cgRow('Market home margin',p.market_margin!=null?p.market_margin.toFixed(1):'—')+cgRow('Confidence',p.confidence||'—');renderTeamStrength(g,p);renderCGPredictions(g,p)}
 function renderCGPredictions(g,p){
  let margin=p.home_score-p.away_score,total=p.home_score+p.away_score,mm=Number(p.market_margin),mt=Number(p.market_total),cards=[],opts=[];
  let winner=margin>=0?g.home.name:g.away.name,wp=Math.max(p.home_win_prob,p.away_win_prob);
@@ -2119,7 +2719,7 @@ loadWeek();
 
 <script>
 (function(){
- const SNAP='gridlock.college.snapshots.v35', FIN='gridlock.college.finals.v35';
+ const SNAP='gridlock.college.snapshots.v39', FIN='gridlock.college.finals.v39';
  const $=id=>document.getElementById(id); const n=v=>{if(v===null||v===undefined||v==='')return null;v=Number(v);return Number.isFinite(v)?v:null};
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const rd=k=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return[]}}, wr=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
@@ -2347,7 +2947,7 @@ function syncPerformance(){
 async function refresh(){try{if(typeof loadSportsbookOdds==='function'&&!window.GRIDLOCK_ODDS_LOADED)await loadSportsbookOdds(false)}catch(e){}const valueRows=bestValueRows();const dogRows=dogWatchRows();renderRows('topValueList',valueRows,'value');renderRows('upsetWatchList',dogRows,'upset');featuredValue(valueRows);if($('topValueStamp'))$('topValueStamp').textContent=(window.GRIDLOCK_GET_ODDS_EVENTS?.().length)?'DIRECT + ESPN':'ESPN MARKET';if($('upsetStamp'))$('upsetStamp').textContent=(window.GRIDLOCK_GET_ODDS_EVENTS?.().length)?'LIVE +MONEY':'PRICED + WATCHLIST';syncArchive();syncPerformance()}
  const oldRender=typeof render==='function'?render:null;if(oldRender){window.render=function(){const r=oldRender.apply(this,arguments);setTimeout(refresh,50);return r}}
  let bootTries=0;async function bootWhenSlateReady(){bootTries++;if(slate().length){window.GRIDLOCK_ODDS_LOADED=false;await refresh();return}if(bootTries<80)setTimeout(bootWhenSlateReady,250)}setTimeout(bootWhenSlateReady,100);$('valueMarketFilter')?.addEventListener('change',refresh);
-setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V35={refresh,syncArchive};
+setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V39={refresh,syncArchive};
 })();
 
 </script>
