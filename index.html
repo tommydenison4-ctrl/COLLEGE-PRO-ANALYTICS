@@ -1640,6 +1640,41 @@ body.college-mode #scoreStrip .college-score-chip{
   filter:drop-shadow(0 5px 8px rgba(0,0,0,.4)) drop-shadow(0 0 10px rgba(247,207,74,.18));
 }
 
+
+/* GRIDLOCK V53 — hero alerts always visible */
+.cg-live-hero.active{
+  position:fixed!important;
+  top:86px!important;
+  left:50%!important;
+  transform:translateX(-50%)!important;
+  width:min(980px,calc(100vw - 28px))!important;
+  height:auto!important;
+  z-index:9999!important;
+  overflow:visible!important;
+  pointer-events:none!important;
+}
+.cg-live-hero.active .cg-hero-alert{
+  pointer-events:auto!important;
+  box-shadow:0 20px 55px rgba(0,0,0,.48)!important;
+}
+.cg-hero-alert.touchdown{
+  border-color:#4ef092!important;
+  background:
+    radial-gradient(circle at 10% 50%,rgba(78,240,146,.20),transparent 34%),
+    linear-gradient(110deg,#0b422b,#101d27 68%)!important;
+}
+.cg-hero-alert.touchdown .cg-hero-copy b{color:#71f6aa!important}
+.cg-hero-alert.touchdown:after{
+  content:'TOUCHDOWN';
+  position:absolute;
+  right:18px;
+  top:12px;
+  font-size:38px;
+  font-weight:1000;
+  color:rgba(113,246,170,.09);
+  transform:rotate(-6deg);
+}
+
 </style>
 </head>
 <body>
@@ -2142,7 +2177,17 @@ window.GRIDLOCK_ODDS_EVENTS=[];window.GRIDLOCK_ODDS_LOADED=false;window.GRIDLOCK
 function oddsNorm(s){return String(s||'').toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,' ').replace(/\b(university|college|the)\b/g,' ').replace(/\s+/g,' ').trim()}
 function oddsTokens(s){return new Set(oddsNorm(s).split(' ').filter(x=>x.length>1))}
 function oddsNameScore(a,b){const A=oddsTokens(a),B=oddsTokens(b);if(!A.size||!B.size)return 0;let hit=0;A.forEach(x=>{if(B.has(x))hit++});const union=new Set([...A,...B]).size;let sc=union?hit/union:0;const na=oddsNorm(a),nb=oddsNorm(b);if(na===nb)sc=1;if(na.includes(nb)||nb.includes(na))sc=Math.max(sc,.86);return sc}
-function findOddsEvent(g){let best=null,bestScore=0;for(const e of (window.GRIDLOCK_ODDS_EVENTS||[])){const direct=oddsNameScore(g.home.name,e.home_team)+oddsNameScore(g.away.name,e.away_team);const flip=oddsNameScore(g.home.name,e.away_team)+oddsNameScore(g.away.name,e.home_team);const score=Math.max(direct,flip*.65);if(score>bestScore){bestScore=score;best=e}}return bestScore>=1.08?best:null}
+function findOddsEvent(g){
+ let best=null,bestScore=0;
+ for(const e of (window.GRIDLOCK_ODDS_EVENTS||[])){
+   const direct=oddsNameScore(g.home.name,e.home_team)+oddsNameScore(g.away.name,e.away_team);
+   const flip=oddsNameScore(g.home.name,e.away_team)+oddsNameScore(g.away.name,e.home_team);
+   const score=Math.max(direct,flip);
+   if(score>bestScore){bestScore=score;best=e}
+ }
+ // Both teams must match reasonably well; do not display an unrelated game's lines.
+ return bestScore>=1.45?best:null;
+}
 function bookLabel(b){const k=String(b?.key||'').toLowerCase();if(k==='fanduel')return 'FanDuel';if(k==='betrivers'||k==='betrivers_ca_on')return 'BetRivers';if(k.includes('bet365'))return 'bet365';return b?.title||b?.key||'Sportsbook'}
 function bookClass(b){const k=String(b?.key||'').toLowerCase();if(k==='fanduel')return 'fanduel';if(k.startsWith('betrivers'))return 'betrivers';if(k.includes('bet365'))return 'bet365';return 'book'}
 function fmtAmerican(x){const n=Number(x);if(!Number.isFinite(n))return '—';return n>0?`+${Math.round(n)}`:`${Math.round(n)}`}
@@ -2225,7 +2270,7 @@ async function loadSportsbookOdds(force=false){
   window.GRIDLOCK_ODDS_GAME_ID=gameId;
 
   if(status){
-    status.textContent='DIRECT BOOK FEED UNAVAILABLE • /api/odds';
+    status.textContent='DIRECT BOOK FEED UNAVAILABLE • TEST /api/odds?health=1';
     status.title=window.GRIDLOCK_ODDS_ERROR;
   }
   if(wrap)wrap.classList.add('off');
@@ -2234,12 +2279,38 @@ async function loadSportsbookOdds(force=false){
     renderCollegePlayPicker(document.querySelector('[data-picker-cat].active')?.dataset.pickerCat||'GAME');
   return false;
  }}
-function fallbackMarketOptions(g,p,cat){const out=[];const fallbackBook=g.market?.provider?`ESPN FEED • ${g.market.provider}`:'ESPN MARKET REFERENCE';const score=`${g.away.name} ${Number(p.away_score).toFixed(1)} – ${Number(p.home_score).toFixed(1)} ${g.home.name}`;const mt=Number(p.market_total ?? g.market?.over_under), mm=Number(p.market_margin), modelMargin=Number(p.home_score)-Number(p.away_score), modelTotal=Number(p.home_score)+Number(p.away_score);
- if(cat==='GAME'){out.push({cat:'GAME',book:'GRIDLOCK',css:'gridlock',title:`${g.away.name} to win`,line:'MODEL WINNER',price:'',sub:`${pct(p.away_win_prob)} win probability`,leg:`${g.away.name} to win`,text:`GRIDLOCK PICK: ${g.away.name} to win\nWin probability: ${pct(p.away_win_prob)}\nProjected score: ${score}`});out.push({cat:'GAME',book:'GRIDLOCK',css:'gridlock',title:`${g.home.name} to win`,line:'MODEL WINNER',price:'',sub:`${pct(p.home_win_prob)} win probability`,leg:`${g.home.name} to win`,text:`GRIDLOCK PICK: ${g.home.name} to win\nWin probability: ${pct(p.home_win_prob)}\nProjected score: ${score}`});out.push({cat:'GAME',book:'GRIDLOCK',css:'gridlock',title:'Projected score',line:score,price:'',sub:'GRIDLOCK model projection',leg:`Projected score: ${score}`,text:`GRIDLOCK PROJECTED SCORE\n${score}`})}
- if(cat==='SPREAD'&&Number.isFinite(mm)){const homeLine=-mm,awayLine=mm;for(const [team,line,tm] of [[g.home.name,homeLine,modelMargin],[g.away.name,awayLine,-modelMargin]]){const edge=tm+line;out.push({cat:'SPREAD',book:fallbackBook,css:'espn',title:`${team} spread`,line:`${line>0?'+':''}${line.toFixed(1)}`,price:'',sub:`Fallback market • GRIDLOCK margin ${tm>=0?'+':''}${tm.toFixed(1)}`,edge:`${edge>=0?'+':''}${edge.toFixed(1)} pts vs line`,leg:`${team} ${line>0?'+':''}${line.toFixed(1)}`,text:`GRIDLOCK PLAY: ${team} ${line>0?'+':''}${line.toFixed(1)}\nGRIDLOCK projected team margin: ${tm>=0?'+':''}${tm.toFixed(1)}\nModel edge: ${edge>=0?'+':''}${edge.toFixed(1)} pts\nProjected score: ${score}`})}}
- if(cat==='TOTAL'&&Number.isFinite(mt)){for(const nm of ['Over','Under']){const edge=nm==='Over'?modelTotal-mt:mt-modelTotal;out.push({cat:'TOTAL',book:fallbackBook,css:'espn',title:`${nm} ${mt.toFixed(1)}`,line:`${nm.toUpperCase()} ${mt.toFixed(1)}`,price:'',sub:`Fallback market • GRIDLOCK total ${modelTotal.toFixed(1)}`,edge:`${edge>=0?'+':''}${edge.toFixed(1)} pts vs line`,leg:`${nm} ${mt.toFixed(1)}`,text:`GRIDLOCK PLAY: ${nm.toUpperCase()} ${mt.toFixed(1)}\nGRIDLOCK projected total: ${modelTotal.toFixed(1)}\nModel edge: ${edge>=0?'+':''}${edge.toFixed(1)} pts\nProjected score: ${score}`})}}
- return out}
 
+function fallbackMarketOptions(g,p,cat){
+ const out=[];
+ const fallbackBook=g.market?.provider?`ESPN FEED • ${g.market.provider}`:'GRIDLOCK MODEL';
+ const score=`${g.away.name} ${Number(p.away_score).toFixed(1)} – ${Number(p.home_score).toFixed(1)} ${g.home.name}`;
+ const rawTotal=(p.market_total ?? g.market?.over_under);
+ const rawMargin=p.market_margin;
+ const mt=(rawTotal===null||rawTotal===undefined||rawTotal==='')?null:Number(rawTotal);
+ const mm=(rawMargin===null||rawMargin===undefined||rawMargin==='')?null:Number(rawMargin);
+ const modelMargin=Number(p.home_score)-Number(p.away_score);
+ const modelTotal=Number(p.home_score)+Number(p.away_score);
+
+ if(cat==='GAME'){
+   out.push({cat:'GAME',book:'GRIDLOCK',css:'gridlock',title:`${g.away.name} to win`,line:'MODEL',price:'',sub:`${pct(p.away_win_prob)} win probability`,leg:`${g.away.name} to win`,text:`GRIDLOCK PICK: ${g.away.name} to win\nWin probability: ${pct(p.away_win_prob)}\nProjected score: ${score}`});
+   out.push({cat:'GAME',book:'GRIDLOCK',css:'gridlock',title:`${g.home.name} to win`,line:'MODEL',price:'',sub:`${pct(p.home_win_prob)} win probability`,leg:`${g.home.name} to win`,text:`GRIDLOCK PICK: ${g.home.name} to win\nWin probability: ${pct(p.home_win_prob)}\nProjected score: ${score}`});
+   out.push({cat:'GAME',book:'GRIDLOCK',css:'gridlock',title:'Projected score',line:score,price:'',sub:'GRIDLOCK model projection',leg:`Projected score: ${score}`,text:`GRIDLOCK PROJECTED SCORE\n${score}`});
+ }
+ if(cat==='SPREAD'&&Number.isFinite(mm)){
+   const homeLine=-mm,awayLine=mm;
+   for(const [team,line,tm] of [[g.home.name,homeLine,modelMargin],[g.away.name,awayLine,-modelMargin]]){
+     const edge=tm+line;
+     out.push({cat:'SPREAD',book:fallbackBook,css:'espn',title:`${team} spread`,line:`${line>0?'+':''}${line.toFixed(1)}`,price:'',sub:`Reference market • GRIDLOCK margin ${tm>=0?'+':''}${tm.toFixed(1)}`,edge:`${edge>=0?'+':''}${edge.toFixed(1)} pts vs line`,leg:`${team} ${line>0?'+':''}${line.toFixed(1)}`,text:`GRIDLOCK PLAY: ${team} ${line>0?'+':''}${line.toFixed(1)}\nGRIDLOCK projected team margin: ${tm>=0?'+':''}${tm.toFixed(1)}\nModel edge: ${edge>=0?'+':''}${edge.toFixed(1)} pts\nProjected score: ${score}`});
+   }
+ }
+ if(cat==='TOTAL'&&Number.isFinite(mt)){
+   for(const nm of ['Over','Under']){
+     const edge=nm==='Over'?modelTotal-mt:mt-modelTotal;
+     out.push({cat:'TOTAL',book:fallbackBook,css:'espn',title:`${nm} ${mt.toFixed(1)}`,line:`${nm.toUpperCase()} ${mt.toFixed(1)}`,price:'',sub:`Reference market • GRIDLOCK total ${modelTotal.toFixed(1)}`,edge:`${edge>=0?'+':''}${edge.toFixed(1)} pts vs line`,leg:`${nm} ${mt.toFixed(1)}`,text:`GRIDLOCK PLAY: ${nm.toUpperCase()} ${mt.toFixed(1)}\nGRIDLOCK projected total: ${modelTotal.toFixed(1)}\nModel edge: ${edge>=0?'+':''}${edge.toFixed(1)} pts\nProjected score: ${score}`});
+   }
+ }
+ return out;
+}
 function collegeMarketOptions(g,p){
  const out=[]; if(!g||!p)return out;
  const score=`${g.away.name} ${Number(p.away_score).toFixed(1)} – ${Number(p.home_score).toFixed(1)} ${g.home.name}`;
@@ -2277,11 +2348,24 @@ function renderCollegePlayPicker(cat='GAME'){
  grid.innerHTML=groups.join('');window.GRIDLOCK_PICKER_VISIBLE_OPTIONS=opts;
 }
 
+
 function openCollegePlayPicker(){
  const g=window.GRIDLOCK_ACTIVE_COLLEGE_GAME;
  if(!g)return openShare();
 
- window.GRIDLOCK_PICKER_GAME_ID=String(g.id);
+ const gameId=String(g.id);
+ window.GRIDLOCK_PICKER_GAME_ID=gameId;
+
+ // If the cached sportsbook payload belongs to another matchup,
+ // clear it BEFORE rendering so the prior game's lines can never flash here.
+ const staleGame=window.GRIDLOCK_ODDS_GAME_ID && window.GRIDLOCK_ODDS_GAME_ID!==gameId;
+ if(staleGame){
+   window.GRIDLOCK_ODDS_EVENTS=[];
+   window.GRIDLOCK_ODDS_LOADED=false;
+   window.GRIDLOCK_ODDS_GAME_ID='';
+   window.GRIDLOCK_PICKER_VISIBLE_OPTIONS=[];
+ }
+
  const m=document.getElementById('shareModal');
  window.GRIDLOCK_QUICK_SHARE_TEXT='';
  showShareView('play');
@@ -2291,7 +2375,7 @@ function openCollegePlayPicker(){
 
  renderCollegePlayPicker('GAME');
 
- const needReload=!window.GRIDLOCK_ODDS_LOADED || window.GRIDLOCK_ODDS_GAME_ID!==String(g.id);
+ const needReload=!window.GRIDLOCK_ODDS_LOADED || window.GRIDLOCK_ODDS_GAME_ID!==gameId;
  loadSportsbookOdds(needReload);
 
  setShareStatus(`Choose a line for ${g.away.abbr} at ${g.home.abbr}.`);
@@ -2887,18 +2971,29 @@ function cgPlayTeam(summary,g,play){
 function cgShowHero(el,summary,g,state,p,type){
   const team=cgPlayTeam(summary,g,p),text=String(p.text||p.shortText||'');
   el.style.height='auto';
+  el.classList.add('active');
   el.innerHTML=`<div class="cg-hero-alert ${type.cls}">
     <div>${team?.logo?`<img class="cg-hero-logo" src="${team.logo}" alt="">`:''}</div>
     <div class="cg-hero-copy"><span>GRIDLOCK LIVE ALERT</span><b>${type.key}</b>${type.player?`<div class="cg-hero-player">${type.player}</div>`:''}<div class="cg-hero-tag">${type.tag}</div><small>${text.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}</small></div>
     <div class="cg-hero-score"><b>${state?.awayScore??0} – ${state?.homeScore??0}</b><span>${g.away.abbr} / ${g.home.abbr}</span></div>
   </div>`;
   if(GRIDLOCK_HERO_TIMER)clearTimeout(GRIDLOCK_HERO_TIMER);
-  GRIDLOCK_HERO_TIMER=setTimeout(()=>{const box=el.querySelector('.cg-hero-alert');if(box)box.classList.add('leave');setTimeout(()=>{el.innerHTML='';el.style.height='0'},400)},5200);
+  GRIDLOCK_HERO_TIMER=setTimeout(()=>{const box=el.querySelector('.cg-hero-alert');if(box)box.classList.add('leave');setTimeout(()=>{el.innerHTML='';el.style.height='0';el.classList.remove('active')},400)},7000);
 }
 function cgRenderHeroAlert(summary,g,state){
   const el=$('cgLiveHero');if(!el)return;
   const plays=cgExtractPlays(summary);if(!plays.length)return;
-  if(!GRIDLOCK_HERO_INITIALIZED){plays.forEach(p=>GRIDLOCK_HERO_SEEN.add(cgPlayId(p)));GRIDLOCK_HERO_INITIALIZED=true;return}
+  if(!GRIDLOCK_HERO_INITIALIZED){
+    GRIDLOCK_HERO_INITIALIZED=true;
+    const current=plays[0];
+    const currentType=current?cgClassifyHero(current):null;
+    plays.forEach((p,i)=>{ if(i>0)GRIDLOCK_HERO_SEEN.add(cgPlayId(p)); });
+    if(current){
+      GRIDLOCK_HERO_SEEN.add(cgPlayId(current));
+      if(currentType){cgShowHero(el,summary,g,state,current,currentType);return;}
+    }
+    return;
+  }
   const fresh=plays.filter(p=>!GRIDLOCK_HERO_SEEN.has(cgPlayId(p)));
   fresh.forEach(p=>GRIDLOCK_HERO_SEEN.add(cgPlayId(p)));
   if(!fresh.length)return;
@@ -3236,6 +3331,61 @@ function cgRenderLiveProjection(g,p,summary,market){
   <div class="cg-live-reason"><strong>WHY IT MOVED:</strong> ${lp.reason1}<br>${lp.reason2}</div>`;
 }
 
+
+function cgTeamLoose(s){
+  return String(s||'').toLowerCase()
+    .replace(/[^a-z0-9]+/g,' ')
+    .replace(/\b(university|college|the|minutemen|scarlet knights|buffaloes|yellow jackets|knights|wildcats|bulldogs|tigers|bears|cowboys|flames|wolf pack|seminoles)\b/g,' ')
+    .trim();
+}
+function cgTeamPairScore(a,b){
+  a=cgTeamLoose(a);b=cgTeamLoose(b);if(!a||!b)return 0;
+  if(a===b)return 100;
+  let s=0;
+  if(a.includes(b)||b.includes(a))s+=60;
+  const aa=a.split(' ').filter(Boolean),bb=b.split(' ').filter(Boolean);
+  for(const x of aa)if(x.length>=3&&bb.includes(x))s+=20;
+  return s;
+}
+async function cgResolveLiveEspnEvent(g){
+  try{
+    const dates=[];
+    const now=new Date();
+    for(const off of [-1,0,1]){
+      const d=new Date(now.getTime()+off*86400000);
+      dates.push(`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`);
+    }
+    let best=null,bestScore=-1;
+    for(const date of dates){
+      const r=await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates=${date}&limit=300`,{cache:'no-store'});
+      if(!r.ok)continue;
+      const j=await r.json();
+      for(const ev of (j.events||[])){
+        const comp=ev.competitions?.[0],cs=comp?.competitors||[];
+        const home=cs.find(x=>x.homeAway==='home'),away=cs.find(x=>x.homeAway==='away');
+        if(!home||!away)continue;
+        const direct=cgTeamPairScore(home.team?.displayName,g.home.name)+cgTeamPairScore(away.team?.displayName,g.away.name);
+        const flip=cgTeamPairScore(home.team?.displayName,g.away.name)+cgTeamPairScore(away.team?.displayName,g.home.name);
+        const score=Math.max(direct,flip);
+        const st=String(ev.status?.type?.state||'').toLowerCase();
+        const detail=String(ev.status?.type?.detail||'');
+        const liveBoost=st==='in'?80:(/quarter|half|ot|in progress/i.test(detail)?60:0);
+        if(score+liveBoost>bestScore){
+          bestScore=score+liveBoost;
+          best={ev,comp,home,away};
+        }
+      }
+    }
+    if(!best || bestScore<130)return null;
+    return {
+      id:String(best.ev.id),
+      date:best.ev.date||best.comp?.date||g.date,
+      status:best.ev.status?.type?.detail||best.ev.status?.type?.shortDetail||g.status,
+      awayScore:Number(best.away.score||g.away.score||0),
+      homeScore:Number(best.home.score||g.home.score||0)
+    };
+  }catch(e){return null}
+}
 async function cgRefreshLiveGame(g){
   if(!g?.id)return;
   const token=++GRIDLOCK_COLLEGE_LIVE_TOKEN;
@@ -3243,12 +3393,39 @@ async function cgRefreshLiveGame(g){
   // FOOTBALL FIRST: direct ESPN summary feed, known-good path from V45.
   let summary=null,state=null,p=null;
   try{
-    const url=`https://site.api.espn.com/apis/site/v2/sports/football/college-football/summary?event=${encodeURIComponent(g.id)}`;
-    const r=await fetch(url,{cache:'no-store'});
-    if(!r.ok)throw new Error(`ESPN summary ${r.status}`);
-    summary=await r.json();
+    async function fetchSummary(id){
+      const url=`https://site.api.espn.com/apis/site/v2/sports/football/college-football/summary?event=${encodeURIComponent(id)}`;
+      const r=await fetch(url,{cache:'no-store'});
+      if(!r.ok)throw new Error(`ESPN summary ${r.status}`);
+      return r.json();
+    }
 
-    if(token!==GRIDLOCK_COLLEGE_LIVE_TOKEN||!selectedCollegeGame||String(selectedCollegeGame.id)!==String(g.id))return;
+    summary=await fetchSummary(g.id);
+
+    // If score/status say "live" but summary has no useful live state, repair the ESPN event id/date.
+    const firstPlays=cgExtractPlays(summary);
+    const hdrState=String(summary?.header?.competitions?.[0]?.status?.type?.state||'').toLowerCase();
+    const scheduleLooksLive=/quarter|half|ot|live|in progress|\d+:\d+/i.test(String(g.status||'')) || Number(g.away?.score||0)>0 || Number(g.home?.score||0)>0;
+    if(scheduleLooksLive && hdrState!=='in' && !firstPlays.length){
+      const repaired=await cgResolveLiveEspnEvent(g);
+      if(repaired && repaired.id && repaired.id!==String(g.id)){
+        g.id=repaired.id;
+        g.date=repaired.date||g.date;
+        g.status=repaired.status||g.status;
+        g.away.score=repaired.awayScore;
+        g.home.score=repaired.homeScore;
+        selectedCollegeGame=g;
+        window.GRIDLOCK_ACTIVE_COLLEGE_GAME=g;
+        summary=await fetchSummary(g.id);
+      }
+    }
+
+    if(token!==GRIDLOCK_COLLEGE_LIVE_TOKEN||!selectedCollegeGame)return;
+
+    // ESPN's actual competition date/status is authoritative once live.
+    const comp=summary?.header?.competitions?.[0];
+    if(comp?.date)g.date=comp.date;
+    if(comp?.status?.type?.detail)g.status=comp.status.type.detail;
 
     p=projFor(g);
     state=cgLiveGameState(summary,g);
@@ -3262,6 +3439,7 @@ async function cgRefreshLiveGame(g){
 
     if(state){
       $('cgStatus').textContent=(state.statusText||g.status||'LIVE').toUpperCase();
+      if(g.date)$('cgDate').textContent=fmtDate(g.date)+' • '+fmtTime(g.date);
 
       // Main GameCast possession footballs.
       const awayBall=$('cgAwayBall'),homeBall=$('cgHomeBall');
@@ -3494,7 +3672,7 @@ loadWeek();
 
 <script>
 (function(){
- const SNAP='gridlock.college.snapshots.v52', FIN='gridlock.college.finals.v52';
+ const SNAP='gridlock.college.snapshots.v54', FIN='gridlock.college.finals.v54';
  const $=id=>document.getElementById(id); const n=v=>{if(v===null||v===undefined||v==='')return null;v=Number(v);return Number.isFinite(v)?v:null};
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const rd=k=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return[]}}, wr=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
@@ -3722,7 +3900,7 @@ function syncPerformance(){
 async function refresh(){try{if(typeof loadSportsbookOdds==='function'&&!window.GRIDLOCK_ODDS_LOADED)await loadSportsbookOdds(false)}catch(e){}const valueRows=bestValueRows();const dogRows=dogWatchRows();renderRows('topValueList',valueRows,'value');renderRows('upsetWatchList',dogRows,'upset');featuredValue(valueRows);if($('topValueStamp'))$('topValueStamp').textContent=(window.GRIDLOCK_GET_ODDS_EVENTS?.().length)?'DIRECT + ESPN':'ESPN MARKET';if($('upsetStamp'))$('upsetStamp').textContent=(window.GRIDLOCK_GET_ODDS_EVENTS?.().length)?'LIVE +MONEY':'PRICED + WATCHLIST';syncArchive();syncPerformance()}
  const oldRender=typeof render==='function'?render:null;if(oldRender){window.render=function(){const r=oldRender.apply(this,arguments);setTimeout(refresh,50);return r}}
  let bootTries=0;async function bootWhenSlateReady(){bootTries++;if(slate().length){window.GRIDLOCK_ODDS_LOADED=false;await refresh();return}if(bootTries<80)setTimeout(bootWhenSlateReady,250)}setTimeout(bootWhenSlateReady,100);$('valueMarketFilter')?.addEventListener('change',refresh);
-setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V52={refresh,syncArchive};
+setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V54={refresh,syncArchive};
 })();
 
 </script>
@@ -3778,8 +3956,11 @@ setInterval(()=>{if(slate().length)refresh()},10000);window.GRIDLOCK_V52={refres
   function currentCollegeWindow(){
     const arr=collegeGames();
     if(!arr.length)return [];
-    // Live first, then today's/upcoming games, while retaining final games near the current slate.
-    const live=arr.filter(g=>!g.complete && /quarter|half|ot|live|in progress|end/i.test(String(g.status||'')));
+    // Live state outranks slate date. A scored/in-progress game is live even if its source bucket says tomorrow.
+    const live=arr.filter(g=>!g.complete && (
+      /quarter|half|ot|live|in progress|end|\d+:\d+/i.test(String(g.status||'')) ||
+      Number(g?.away?.score||0)>0 || Number(g?.home?.score||0)>0
+    ));
     const rest=arr.filter(g=>!live.includes(g));
     return [...live,...rest].slice(0,18);
   }
