@@ -1,3 +1,15 @@
+
+let GRIDLOCK_ODDS_CACHE = globalThis.__GRIDLOCK_ODDS_CACHE || {
+  events:null,
+  fetchedAt:0,
+  expiresAt:0,
+  requestsRemaining:null,
+  requestsUsed:null,
+  inflight:null,
+  lastError:null
+};
+globalThis.__GRIDLOCK_ODDS_CACHE = GRIDLOCK_ODDS_CACHE;
+
 module.exports = async function handler(req,res){
   res.setHeader('Content-Type','application/json');
 
@@ -7,17 +19,8 @@ module.exports = async function handler(req,res){
     s=s.replace(/^ODDS_API_KEY\s*=\s*/i,'').trim();
     return s;
   }
-
   const rawKey=String(process.env.ODDS_API_KEY||'');
   const key=cleanKey(rawKey);
-  const keyMeta={
-    configured:!!rawKey,
-    raw_length:rawKey.length,
-    cleaned_length:key.length,
-    had_assignment_prefix:/^\s*ODDS_API_KEY\s*=/i.test(rawKey),
-    had_wrapping_quotes:/^\s*["']/.test(rawKey)&&/["']\s*$/.test(rawKey),
-    looks_like_url:/^https?:\/\//i.test(key)
-  };
 
   if(String(req.query?.health||'')==='1'){
     return res.end(JSON.stringify({
@@ -26,71 +29,112 @@ module.exports = async function handler(req,res){
       route:'/api/odds',
       provider:'The Odds API',
       key_configured:!!key,
-      key_meta:keyMeta,
+      cache:{
+        populated:Array.isArray(GRIDLOCK_ODDS_CACHE.events),
+        age_seconds:GRIDLOCK_ODDS_CACHE.fetchedAt?Math.round((Date.now()-GRIDLOCK_ODDS_CACHE.fetchedAt)/1000):null,
+        expires_in_seconds:GRIDLOCK_ODDS_CACHE.expiresAt?Math.max(0,Math.round((GRIDLOCK_ODDS_CACHE.expiresAt-Date.now())/1000)):null,
+        requests_remaining:GRIDLOCK_ODDS_CACHE.requestsRemaining
+      },
       timestamp:new Date().toISOString()
     }));
   }
 
   if(!key){
     res.statusCode=503;
-    return res.end(JSON.stringify({ok:false,error:'ODDS_API_KEY_MISSING',key_meta:keyMeta}));
+    return res.end(JSON.stringify({ok:false,error:'ODDS_API_KEY_MISSING'}));
   }
 
-  // A normal API key should be compact. A huge value is almost certainly a pasted URL/JSON/env assignment.
-  if(key.length>128 || keyMeta.looks_like_url){
-    res.statusCode=500;
-    return res.end(JSON.stringify({
-      ok:false,
-      error:'ODDS_API_KEY_VALUE_LOOKS_WRONG',
-      detail:'The configured ODDS_API_KEY is unexpectedly long or looks like a URL. Replace the environment variable with only the API key value.',
-      key_meta:keyMeta
-    }));
-  }
+  async function providerFetch(){
+    const params=new URLSearchParams();
+    params.set('apiKey',key);
+    params.set('regions','us');
+    params.set('markets','h2h,spreads,totals');
+    params.set('oddsFormat','american');
 
-  async function providerFetch(url,timeout=8000){
+    const url=`https://api.the-odds-api.com/v4/sports/americanfootball_ncaaf/odds?${params.toString()}`;
     const ctl=new AbortController();
-    const timer=setTimeout(()=>ctl.abort(),timeout);
+    const timer=setTimeout(()=>ctl.abort(),8000);
     try{
       const r=await fetch(url,{headers:{accept:'application/json'},signal:ctl.signal});
       const text=await r.text();
+      let parsed=null; try{parsed=JSON.parse(text)}catch(e){}
+      if(!r.ok){
+        const err=new Error(parsed?.message||`Odds provider ${r.status}`);
+        err.providerStatus=r.status;
+        err.providerBody=parsed||text.slice(0,500);
+        throw err;
+      }
+      const remainingRaw=r.headers.get('x-requests-remaining');
+      const usedRaw=r.headers.get('x-requests-used');
       return {
-        ok:r.ok,status:r.status,text,
-        remaining:r.headers.get('x-requests-remaining')||'',
-        used:r.headers.get('x-requests-used')||''
+        events:Array.isArray(parsed)?parsed:[],
+        remaining:remainingRaw!==null?Number(remainingRaw):null,
+        used:usedRaw!==null?Number(usedRaw):null
       };
-    }finally{clearTimeout(timer)}
-  }
-
-  // Credential-only probe. GET /sports is documented and does not consume usage quota.
-  if(String(req.query?.probe||'')==='1'){
-    const url=`https://api.the-odds-api.com/v4/sports/?apiKey=${encodeURIComponent(key)}`;
-    try{
-      const p=await providerFetch(url);
-      let parsed=null;try{parsed=JSON.parse(p.text)}catch(e){}
-      res.statusCode=p.ok?200:502;
-      return res.end(JSON.stringify({
-        ok:p.ok,
-        probe:'GET /v4/sports/',
-        provider_status:p.status,
-        key_meta:keyMeta,
-        response:p.ok?{sport_count:Array.isArray(parsed)?parsed.length:null}:null,
-        provider_error:p.ok?null:(parsed||p.text.slice(0,500))
-      }));
-    }catch(err){
-      res.statusCode=502;
-      return res.end(JSON.stringify({
-        ok:false,probe:'GET /v4/sports/',error:'PROBE_REQUEST_FAILED',
-        detail:err?.name==='AbortError'?'timeout':(err?.message||String(err)),
-        key_meta:keyMeta
-      }));
+    }finally{
+      clearTimeout(timer);
     }
   }
 
-  const live=String(req.query?.live||'')==='1';
-  res.setHeader('Cache-Control',live?'s-maxage=25, stale-while-revalidate=25':'s-maxage=60, stale-while-revalidate=90');
+  function ttlForRemaining(remaining){
+    // One league request returns all books/markets GRIDLOCK needs.
+    // Stretch refresh interval automatically as quota gets low.
+    if(Number.isFinite(remaining)){
+      if(remaining <= 50) return 15*60*1000;
+      if(remaining <= 150) return 10*60*1000;
+      if(remaining <= 400) return 5*60*1000;
+    }
+    return 2*60*1000; // normal live cadence: max one provider hit per ~2 min per warm function
+  }
 
-  const home=String(req.query?.home||'').trim();
-  const away=String(req.query?.away||'').trim();
+  async function getLeagueOdds(){
+    const now=Date.now();
+    if(Array.isArray(GRIDLOCK_ODDS_CACHE.events) && now < GRIDLOCK_ODDS_CACHE.expiresAt){
+      return {events:GRIDLOCK_ODDS_CACHE.events,source:'memory-cache',cacheHit:true};
+    }
+
+    // Coalesce simultaneous requests from Top Value, GameCast and Post-a-Play.
+    if(GRIDLOCK_ODDS_CACHE.inflight){
+      await GRIDLOCK_ODDS_CACHE.inflight;
+      return {events:GRIDLOCK_ODDS_CACHE.events||[],source:'coalesced-cache',cacheHit:true};
+    }
+
+    GRIDLOCK_ODDS_CACHE.inflight=(async()=>{
+      try{
+        const data=await providerFetch();
+        const ttl=ttlForRemaining(data.remaining);
+        GRIDLOCK_ODDS_CACHE.events=data.events;
+        GRIDLOCK_ODDS_CACHE.fetchedAt=Date.now();
+        GRIDLOCK_ODDS_CACHE.expiresAt=Date.now()+ttl;
+        GRIDLOCK_ODDS_CACHE.requestsRemaining=data.remaining;
+        GRIDLOCK_ODDS_CACHE.requestsUsed=data.used;
+        GRIDLOCK_ODDS_CACHE.lastError=null;
+      }catch(e){
+        GRIDLOCK_ODDS_CACHE.lastError={
+          at:Date.now(),
+          message:e?.message||String(e),
+          provider_status:e?.providerStatus||null,
+          provider_body:e?.providerBody||null
+        };
+        // If provider fails/quota is exhausted, serve the last successful snapshot for up to 30 minutes.
+        if(Array.isArray(GRIDLOCK_ODDS_CACHE.events) &&
+           Date.now()-GRIDLOCK_ODDS_CACHE.fetchedAt < 30*60*1000){
+          GRIDLOCK_ODDS_CACHE.expiresAt=Date.now()+5*60*1000;
+          return;
+        }
+        throw e;
+      }finally{
+        GRIDLOCK_ODDS_CACHE.inflight=null;
+      }
+    })();
+
+    await GRIDLOCK_ODDS_CACHE.inflight;
+    return {
+      events:GRIDLOCK_ODDS_CACHE.events||[],
+      source:GRIDLOCK_ODDS_CACHE.lastError?'stale-cache':'provider',
+      cacheHit:!!GRIDLOCK_ODDS_CACHE.lastError
+    };
+  }
 
   function norm(s){
     return String(s||'').toLowerCase()
@@ -106,7 +150,7 @@ module.exports = async function handler(req,res){
     'southern california':'usc','usc':'southern california'
   };
   function teamScore(a,b){
-    a=norm(a);b=norm(b);if(!a||!b)return 0;
+    a=norm(a); b=norm(b); if(!a||!b)return 0;
     if(a===b)return 100;
     let score=0;
     if(a.includes(b)||b.includes(a))score+=50;
@@ -118,32 +162,13 @@ module.exports = async function handler(req,res){
     return score;
   }
 
-  const params=new URLSearchParams();
-  params.set('apiKey',key);
-  params.set('regions','us');
-  params.set('markets','h2h,spreads,totals');
-  params.set('oddsFormat','american');
-
-  const url=`https://api.the-odds-api.com/v4/sports/americanfootball_ncaaf/odds?${params.toString()}`;
-
   try{
-    const p=await providerFetch(url);
-    if(!p.ok){
-      let parsed=null;try{parsed=JSON.parse(p.text)}catch(e){}
-      res.statusCode=502;
-      return res.end(JSON.stringify({
-        ok:false,
-        error:'ODDS_PROVIDER_FAILED',
-        provider_status:p.status,
-        provider_error:parsed||p.text.slice(0,500),
-        request_shape:'americanfootball_ncaaf / regions=us / h2h,spreads,totals',
-        url_length:url.length,
-        key_meta:keyMeta
-      }));
-    }
-
-    const events=JSON.parse(p.text);
+    const league=await getLeagueOdds();
+    const home=String(req.query?.home||'').trim();
+    const away=String(req.query?.away||'').trim();
+    let events=league.events||[];
     let matched=null,bestScore=-1;
+
     if(home&&away){
       for(const e of events){
         const direct=teamScore(e.home_team,home)+teamScore(e.away_team,away);
@@ -152,29 +177,47 @@ module.exports = async function handler(req,res){
         if(s>bestScore){bestScore=s;matched=e;}
       }
       if(bestScore<35)matched=null;
+      events=matched?[matched]:[];
     }
+
+    const age=GRIDLOCK_ODDS_CACHE.fetchedAt
+      ? Math.max(0,Math.round((Date.now()-GRIDLOCK_ODDS_CACHE.fetchedAt)/1000))
+      : null;
+
+    // Vercel/CDN can reuse the league snapshot too. Frontend uses one canonical URL.
+    res.setHeader('Cache-Control','public, s-maxage=90, stale-while-revalidate=60');
 
     return res.end(JSON.stringify({
       ok:true,
       source:'The Odds API',
-      mode:'regions=us featured markets',
-      live_requested:live,
-      fetched_at:new Date().toISOString(),
-      event_count:Array.isArray(events)?events.length:0,
-      matched:!!matched,
-      matched_score:bestScore,
-      requests_remaining:p.remaining,
-      requests_used:p.used,
-      key_meta:{cleaned_length:keyMeta.cleaned_length},
-      events:matched?[matched]:(home&&away?[]:events)
+      mode:'GRIDLOCK shared league cache',
+      cache_source:league.source,
+      cache_hit:league.cacheHit,
+      cache_age_seconds:age,
+      next_provider_refresh_seconds:GRIDLOCK_ODDS_CACHE.expiresAt
+        ? Math.max(0,Math.round((GRIDLOCK_ODDS_CACHE.expiresAt-Date.now())/1000))
+        : null,
+      requests_remaining:GRIDLOCK_ODDS_CACHE.requestsRemaining,
+      requests_used:GRIDLOCK_ODDS_CACHE.requestsUsed,
+      event_count:Array.isArray(GRIDLOCK_ODDS_CACHE.events)?GRIDLOCK_ODDS_CACHE.events.length:0,
+      matched:home&&away?!!matched:undefined,
+      matched_score:home&&away?bestScore:undefined,
+      stale_due_to_provider_error:!!GRIDLOCK_ODDS_CACHE.lastError,
+      last_provider_error:GRIDLOCK_ODDS_CACHE.lastError,
+      events
     }));
   }catch(err){
+    const ps=err?.providerStatus||null;
+    const body=err?.providerBody||null;
     res.statusCode=502;
     return res.end(JSON.stringify({
       ok:false,
-      error:'ODDS_PROVIDER_REQUEST_FAILED',
-      detail:err?.name==='AbortError'?'timeout':(err?.message||String(err)),
-      key_meta:keyMeta
+      error:ps===401 && body?.error_code==='OUT_OF_USAGE_CREDITS'
+        ? 'OUT_OF_USAGE_CREDITS'
+        : 'ODDS_PROVIDER_FAILED',
+      provider_status:ps,
+      provider_error:body,
+      detail:err?.name==='AbortError'?'timeout':(err?.message||String(err))
     }));
   }
 };
