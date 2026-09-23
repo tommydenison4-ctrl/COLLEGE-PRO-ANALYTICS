@@ -1698,7 +1698,7 @@ body.college-mode #scoreStrip .college-score-chip{
 #topValueStamp.live-aware{color:#63dbff!important}
 
 </style>
-<link rel="stylesheet" href="nfl-center.css"></head>
+<link rel="stylesheet" href="nfl-center.css"><script src="play-ribbons.js?v=1"></script></head>
 <body>
 <div class="app">
   <header class="topbar"><div class="topbar-inner"><div class="brand gridlock-brand"><div class="gridlock-g">G</div><div><b>GRIDLOCK</b><small>FOOTBALL INTELLIGENCE</small></div></div><div class="mainnav"><span class="active" data-jump="matchup">NFL</span><span data-jump="heatmaps">COLLEGE</span><span data-jump="projection">PROJECTIONS</span><span data-jump="players">PLAYERS</span><span data-jump="news">NEWS</span></div><div class="mobile-header-switch" id="mobileHeaderSwitch" aria-label="League navigation">
@@ -2898,26 +2898,9 @@ function cgShowHero(el,summary,g,state,p,type){
   GRIDLOCK_HERO_TIMER=setTimeout(()=>{const box=el.querySelector('.cg-hero-alert');if(box)box.classList.add('leave');setTimeout(()=>{el.innerHTML='';el.style.height='0';el.classList.remove('active')},400)},7000);
 }
 function cgRenderHeroAlert(summary,g,state){
-  const el=$('cgLiveHero');if(!el)return;
-  const plays=cgExtractPlays(summary);if(!plays.length)return;
-  if(!GRIDLOCK_HERO_INITIALIZED){
-    GRIDLOCK_HERO_INITIALIZED=true;
-    const current=plays[0];
-    const currentType=current?cgClassifyHero(current):null;
-    plays.forEach((p,i)=>{ if(i>0)GRIDLOCK_HERO_SEEN.add(cgPlayId(p)); });
-    if(current){
-      GRIDLOCK_HERO_SEEN.add(cgPlayId(current));
-      if(currentType){cgShowHero(el,summary,g,state,current,currentType);return;}
-    }
-    return;
-  }
-  const fresh=plays.filter(p=>!GRIDLOCK_HERO_SEEN.has(cgPlayId(p)));
-  fresh.forEach(p=>GRIDLOCK_HERO_SEEN.add(cgPlayId(p)));
-  if(!fresh.length)return;
-  const candidates=fresh.map(p=>({p,type:cgClassifyHero(p)})).filter(x=>x.type);
-  if(!candidates.length)return;
-  candidates.sort((a,b)=>b.type.priority-a.type.priority);
-  cgShowHero(el,summary,g,state,candidates[0].p,candidates[0].type);
+ const el=$('cgLiveHero');if(!el)return;el.classList.add('play-ribbon-host');
+ const status=summary?.header?.competitions?.[0]?.status;
+ PlayRibbons.update(el,g.id,cgExtractPlays(summary),status?.type?.state==='in'&&!status?.type?.completed);
 }
 
 function cgRenderPBP(summary){
