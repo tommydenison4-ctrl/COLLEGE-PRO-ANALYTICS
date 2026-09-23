@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "node nfl-center.test.cjs && node integration.test.cjs"
+  },
+  "devDependencies": {
+    "jsdom": "30.1.1"
+  }
+}

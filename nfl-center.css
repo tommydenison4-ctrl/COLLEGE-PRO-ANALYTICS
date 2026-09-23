@@ -1,0 +1,39 @@
+/* Reuse NCAA's slate, game-center and responsive classes; scope NFL additions. */
+body:not(.college-mode) .matchup-head,
+body:not(.college-mode) .tabs-wrap,
+body:not(.college-mode) .score-strip-wrap {display:none!important}
+body:not(.college-mode) main.main>.section {display:none!important}
+body:not(.college-mode) main.main>#nflCenter {display:block!important}
+body.college-mode #nflCenter {display:none!important}
+#nflCenter {padding-top:0;--cgAway:#168cff;--cgHome:#55e59b}
+#nflCenter [hidden] {display:none!important}
+#nflCenter .college-game {text-align:left;color:inherit;font:inherit;border:0;width:100%}
+#nflCenter .college-game:focus-visible,#nflCenter button:focus-visible {outline:2px solid #7bc6ff;outline-offset:-2px}
+#nflCenter .nfl-card-name {display:flex;gap:8px;align-items:center;min-width:0}
+#nflCenter .nfl-card-name img {width:30px;height:30px;object-fit:contain}
+#nflCenter .college-game-bottom {gap:8px;flex-wrap:wrap}
+#nflCenter .nfl-score-actual {font-size:32px;font-weight:1000}
+#nflCenter .nfl-live-score {display:flex;justify-content:space-between;align-items:center;gap:15px;padding:18px}
+#nflCenter .nfl-table {width:100%;border-collapse:collapse;font-size:10px}
+#nflCenter .nfl-table th,#nflCenter .nfl-table td {padding:9px 6px;border-bottom:1px solid #17344b;text-align:right}
+#nflCenter .nfl-table th:first-child,#nflCenter .nfl-table td:first-child {text-align:left}
+#nflCenter .nfl-pbp {padding:10px 0;border-bottom:1px solid #17344b;font-size:10px;line-height:1.5}
+#nflCenter .cg-team.away .cg-team-name,#nflCenter .nfl-away {color:var(--cgAway)}
+#nflCenter .cg-team.home .cg-team-name,#nflCenter .nfl-home {color:var(--cgHome)}
+#nflCenter .cg-panel {min-width:0}
+#nflCenter .college-source {flex-wrap:wrap}
+#nflCenter .college-source small {width:100%}
+@media(max-width:600px){
+ #nflCenter .cg-grid {grid-template-columns:1fr}
+ #nflCenter .cg-kpis {grid-template-columns:repeat(2,minmax(0,1fr))}
+ #nflCenter .cg-team-name {font-size:18px;overflow-wrap:anywhere}
+ #nflCenter .college-projection-note {align-items:start;flex-direction:column}
+ #nflCenter .cg-row {flex-wrap:wrap;gap:5px}
+ #nflCenter .cg-row b {overflow-wrap:anywhere}
+}
+#nflCenter #nflLiveHero {height:auto;position:static;z-index:auto;overflow:hidden;margin:12px 0;background:#091724;border:1px solid #17344b;border-radius:10px}
+#nflCenter .cg-team.away .cg-team-name,#nflCenter .nfl-away {color:color-mix(in srgb,var(--cgAway) 65%,white)}
+#nflCenter .cg-team.home .cg-team-name,#nflCenter .nfl-home {color:color-mix(in srgb,var(--cgHome) 65%,white)}
+body:not(.college-mode):not(.nfl-game-open) #openShareBtn {display:none}
+body:not(.college-mode) #openShareBtn {display:none!important}
+#nflCenter .cg-tabs {scrollbar-width:thin;scrollbar-color:#36566d #071522}
