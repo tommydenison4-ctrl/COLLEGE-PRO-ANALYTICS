@@ -1714,6 +1714,20 @@ body.college-mode #scoreStrip .college-score-chip{
 .pick-slate-edge{font-size:7px;color:#8fa5b8;font-weight:900}
 .pick-slate-noplay{display:inline-flex;align-items:center;border:1px solid #3b4f60;background:#0b1c29;color:#7890a2;border-radius:999px;padding:4px 8px;font-size:7px;font-weight:1000;letter-spacing:.07em}
 .pick-slate-badge .pick-tier-pill{margin-left:0;padding:3px 7px;font-size:7px}
+.main-card-share{margin-top:9px;padding-top:9px;border-top:1px solid #143148}
+.main-card-share-hint{font-size:7px;color:#6f8da2;font-weight:900;letter-spacing:.05em;margin-bottom:7px}
+.main-card-share-actions{display:none;gap:6px;align-items:center;flex-wrap:wrap}
+.college-game.share-ready .main-card-share-actions{display:flex}
+.main-card-share-pick{font-size:8px;font-weight:1000;color:#dff3ff;margin-right:auto}
+.main-card-send{border:1px solid #2b536e;background:#0b2638;color:#ecf7ff;border-radius:999px;padding:6px 9px;font-size:7px;font-weight:1000;letter-spacing:.04em}
+.main-card-send.x{background:#05080b;border-color:#425260}
+.main-card-send.fb{background:#153a6b;border-color:#285c9d}
+.college-team-row[data-share-side]{cursor:pointer;border-radius:7px;padding-left:6px;padding-right:6px;transition:.12s}
+.college-team-row[data-share-side]:hover{background:#0d2437}
+.college-team-row[data-share-side].share-selected{background:#0c3151;box-shadow:inset 3px 0 #35a9ff}
+.college-team-row[data-share-side].share-selected .college-team-name{color:#8fd4ff}
+#cgLiveMarket,#nflLiveMarket,.cg-live-market,#oddsStatus{display:none!important}
+
 
 @media(max-width:900px){.picks-kpis{grid-template-columns:repeat(2,1fr)}.pick-row{grid-template-columns:1fr 1fr}.pick-row.head{display:none}.pick-row .match{grid-column:1/-1}}
 
@@ -1905,7 +1919,7 @@ body.college-mode #scoreStrip .college-score-chip{
       <div class="cg-card-head">LIVE GRIDLOCK PROJECTION <span class="cg-live-pill" id="cgLiveProjectionStamp">WAITING</span></div>
       <div class="cg-card-body">
         <div id="cgLiveProjection"><div class="cg-live-empty">Live projection activates when the game begins.</div></div>
-        <div class="cg-live-market" id="cgLiveMarket"><div class="cg-live-empty">Live sportsbook lines will appear when available.</div></div>
+        
       </div>
     </div>
     <div class="cg-card">
@@ -2047,8 +2061,7 @@ body.college-mode #scoreStrip .college-score-chip{
 <div class="share-view active" id="playShareView">
 <div class="play-picker" id="collegePlayPicker">
   <div><div class="picker-title" id="pickerGameTitle">SELECT A PLAY</div><div class="picker-sub">Choose a GRIDLOCK prediction or market. No typing required.</div></div>
-  <div class="odds-status" id="oddsStatus"><span class="odds-live off"><b>SPORTSBOOK LINES</b> <span id="oddsStatusText">Loading…</span></span><button class="odds-refresh" id="oddsRefreshBtn" type="button">REFRESH</button></div>
-  <div class="picker-tabs" id="pickerTabs"><button class="picker-tab active" data-picker-cat="GAME" type="button">GAME</button><button class="picker-tab" data-picker-cat="SPREAD" type="button">SPREAD</button><button class="picker-tab" data-picker-cat="TOTAL" type="button">OVER / UNDER</button><button class="picker-tab" data-picker-cat="PROPS" type="button">PLAYER PROPS</button></div>
+<div class="picker-tabs" id="pickerTabs"><button class="picker-tab active" data-picker-cat="GAME" type="button">GAME</button><button class="picker-tab" data-picker-cat="SPREAD" type="button">SPREAD</button><button class="picker-tab" data-picker-cat="TOTAL" type="button">OVER / UNDER</button><button class="picker-tab" data-picker-cat="PROPS" type="button">PLAYER PROPS</button></div>
   <div class="picker-grid" id="pickerGrid"></div>
 </div>
 <button class="picker-back" id="pickerBack" type="button">← CHOOSE A DIFFERENT PLAY</button>
@@ -2587,7 +2600,8 @@ function gameCard(g){
       tierHTML=`<div class="pick-slate-badge"><span class="pick-slate-noplay">NO STAR RATING</span><span class="pick-slate-edge">MARKET SPREAD UNAVAILABLE</span></div>`;
     }
   }
-  return `<div class="college-game" data-game="${g.id}"><div class="college-game-top"><span class="college-time">${fmtTime(g.date)}${g.neutral?' • <span class="college-neutral">NEUTRAL</span>':''}</span><span class="college-network">${g.network||''}</span></div><div class="college-team-row"><div><div class="college-team-name">${g.away.name}</div><div class="college-team-conf">${g.away.conf||g.away.abbr}</div></div><div class="college-proj ${p?'':'blank'}">${p&&p.away_score!==''?'PROJ '+Number(p.away_score).toFixed(1):'PROJ —'}</div><div class="college-score">${g.away.score||''}</div></div><div class="college-team-row"><div><div class="college-team-name">${g.home.name}</div><div class="college-team-conf">${g.home.conf||g.home.abbr}</div></div><div class="college-proj ${p?'':'blank'}">${p&&p.home_score!==''?'PROJ '+Number(p.home_score).toFixed(1):'PROJ —'}</div><div class="college-score">${g.home.score||''}</div></div><div class="college-game-bottom"><span class="college-status">${g.market?.details?`MARKET ${g.market.details}${g.market.over_under?` • O/U ${g.market.over_under}`:''}`:(g.status||g.venue||'')}</span><span class="college-winprob">${hp!=null?`${g.home.abbr} ${(hp*100).toFixed(1)}% • ${g.away.abbr} ${(ap*100).toFixed(1)}%`:p?`${p.source||'GRIDLOCK MODEL'}${p.confidence?` • ${p.confidence}`:''}`:'MODEL UNAVAILABLE'}</span></div>${tierHTML}</div>`
+  const shareHTML=`<div class="main-card-share"><div class="main-card-share-hint">TAP A TEAM TO SHARE THAT SIDE</div><div class="main-card-share-actions"><span class="main-card-share-pick">SELECTED: —</span><button type="button" class="main-card-send msg" data-main-share="msg">MSG</button><button type="button" class="main-card-send x" data-main-share="x">X</button><button type="button" class="main-card-send fb" data-main-share="fb">FB</button></div></div>`;
+  return `<div class="college-game" data-game="${g.id}" role="button" tabindex="0"><div class="college-game-top"><span class="college-time">${fmtTime(g.date)}${g.neutral?' • <span class="college-neutral">NEUTRAL</span>':''}</span><span class="college-network">${g.network||''}</span></div><div class="college-team-row" data-share-side="away"><div><div class="college-team-name">${g.away.name}</div><div class="college-team-conf">${g.away.conf||g.away.abbr}</div></div><div class="college-proj ${p?'':'blank'}">${p&&p.away_score!==''?'PROJ '+Number(p.away_score).toFixed(1):'PROJ —'}</div><div class="college-score">${g.away.score||''}</div></div><div class="college-team-row" data-share-side="home"><div><div class="college-team-name">${g.home.name}</div><div class="college-team-conf">${g.home.conf||g.home.abbr}</div></div><div class="college-proj ${p?'':'blank'}">${p&&p.home_score!==''?'PROJ '+Number(p.home_score).toFixed(1):'PROJ —'}</div><div class="college-score">${g.home.score||''}</div></div><div class="college-game-bottom"><span class="college-status">${g.market?.details?`MARKET ${g.market.details}${g.market.over_under?` • O/U ${g.market.over_under}`:''}`:(g.status||g.venue||'')}</span><span class="college-winprob">${hp!=null?`${g.home.abbr} ${(hp*100).toFixed(1)}% • ${g.away.abbr} ${(ap*100).toFixed(1)}%`:p?`${p.source||'GRIDLOCK MODEL'}${p.confidence?` • ${p.confidence}`:''}`:'MODEL UNAVAILABLE'}</span></div>${tierHTML}${shareHTML}</div>`
 }
 function render(){for(const g of games){const p=projFor(g);if(p&&window.GridlockPicks)window.GridlockPicks.syncGame({league:'NCAA',gameId:g.id,week:(weeks[+$('collegeWeek').value]?.label||'').replace(/[^0-9]/g,''),date:g.date,away:g.away.name,home:g.home.name,awayAbbr:g.away.abbr,homeAbbr:g.home.abbr,modelHomeMargin:Number(p.margin),marketHomeMargin:Number.isFinite(Number(p.market_margin))?Number(p.market_margin):g.market?.home_margin,marketDetails:g.market?.details||'',complete:g.complete,awayFinal:g.away.score,homeFinal:g.home.score});}let f=$('collegeConf').value,q=norm($('collegeSearch').value);let arr=games.filter(g=>confMatch(g,f)&&(!q||norm(g.name+' '+g.home.name+' '+g.away.name).includes(q)));let by={};for(const g of arr){let bits=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(g.date)).map(p=>[p.type,p.value]));let d=bits.year+'-'+bits.month+'-'+bits.day;(by[d]??=[]).push(g)}$('collegeDays').innerHTML=Object.entries(by).map(([d,gs])=>`<div class="college-day"><div class="college-day-head"><b>${fmtDate(d+'T12:00:00Z')}</b><span>${gs.length} GAME${gs.length===1?'':'S'}</span></div><div class="college-games">${gs.map(gameCard).join('')}</div></div>`).join('');$('collegeEmpty').style.display=arr.length?'none':'block';$('collegeGameCount').textContent=arr.length;$('collegeProjectedCount').textContent=arr.filter(projFor).length;$('collegeFbsCount').textContent=new Set(arr.flatMap(g=>[g.home.name,g.away.name])).size;}
 function csvParse(text){let rows=[],row=[],cell='',q=false;for(let i=0;i<text.length;i++){let c=text[i];if(c==='"'){if(q&&text[i+1]==='"'){cell+='"';i++}else q=!q}else if(c===','&&!q){row.push(cell);cell=''}else if((c==='\n'||c==='\r')&&!q){if(c==='\r'&&text[i+1]==='\n')i++;row.push(cell);if(row.some(x=>x.trim()))rows.push(row);row=[];cell=''}else cell+=c}row.push(cell);if(row.some(x=>x.trim()))rows.push(row);return rows}
@@ -3475,19 +3489,6 @@ async function cgRefreshLiveGame(g){
     console.error('GRIDLOCK GameCast refresh',e);
     return;
   }
-
-  // BETTING SECOND: completely independent; never blocks/clears football.
-  try{
-    const marketEl=$('cgLiveMarket');
-    if(marketEl)marketEl.innerHTML='<div class="cg-market-title"><b>LIVE BETTING MARKET</b><span>CHECKING SPORTSBOOK API…</span></div><div class="cg-market-debug">Football feed is already rendered. Odds request is running independently.</div>';
-    const liveMarket=await cgFetchLiveMarket(g);
-    if(token!==GRIDLOCK_COLLEGE_LIVE_TOKEN||!selectedCollegeGame||String(selectedCollegeGame.id)!==String(g.id))return;
-    cgRenderLiveMarket(g,liveMarket);
-    if(liveMarket?.available)cgRenderLiveProjection(g,p,summary,liveMarket);
-  }catch(e){
-    const el=$('cgLiveMarket');
-    if(el)el.innerHTML=`<div class="cg-market-title"><b>LIVE BETTING MARKET</b><span>ODDS FEED ERROR</span></div><div class="cg-market-debug">${String(e?.message||e)}</div>`;
-  }
 }
 function cgStartLiveRefresh(g){
   if(GRIDLOCK_COLLEGE_LIVE_TIMER)clearInterval(GRIDLOCK_COLLEGE_LIVE_TIMER);
@@ -3552,7 +3553,83 @@ window.GRIDLOCK_OPEN_SHARED_COLLEGE_PICK=async function(q){
  }catch(e){console.warn('GRIDLOCK shared college route failed',e);document.documentElement.classList.remove('shared-college-loading');return false}
 };
 
-$('collegeDays').addEventListener('click',e=>{let c=e.target.closest('.college-game');if(!c)return;let g=games.find(x=>x.id===c.dataset.game);if(g)openCollegeGame(g)});$('cgBack').onclick=closeCollegeGame;$('cgTabs').addEventListener('click',e=>{let b=e.target.closest('.cg-tab');if(b)setCGTab(b.dataset.cg)});$('cgRunSim').onclick=runCGSim;$('cgPostPlay').onclick=openCollegePlayPicker;$('cgPredictions').addEventListener('click',e=>{const card=e.target.closest('[data-share-index]');if(!card)return;const opt=(window.GRIDLOCK_COLLEGE_SHARE_OPTIONS||[])[+card.dataset.shareIndex];if(opt)openQuickShare(opt)});document.getElementById('pickerTabs')?.addEventListener('click',e=>{const b=e.target.closest('[data-picker-cat]');if(b)renderCollegePlayPicker(b.dataset.pickerCat)});document.getElementById('pickerGrid')?.addEventListener('click',e=>{const b=e.target.closest('[data-picker-index]');if(!b)return;const opt=(window.GRIDLOCK_PICKER_VISIBLE_OPTIONS||[])[+b.dataset.pickerIndex];if(opt)openQuickShare(opt)});document.getElementById('pickerBack')?.addEventListener('click',openCollegePlayPicker);document.getElementById('oddsRefreshBtn')?.addEventListener('click',()=>loadSportsbookOdds(true));$('cgChatSend').onclick=sendCGChat;$('cgChatInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendCGChat()}});$('cgOpenSpatial').onclick=openSpatialForGame;
+
+function mainCardMarketSpread(g,side,league,p=null){
+ const mm=league==='NFL'?Number(g.market?.margin):(Number.isFinite(Number(p?.market_margin))?Number(p.market_margin):Number(g.market?.home_margin));
+ if(!Number.isFinite(mm))return '';
+ const s=side==='home'?-mm:mm;
+ return (s>0?'+':'')+s.toFixed(1);
+}
+function mainCardShareText(g,side,league,p=null){
+ const t=g[side],line=mainCardMarketSpread(g,side,league,p);
+ const modelMargin=p?Number(p.margin):NaN;
+ const marketMargin=league==='NFL'?Number(g.market?.margin):(Number.isFinite(Number(p?.market_margin))?Number(p.market_margin):Number(g.market?.home_margin));
+ let edge='',stars='';
+ if(Number.isFinite(modelMargin)&&Number.isFinite(marketMargin)&&window.GridlockPicks){
+   const signed=modelMargin-marketMargin,chosen=(side==='home'?signed:-signed);
+   edge=(chosen>=0?'+':'')+chosen.toFixed(1)+' model pts vs spread';
+   const tier=window.GridlockPicks.tier(league,Math.abs(signed));
+   if(tier)stars=window.GridlockPicks.stars(tier)+' '+tier+'-STAR';
+ }
+ const ap=Number(p?.away_score ?? p?.away?.points),hp=Number(p?.home_score ?? p?.home?.points);
+ const proj=Number.isFinite(ap)&&Number.isFinite(hp)?`GRIDLOCK projection: ${g.away.abbr||g.away.name} ${ap.toFixed(1)} – ${g.home.abbr||g.home.name} ${hp.toFixed(1)}`:'';
+ return [`GRIDLOCK PLAY: ${t.name}${line?' '+line:''}`,stars,edge,proj,`${g.away.name} at ${g.home.name}`].filter(Boolean).join('\n');
+}
+function mainCardShareURL(g,league,side){
+ try{
+   const u=new URL(location.href);
+   u.searchParams.set('league',league==='NCAA'?'college':'nfl');
+   u.searchParams.set('game',g.id);
+   u.searchParams.set('pick',side);
+   return u.toString()
+ }catch(e){return location.href}
+}
+async function sendMainCardShare(kind,g,side,league,p){
+ const text=mainCardShareText(g,side,league,p),url=mainCardShareURL(g,league,side),title=`${g.away.name} at ${g.home.name}`;
+ if(kind==='msg'){
+   if(navigator.share){try{await navigator.share({title,text,url});return}catch(e){if(e?.name==='AbortError')return}}
+   location.href='sms:?&body='+encodeURIComponent(text+'\n'+url);return;
+ }
+ if(kind==='x'){
+   window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(url),'_blank','noopener,noreferrer');return;
+ }
+ if(kind==='fb'){
+   try{await navigator.clipboard.writeText(text)}catch(e){}
+   window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url),'_blank','noopener,noreferrer');return;
+ }
+}
+function selectMainCardSide(card,side,g,league,p){
+ card.dataset.shareSelected=side;
+ card.classList.add('share-ready');
+ card.querySelectorAll('[data-share-side]').forEach(r=>r.classList.toggle('share-selected',r.dataset.shareSide===side));
+ const label=card.querySelector('.main-card-share-pick'),t=g[side],line=mainCardMarketSpread(g,side,league,p);
+ if(label)label.textContent='SELECTED: '+(t.abbr||t.name)+(line?' '+line:'');
+}
+function handleMainCardShareClick(e,card,g,league,p){
+ const sideEl=e.target.closest('[data-share-side]');
+ if(sideEl){
+   e.preventDefault();e.stopPropagation();
+   selectMainCardSide(card,sideEl.dataset.shareSide,g,league,p);
+   return true;
+ }
+ const send=e.target.closest('[data-main-share]');
+ if(send){
+   e.preventDefault();e.stopPropagation();
+   const side=card.dataset.shareSelected;
+   if(side)sendMainCardShare(send.dataset.mainShare,g,side,league,p);
+   return true;
+ }
+ return false;
+}
+window.handleMainCardShareClick=handleMainCardShareClick;
+
+$('collegeDays').addEventListener('click',e=>{
+ let c=e.target.closest('.college-game');if(!c)return;
+ let g=games.find(x=>x.id===c.dataset.game);if(!g)return;
+ let p=null;try{p=projFor(g)}catch(_){}
+ if(handleMainCardShareClick(e,c,g,'NCAA',p))return;
+ openCollegeGame(g)
+});$('cgBack').onclick=closeCollegeGame;$('cgTabs').addEventListener('click',e=>{let b=e.target.closest('.cg-tab');if(b)setCGTab(b.dataset.cg)});$('cgRunSim').onclick=runCGSim;$('cgPostPlay').onclick=openCollegePlayPicker;$('cgPredictions').addEventListener('click',e=>{const card=e.target.closest('[data-share-index]');if(!card)return;const opt=(window.GRIDLOCK_COLLEGE_SHARE_OPTIONS||[])[+card.dataset.shareIndex];if(opt)openQuickShare(opt)});document.getElementById('pickerTabs')?.addEventListener('click',e=>{const b=e.target.closest('[data-picker-cat]');if(b)renderCollegePlayPicker(b.dataset.pickerCat)});document.getElementById('pickerGrid')?.addEventListener('click',e=>{const b=e.target.closest('[data-picker-index]');if(!b)return;const opt=(window.GRIDLOCK_PICKER_VISIBLE_OPTIONS||[])[+b.dataset.pickerIndex];if(opt)openQuickShare(opt)});document.getElementById('pickerBack')?.addEventListener('click',openCollegePlayPicker);$('cgChatSend').onclick=sendCGChat;$('cgChatInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendCGChat()}});$('cgOpenSpatial').onclick=openSpatialForGame;
 
 const ws=$('collegeWeek');weeks.forEach((w,i)=>{let o=document.createElement('option');o.value=i;o.textContent=`${w.label} • ${w.from.slice(5).replace('-','/')}–${w.to.slice(5).replace('-','/')}`;ws.appendChild(o)});ws.value=currentWeekIndex();
 ws.addEventListener('change',loadWeek);$('collegePrevWeek').onclick=()=>{ws.value=Math.max(0,+ws.value-1);loadWeek()};$('collegeNextWeek').onclick=()=>{ws.value=Math.min(weeks.length-1,+ws.value+1);loadWeek()};$('collegeConf').onchange=render;$('collegeSearch').oninput=render;$('collegeProjectionFile').onchange=e=>{let f=e.target.files?.[0];if(f)importProj(f);e.target.value=''};$('collegeClearProj').onclick=()=>{if(confirm('Clear manually imported college projection overrides?')){projections={};localStorage.removeItem('gridlock_college_projections_2026');render()}};
@@ -4057,14 +4134,7 @@ function syncPerformance(){
   if($('archiveAllCount'))$('archiveAllCount').textContent=snaps.length;
 }
 async function refresh(){
-  try{
-    // Keep sportsbook list current; once a game is live we need current live lines, not a cached pregame board.
-    const oddsAge=Date.now()-(window.GRIDLOCK_ODDS_LAST_FETCH||0);
-    if(typeof loadSportsbookOdds==='function' && (!window.GRIDLOCK_ODDS_LOADED || oddsAge>90000)){
-      await loadSportsbookOdds(false);
-    }
-  }catch(e){}
-  try{await refreshWeeklyLiveModels()}catch(e){}
+try{await refreshWeeklyLiveModels()}catch(e){}
   const valueRows=bestValueRows(),dogRows=dogWatchRows();
   renderRows('topValueList',valueRows,'value');
   renderRows('upsetWatchList',dogRows,'upset');
