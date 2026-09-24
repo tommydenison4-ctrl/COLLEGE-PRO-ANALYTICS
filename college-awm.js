@@ -22,6 +22,6 @@ window.GRIDLOCK_COLLEGE_PROJ_FOR=g=>{const p=COLLEGE_AWM.project(g);return p.ava
 
 // Load the season panels after the existing page has initialized.
 (function(){
- async function panels(){if(window.AWM_BUNDLED)return;for(const file of ['season-watch-data.js', 'season-watch.js', 'player-stats-nfl-data.js', 'player-stats-ncaa-data.js', 'football-tabs.js']){try{await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=file+'?v=20260924tabs';script.onload=resolve;script.onerror=reject;document.head.append(script)})}catch(error){console.warn('Season panel unavailable:',file);break}}}
+ async function panels(){if(window.AWM_BUNDLED)return;for(const file of ['season-watch-data.js', 'season-watch.js', 'player-stats-nfl-data.js', 'player-stats-ncaa-data.js', 'football-tabs.js', 'weekly-edges.js']){try{await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=file+'?v=20260924edges2';script.onload=resolve;script.onerror=reject;document.head.append(script)})}catch(error){console.warn('Season panel unavailable:',file);break}}}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',panels,{once:true});else panels();
 })();

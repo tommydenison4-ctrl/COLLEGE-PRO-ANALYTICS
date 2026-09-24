@@ -45,3 +45,7 @@ Early Super Bowl, NCAA FBS and Vanier Cup picks rank covered teams by average ne
 
 ## Dedicated football tabs and current data (September 24)
 Award and championship watches now have named top navigation tabs and no longer sit on schedules. Players use sourced 2026 box-score totals; U SPORTS Top 10 scrapes the official poll, and team/conference pages use current official records. NFL/NCAA News reads ESPN football articles. Automatic data jobs run every two hours; standings/news poll each minute. Missing sources retain last verified data and are labeled. Highlights preserve local uploads; an automatic verified game-highlight feed is not available.
+
+
+September 24 navigation fit update: wrapping desktop tabs and a collapsible phone menu replace horizontal scrolling.
+NCAA/NFL weekly cards highlight the largest absolute model-versus-spread edge and the largest positive underdog spread edge. Uses the full selected week, only upcoming pregame games with real model margins and market lines; filters do not change winners. Both labels may apply to one game. Win chance and spread source remain visible.
