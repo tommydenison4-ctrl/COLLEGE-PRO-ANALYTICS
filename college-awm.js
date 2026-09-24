@@ -1,3 +1,10 @@
+// Remove the decorative NCAA entrance animation before it can appear.
+(function(){
+ const style=document.createElement('style');style.textContent='#griddyIntro{display:none!important}#griddyIntro *{animation:none!important}';document.head.append(style);
+ const remove=()=>document.getElementById('griddyIntro')?.remove();
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',remove,{once:true});else remove();
+})();
+
 window.COLLEGE_AWM=(()=>{
  const A=window.AdvantageModel,data=window.AWM_DATA.NCAA;
  function project(g){
