@@ -1,10 +1,3 @@
-// Remove the decorative NCAA entrance animation before it can appear.
-(function(){
- const style=document.createElement('style');style.textContent='#griddyIntro{display:none!important}#griddyIntro *{animation:none!important}';document.head.append(style);
- const remove=()=>document.getElementById('griddyIntro')?.remove();
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',remove,{once:true});else remove();
-})();
-
 window.COLLEGE_AWM=(()=>{
  const A=window.AdvantageModel,data=window.AWM_DATA.NCAA;
  function project(g){
@@ -26,9 +19,3 @@ window.COLLEGE_AWM=(()=>{
 })();
 
 window.GRIDLOCK_COLLEGE_PROJ_FOR=g=>{const p=COLLEGE_AWM.project(g);return p.available?p:null;};
-
-// Load the season panels after the existing page has initialized.
-(function(){
- async function panels(){if(window.AWM_BUNDLED)return;for(const file of ['season-watch-data.js', 'season-watch.js', 'player-stats-nfl-data.js', 'player-stats-ncaa-data.js', 'football-tabs.js', 'weekly-edges.js']){try{await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=file+'?v=20260924edges2';script.onload=resolve;script.onerror=reject;document.head.append(script)})}catch(error){console.warn('Season panel unavailable:',file);break}}}
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',panels,{once:true});else panels();
-})();
