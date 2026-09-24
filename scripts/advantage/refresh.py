@@ -25,3 +25,7 @@ for league in leagues:
  target.write_text(json.dumps(old,allow_nan=False))
 subprocess.run(['node',str(Path(__file__).with_name('snapshots.cjs')),'build'],check=True)
 print('Updated profiles and saved forecasts. Model coefficients and historical validation are unchanged.')
+
+import season_watch
+season_watch.build()
+subprocess.run(['node',str(Path(__file__).with_name('check-season.cjs'))],check=True)

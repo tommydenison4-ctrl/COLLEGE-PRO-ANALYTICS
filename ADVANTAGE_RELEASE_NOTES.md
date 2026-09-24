@@ -37,3 +37,8 @@ To refresh locally: install scripts/advantage/requirements.txt with Python 3.12+
 ## Verification
 
 All 73 inline scripts and new browser scripts compile. Checks cover the 60/35/5 blend, strict missing-data handling, league/date matching, market exclusion, chronological train/test cutoffs, original workbook matching and real ESPN feed replay. Browser checks verified U SPORTS schedule/pregame views, NFL schedule/GameCentre and NCAA schedule/GameCentre. The inherited kickoff-time/live-state bug was corrected, and the retired synthetic NFL surface is hidden and its initial renderer disabled. No actual in-progress live game was available for an end-to-end broadcast test.
+
+## Plain-language paths, awards and championships
+Game previews explain big plays and turnovers, with separate routes for each team. Original workbook thresholds remain unchanged. Where the scenario model is missing, qualitative game plans are explicitly separated from numerical win chances.
+2026 offensive production watches cover NFL MVP, Heisman and Hec Crighton (on their respective sites). Rankings use a disclosed yardage/touchdown/interception index per recorded appearance, require two appearances, link sources, and are not award-voting probabilities. Defensive and special-teams candidates are not scored.
+Early Super Bowl, NCAA FBS and Vanier Cup picks rank covered teams by average neutral-field head-to-head strength, symmetrized across home/away assignment. This is not a playoff simulation or title probability. U SPORTS uses 2026-only profiles with explicit missing-team coverage. Daily refresh updates the watch data and team profiles.
