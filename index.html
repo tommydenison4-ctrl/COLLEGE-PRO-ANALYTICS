@@ -1738,7 +1738,7 @@ body.college-mode #scoreStrip .college-score-chip{
 .pick-share-row b{text-align:right}
 .pick-share-text{margin-top:13px;background:#071827;border:1px solid #1b4058;border-radius:10px;padding:11px;font-size:10px;line-height:1.5;white-space:pre-wrap;color:#dff3ff}
 .pick-share-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 18px 18px}
-.pick-share-action{border:1px solid #2b536e;background:#0b2638;color:#ecf7ff;border-radius:10px;padding:11px 9px;font-size:8px;font-weight:1000}
+.pick-share-action{border:1px solid #2b536e;background:#0b2638;color:#ecf7ff;border-radius:10px;padding:11px 9px;font-size:8px;font-weight:1000;text-decoration:none;text-align:center;display:block}
 .pick-share-action.x{background:#05080b}
 .pick-share-action.fb{background:#153a6b}
 .pick-share-action.copy{background:#0d3151}
@@ -3741,6 +3741,15 @@ function openPickShareModal(g,side,league,p){
  const ap=Number(p?.away_score ?? p?.away?.points),hp=Number(p?.home_score ?? p?.home?.points);
  const proj=Number.isFinite(ap)&&Number.isFinite(hp)?`${g.away.abbr||g.away.name} ${ap.toFixed(1)} – ${g.home.abbr||g.home.name} ${hp.toFixed(1)}`:'—';
  GRIDLOCK_SHARE_STATE={g,side,league,p,text,url,full:text+'\n'+url};
+ const fullShare=text+'\n'+url;
+ const ua=navigator.userAgent||'',ios=/iPhone|iPad|iPod/i.test(ua);
+ const msg=document.getElementById('pickShareMsg');
+ const x=document.getElementById('pickShareX');
+ const fb=document.getElementById('pickShareFB');
+ if(msg)msg.href=ios?'sms:&body='+encodeURIComponent(fullShare):'sms:?body='+encodeURIComponent(fullShare);
+ if(x)x.href='https://twitter.com/intent/tweet?text='+encodeURIComponent(text+'\n'+url);
+ if(fb)fb.href='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url);
+
  const modal=document.getElementById('pickShareModal');
  document.getElementById('pickShareTitle').textContent=`${t.name}${line?' '+line:''}`;
  document.getElementById('pickShareStars').textContent=starText;
@@ -3766,83 +3775,6 @@ async function copyGridlockPick(){
  }
 }
 let GRIDLOCK_SHARE_BUSY=false;
-async function sendMainCardShare(kind){
- if(!GRIDLOCK_SHARE_STATE||GRIDLOCK_SHARE_BUSY)return;
- const {g,text,url,full}=GRIDLOCK_SHARE_STATE;
- if(window.GridlockPicks?.hasStarted({date:g?.date,state:g?.state,complete:g?.complete})){
-   closePickShareModal();
-   return;
- }
-
- GRIDLOCK_SHARE_BUSY=true;
-
- // Close the GRIDLOCK overlay immediately so it can never be left sitting
- // over the page while the OS/share destination takes control.
- closePickShareModal();
-
- try{
-   if(kind==='copy'){
-     const ok=await copyGridlockPick();
-     if(ok){
-       const toast=document.createElement('div');
-       toast.textContent='PICK COPIED';
-       toast.style.cssText='position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:200;background:#0d3151;color:#fff;border:1px solid #3e8cba;border-radius:999px;padding:9px 14px;font:900 9px system-ui;letter-spacing:.06em';
-       document.body.appendChild(toast);
-       setTimeout(()=>toast.remove(),1400);
-     }
-     return;
-   }
-
-   if(kind==='x'){
-     // Open synchronously from the user's click so popup blockers do not
-     // strand the app behind the modal.
-     window.open(
-       'https://twitter.com/intent/tweet?text='+encodeURIComponent(text+'\n'+url),
-       '_blank',
-       'noopener,noreferrer'
-     );
-     return;
-   }
-
-   if(kind==='fb'){
-     // Open Facebook first while the click still counts as a user gesture.
-     const fbUrl='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url);
-     window.open(fbUrl,'_blank','noopener,noreferrer');
-     // Copy the exact pick in the background as a fallback for Facebook.
-     copyGridlockPick().catch(()=>{});
-     return;
-   }
-
-   if(kind==='msg'){
-     // Invoke native share synchronously after the modal has closed.
-     if(navigator.share){
-       try{
-         await navigator.share({
-           title:'GRIDLOCK PICK',
-           text:full
-         });
-         return;
-       }catch(e){
-         if(e?.name==='AbortError')return;
-       }
-     }
-
-     // Fallback only if native share is unavailable or fails.
-     const ua=navigator.userAgent||'',ios=/iPhone|iPad|iPod/i.test(ua);
-     const href=ios?'sms:&body='+encodeURIComponent(full):'sms:?body='+encodeURIComponent(full);
-     const a=document.createElement('a');
-     a.href=href;
-     a.style.display='none';
-     document.body.appendChild(a);
-     a.click();
-     a.remove();
-     return;
-   }
- }finally{
-   // Always release the UI lock even if the destination app/browser throws.
-   setTimeout(()=>{GRIDLOCK_SHARE_BUSY=false},250);
- }
-}
 function selectMainCardSide(card,side,g,league,p){
  card.dataset.shareSelected=side;
  card.classList.add('share-ready');
@@ -4658,7 +4590,7 @@ function renderNFLStrip(){
 
 <div class="pick-share-modal" id="pickShareModal" aria-hidden="true">
   <div class="pick-share-panel" role="dialog" aria-modal="true" aria-labelledby="pickShareTitle">
-    <div class="pick-share-head"><b>SHARE GRIDLOCK PICK</b><button type="button" class="pick-share-close" id="pickShareClose">×</button></div>
+    <div class="pick-share-head"><b>SHARE GRIDLOCK PICK <span style="color:#4aa8df;font-size:7px">v71</span></b><button type="button" class="pick-share-close" id="pickShareClose">×</button></div>
     <div class="pick-share-card">
       <div class="pick-share-kicker">GRIDLOCK PICK</div>
       <div class="pick-share-title" id="pickShareTitle">—</div>
@@ -4671,12 +4603,12 @@ function renderNFLStrip(){
       <div class="pick-share-text" id="pickShareText"></div>
     </div>
 <div class="pick-share-actions">
-      <button type="button" class="pick-share-action" data-pick-share="msg">MESSAGE / SHARE</button>
-      <button type="button" class="pick-share-action x" data-pick-share="x">X</button>
-      <button type="button" class="pick-share-action fb" data-pick-share="fb">FB</button>
-      <button type="button" class="pick-share-action copy" data-pick-share="copy">COPY PICK</button>
+      <a class="pick-share-action" id="pickShareMsg" href="#">MESSAGE</a>
+      <a class="pick-share-action x" id="pickShareX" href="#" target="_blank" rel="noopener noreferrer">X</a>
+      <a class="pick-share-action fb" id="pickShareFB" href="#" target="_blank" rel="noopener noreferrer">FB</a>
+      <button type="button" class="pick-share-action copy" id="pickShareCopy">COPY PICK</button>
     </div>
-    <div class="pick-share-note">MESSAGE / SHARE now opens your device’s normal share sheet first, so you can choose Messages and then tap a suggested person/contact just like a normal share. Browsers without native sharing fall back to the standard text-message composer.</div>
+    <div class="pick-share-note">MESSAGE now opens the normal Messages/SMS composer directly with the recipient field blank and the full GRIDLOCK pick already filled in. X and Facebook are plain links too, so there is no browser share-sheet JavaScript left to freeze this page.</div>
   </div>
 </div>
 
@@ -4686,7 +4618,12 @@ function renderNFLStrip(){
  const modal=document.getElementById('pickShareModal');
  document.getElementById('pickShareClose')?.addEventListener('click',closePickShareModal);
  modal?.addEventListener('click',e=>{if(e.target===modal)closePickShareModal()});
- modal?.querySelectorAll('[data-pick-share]').forEach(b=>b.addEventListener('click',()=>sendMainCardShare(b.dataset.pickShare)));
+ ['pickShareMsg','pickShareX','pickShareFB'].forEach(id=>document.getElementById(id)?.addEventListener('click',()=>closePickShareModal()));
+ document.getElementById('pickShareCopy')?.addEventListener('click',async()=>{
+   const ok=await copyGridlockPick();
+   const b=document.getElementById('pickShareCopy');
+   if(b){const old=b.textContent;b.textContent=ok?'COPIED':'COPY FAILED';setTimeout(()=>b.textContent=old,1500)}
+ });
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closePickShareModal()});
 })();
 </script>
