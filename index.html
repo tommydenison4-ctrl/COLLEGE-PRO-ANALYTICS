@@ -3577,6 +3577,7 @@ function mainCardShareText(g,side,league,p=null){
 }
 function mainCardShareURL(g,league,side,p=null){
  try{
+   const u=new URL(location.href);
    const t=g[side];
    const line=mainCardMarketSpread(g,side,league,p);
    const modelMargin=p?Number(p.margin):NaN;
@@ -3588,45 +3589,42 @@ function mainCardShareURL(g,league,side,p=null){
      const tier=window.GridlockPicks.tier(league,Math.abs(signed));
      if(tier)stars=String(tier);
    }
-   const ap=Number(p?.away_score ?? p?.away?.points),hp=Number(p?.home_score ?? p?.home?.points);
-   const q=new URLSearchParams();
-   q.set('league',league==='NCAA'?'college':'nfl');
-   q.set('game',g.id);
-   q.set('pick',side);
-   q.set('team',t.abbr||t.name);
-   q.set('teamName',t.name);
-   q.set('matchup',`${g.away.name} at ${g.home.name}`);
-   if(line)q.set('line',line);
-   if(edge)q.set('edge',edge);
-   if(stars)q.set('stars',stars);
-   if(Number.isFinite(ap))q.set('awayScore',ap.toFixed(1));
-   if(Number.isFinite(hp))q.set('homeScore',hp.toFixed(1));
-   q.set('away',g.away.abbr||g.away.name);
-   q.set('home',g.home.abbr||g.home.name);
-   return location.origin+'/api/share?'+q.toString();
+   u.searchParams.set('league',league==='NCAA'?'college':'nfl');
+   u.searchParams.set('game',g.id);
+   u.searchParams.set('pick',side);
+   u.searchParams.set('team',t.abbr||t.name);
+   if(line)u.searchParams.set('line',line);
+   if(edge)u.searchParams.set('edge',edge);
+   if(stars)u.searchParams.set('stars',stars);
+   return u.toString()
  }catch(e){return location.href}
 }
 async function sendMainCardShare(kind,g,side,league,p){
  const text=mainCardShareText(g,side,league,p),url=mainCardShareURL(g,league,side,p),full=text+'\n'+url;
  if(kind==='msg'){
-   // Always copy the exact pick, then open Messages/SMS with the same body.
-   // The /api/share URL also renders the selected team/line in the link preview.
-   try{await navigator.clipboard.writeText(full)}catch(e){}
+   // Use SMS directly. Native share sheets often drop the text and keep only the URL.
    const ua=navigator.userAgent||'';
-   const ios=/iPhone|iPad|iPod/i.test(ua);
-   const href=ios?'sms:&body='+encodeURIComponent(full):'sms:?body='+encodeURIComponent(full);
-   const a=document.createElement('a');a.href=href;a.style.display='none';document.body.appendChild(a);a.click();a.remove();
+   const sep=/iPhone|iPad|iPod/i.test(ua)?'&':'?';
+   location.href='sms:'+sep+'body='+encodeURIComponent(full);
    return;
  }
  if(kind==='x'){
-   window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text+'\n'+url),'_blank','noopener,noreferrer');
+   window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(url),'_blank','noopener,noreferrer');
    return;
  }
  if(kind==='fb'){
-   // Facebook blocks arbitrary prefilled post copy, so the server-rendered share URL itself
-   // carries the pick in its OG title/description. Also copy the exact pick as a fallback.
+   // Facebook does not reliably allow sites to prefill post text.
+   // Put the pick in the share URL and also pass quote/copy text as a fallback.
    try{await navigator.clipboard.writeText(text)}catch(e){}
-   window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url),'_blank','noopener,noreferrer');
+   const fb='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url)+'&quote='+encodeURIComponent(text);
+   window.open(fb,'_blank','noopener,noreferrer');
+   const card=document.querySelector(`.college-game[data-game="${CSS.escape(String(g.id))}"],.college-game[data-nfl-game="${CSS.escape(String(g.id))}"]`);
+   const label=card?.querySelector('.main-card-share-pick');
+   if(label){
+     const original=label.textContent;
+     label.textContent='PICK COPIED FOR FACEBOOK';
+     setTimeout(()=>{if(label)label.textContent=original},2200);
+   }
    return;
  }
 }
