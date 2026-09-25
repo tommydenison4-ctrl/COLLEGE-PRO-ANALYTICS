@@ -1716,12 +1716,50 @@ body.college-mode #scoreStrip .college-score-chip{
 .pick-slate-badge .pick-tier-pill{margin-left:0;padding:3px 7px;font-size:7px}
 .main-card-share{margin-top:9px;padding-top:9px;border-top:1px solid #143148}
 .main-card-share-hint{font-size:7px;color:#6f8da2;font-weight:900;letter-spacing:.05em;margin-bottom:7px}
-.main-card-share-actions{display:none;gap:6px;align-items:center;flex-wrap:wrap}
+.main-card-share-actions{display:none!important}
 .college-game.share-ready .main-card-share-actions{display:flex}
 .main-card-share-pick{font-size:8px;font-weight:1000;color:#dff3ff;margin-right:auto}
 .main-card-send{border:1px solid #2b536e;background:#0b2638;color:#ecf7ff;border-radius:999px;padding:6px 9px;font-size:7px;font-weight:1000;letter-spacing:.04em}
 .main-card-send.x{background:#05080b;border-color:#425260}
 .main-card-send.fb{background:#153a6b;border-color:#285c9d}
+.pick-share-modal{position:fixed;inset:0;background:rgba(3,10,17,.76);display:none;align-items:center;justify-content:center;padding:18px;z-index:120}
+.pick-share-modal.open{display:flex}
+.pick-share-panel{width:min(560px,96vw);background:linear-gradient(180deg,#081724,#06121d);border:1px solid #214a64;border-radius:16px;box-shadow:0 28px 90px rgba(0,0,0,.55);overflow:hidden}
+.pick-share-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #17364b}
+.pick-share-head b{font-size:10px;letter-spacing:.09em}
+.pick-share-close{border:1px solid #214c68;background:#102c40;color:#eef8ff;width:30px;height:30px;border-radius:50%;font-size:16px;font-weight:900}
+.pick-share-card{padding:18px}
+.pick-share-kicker{font-size:8px;color:#55aaff;font-weight:1000;letter-spacing:.14em}
+.pick-share-title{font-size:24px;font-weight:1000;line-height:1.05;margin-top:7px;color:#fff}
+.pick-share-stars{margin-top:8px;font-size:15px;font-weight:1000;color:#ffd65a}
+.pick-share-meta{margin-top:12px;display:grid;gap:7px}
+.pick-share-row{display:flex;justify-content:space-between;gap:14px;border-top:1px solid #143148;padding-top:7px;font-size:9px}
+.pick-share-row span{color:#7f9aad}
+.pick-share-row b{text-align:right}
+.pick-share-text{margin-top:13px;background:#071827;border:1px solid #1b4058;border-radius:10px;padding:11px;font-size:10px;line-height:1.5;white-space:pre-wrap;color:#dff3ff}
+.pick-share-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 18px 18px}
+.pick-share-action{border:1px solid #2b536e;background:#0b2638;color:#ecf7ff;border-radius:10px;padding:11px 9px;font-size:8px;font-weight:1000}
+.pick-share-action.x{background:#05080b}
+.pick-share-action.fb{background:#153a6b}
+.pick-share-action.copy{background:#0d3151}
+.pick-share-note{padding:0 18px 16px;color:#6f8da2;font-size:8px;line-height:1.45}
+.pick-recips{padding:0 18px 14px}
+.pick-recips-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.pick-recips-head b{font-size:8px;letter-spacing:.08em}
+.pick-recips-head button{border:1px solid #28536f;background:#0d2a3d;color:#eaf6ff;border-radius:999px;padding:6px 9px;font-size:7px;font-weight:1000}
+.pick-recips-list{display:flex;gap:7px;flex-wrap:wrap}
+.pick-recip{border:1px solid #2b536e;background:#0b2131;color:#dff3ff;border-radius:999px;padding:7px 10px;font-size:8px;font-weight:1000}
+.pick-recip.selected{background:#0f4169;border-color:#49b6ff;color:#fff}
+.pick-recip small{display:block;font-size:6px;color:#88a7bb;margin-top:2px}
+.pick-recip-empty{font-size:8px;color:#6f8da2}
+.pick-contact-form{display:none;gap:7px;margin-top:9px;grid-template-columns:1fr 1fr auto}
+.pick-contact-form.open{display:grid}
+.pick-contact-form input{min-width:0;background:#071827;border:1px solid #214a64;color:#fff;border-radius:8px;padding:8px;font-size:8px}
+.pick-contact-form button{border:1px solid #2b6c93;background:#0d3151;color:#fff;border-radius:8px;padding:8px 10px;font-size:7px;font-weight:1000}
+@media(max-width:560px){.pick-contact-form{grid-template-columns:1fr}.pick-recips-list{gap:6px}}
+
+@media(max-width:560px){.pick-share-actions{grid-template-columns:repeat(2,1fr)}.pick-share-title{font-size:21px}}
+
 .college-team-row[data-share-side]{cursor:pointer;border-radius:7px;padding-left:6px;padding-right:6px;transition:.12s}
 .college-team-row[data-share-side]:hover{background:#0d2437}
 .college-team-row[data-share-side].share-selected{background:#0c3151;box-shadow:inset 3px 0 #35a9ff}
@@ -2600,7 +2638,7 @@ function gameCard(g){
       tierHTML=`<div class="pick-slate-badge"><span class="pick-slate-noplay">NO STAR RATING</span><span class="pick-slate-edge">MARKET SPREAD UNAVAILABLE</span></div>`;
     }
   }
-  const shareHTML=`<div class="main-card-share"><div class="main-card-share-hint">TAP A TEAM TO SHARE THAT SIDE</div><div class="main-card-share-actions"><span class="main-card-share-pick">SELECTED: —</span><button type="button" class="main-card-send msg" data-main-share="msg">MSG</button><button type="button" class="main-card-send x" data-main-share="x">X</button><button type="button" class="main-card-send fb" data-main-share="fb">FB</button></div></div>`;
+  const shareHTML=`<div class="main-card-share"><div class="main-card-share-hint">TAP A TEAM TO SHARE PICK</div><div class="main-card-share-actions"><span class="main-card-share-pick">SELECTED: —</span><button type="button" class="main-card-send msg" data-main-share="msg">MSG</button><button type="button" class="main-card-send x" data-main-share="x">X</button><button type="button" class="main-card-send fb" data-main-share="fb">FB</button></div></div>`;
   return `<div class="college-game" data-game="${g.id}" role="button" tabindex="0"><div class="college-game-top"><span class="college-time">${fmtTime(g.date)}${g.neutral?' • <span class="college-neutral">NEUTRAL</span>':''}</span><span class="college-network">${g.network||''}</span></div><div class="college-team-row" data-share-side="away"><div><div class="college-team-name">${g.away.name}</div><div class="college-team-conf">${g.away.conf||g.away.abbr}</div></div><div class="college-proj ${p?'':'blank'}">${p&&p.away_score!==''?'PROJ '+Number(p.away_score).toFixed(1):'PROJ —'}</div><div class="college-score">${g.away.score||''}</div></div><div class="college-team-row" data-share-side="home"><div><div class="college-team-name">${g.home.name}</div><div class="college-team-conf">${g.home.conf||g.home.abbr}</div></div><div class="college-proj ${p?'':'blank'}">${p&&p.home_score!==''?'PROJ '+Number(p.home_score).toFixed(1):'PROJ —'}</div><div class="college-score">${g.home.score||''}</div></div><div class="college-game-bottom"><span class="college-status">${g.market?.details?`MARKET ${g.market.details}${g.market.over_under?` • O/U ${g.market.over_under}`:''}`:(g.status||g.venue||'')}</span><span class="college-winprob">${hp!=null?`${g.home.abbr} ${(hp*100).toFixed(1)}% • ${g.away.abbr} ${(ap*100).toFixed(1)}%`:p?`${p.source||'GRIDLOCK MODEL'}${p.confidence?` • ${p.confidence}`:''}`:'MODEL UNAVAILABLE'}</span></div>${tierHTML}${shareHTML}</div>`
 }
 function render(){for(const g of games){const p=projFor(g);if(p&&window.GridlockPicks)window.GridlockPicks.syncGame({league:'NCAA',gameId:g.id,week:(weeks[+$('collegeWeek').value]?.label||'').replace(/[^0-9]/g,''),date:g.date,away:g.away.name,home:g.home.name,awayAbbr:g.away.abbr,homeAbbr:g.home.abbr,modelHomeMargin:Number(p.margin),marketHomeMargin:Number.isFinite(Number(p.market_margin))?Number(p.market_margin):g.market?.home_margin,marketDetails:g.market?.details||'',complete:g.complete,awayFinal:g.away.score,homeFinal:g.home.score});}let f=$('collegeConf').value,q=norm($('collegeSearch').value);let arr=games.filter(g=>confMatch(g,f)&&(!q||norm(g.name+' '+g.home.name+' '+g.away.name).includes(q)));let by={};for(const g of arr){let bits=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(g.date)).map(p=>[p.type,p.value]));let d=bits.year+'-'+bits.month+'-'+bits.day;(by[d]??=[]).push(g)}$('collegeDays').innerHTML=Object.entries(by).map(([d,gs])=>`<div class="college-day"><div class="college-day-head"><b>${fmtDate(d+'T12:00:00Z')}</b><span>${gs.length} GAME${gs.length===1?'':'S'}</span></div><div class="college-games">${gs.map(gameCard).join('')}</div></div>`).join('');$('collegeEmpty').style.display=arr.length?'none':'block';$('collegeGameCount').textContent=arr.length;$('collegeProjectedCount').textContent=arr.filter(projFor).length;$('collegeFbsCount').textContent=new Set(arr.flatMap(g=>[g.home.name,g.away.name])).size;}
@@ -3577,7 +3615,6 @@ function mainCardShareText(g,side,league,p=null){
 }
 function mainCardShareURL(g,league,side,p=null){
  try{
-   const u=new URL(location.href);
    const t=g[side];
    const line=mainCardMarketSpread(g,side,league,p);
    const modelMargin=p?Number(p.margin):NaN;
@@ -3589,42 +3626,94 @@ function mainCardShareURL(g,league,side,p=null){
      const tier=window.GridlockPicks.tier(league,Math.abs(signed));
      if(tier)stars=String(tier);
    }
-   u.searchParams.set('league',league==='NCAA'?'college':'nfl');
-   u.searchParams.set('game',g.id);
-   u.searchParams.set('pick',side);
-   u.searchParams.set('team',t.abbr||t.name);
-   if(line)u.searchParams.set('line',line);
-   if(edge)u.searchParams.set('edge',edge);
-   if(stars)u.searchParams.set('stars',stars);
-   return u.toString()
+   const ap=Number(p?.away_score ?? p?.away?.points),hp=Number(p?.home_score ?? p?.home?.points);
+   const q=new URLSearchParams();
+   q.set('league',league==='NCAA'?'college':'nfl');
+   q.set('game',g.id);
+   q.set('pick',side);
+   q.set('team',t.abbr||t.name);
+   q.set('teamName',t.name);
+   q.set('matchup',`${g.away.name} at ${g.home.name}`);
+   if(line)q.set('line',line);
+   if(edge)q.set('edge',edge);
+   if(stars)q.set('stars',stars);
+   if(Number.isFinite(ap))q.set('awayScore',ap.toFixed(1));
+   if(Number.isFinite(hp))q.set('homeScore',hp.toFixed(1));
+   q.set('away',g.away.abbr||g.away.name);
+   q.set('home',g.home.abbr||g.home.name);
+   return location.origin+'/api/share?'+q.toString();
  }catch(e){return location.href}
 }
-async function sendMainCardShare(kind,g,side,league,p){
- const text=mainCardShareText(g,side,league,p),url=mainCardShareURL(g,league,side,p),full=text+'\n'+url;
+let GRIDLOCK_SHARE_STATE=null;
+function openPickShareModal(g,side,league,p){
+ const t=g[side],line=mainCardMarketSpread(g,side,league,p),text=mainCardShareText(g,side,league,p),url=mainCardShareURL(g,league,side,p);
+ const modelMargin=p?Number(p.margin):NaN;
+ const marketMargin=league==='NFL'?Number(g.market?.margin):(Number.isFinite(Number(p?.market_margin))?Number(p.market_margin):Number(g.market?.home_margin));
+ let edge='—',starText='';
+ if(Number.isFinite(modelMargin)&&Number.isFinite(marketMargin)&&window.GridlockPicks){
+   const signed=modelMargin-marketMargin,chosen=(side==='home'?signed:-signed);
+   edge=(chosen>=0?'+':'')+chosen.toFixed(1)+' pts vs spread';
+   const tier=window.GridlockPicks.tier(league,Math.abs(signed));
+   if(tier)starText=window.GridlockPicks.stars(tier)+' '+tier+'-STAR';
+ }
+ const ap=Number(p?.away_score ?? p?.away?.points),hp=Number(p?.home_score ?? p?.home?.points);
+ const proj=Number.isFinite(ap)&&Number.isFinite(hp)?`${g.away.abbr||g.away.name} ${ap.toFixed(1)} – ${g.home.abbr||g.home.name} ${hp.toFixed(1)}`:'—';
+ GRIDLOCK_SHARE_STATE={g,side,league,p,text,url,full:text+'\n'+url};
+ const modal=document.getElementById('pickShareModal');
+ document.getElementById('pickShareTitle').textContent=`${t.name}${line?' '+line:''}`;
+ document.getElementById('pickShareStars').textContent=starText;
+ document.getElementById('pickShareEdge').textContent=edge;
+ document.getElementById('pickShareProjection').textContent=proj;
+ document.getElementById('pickShareMatchup').textContent=`${g.away.name} at ${g.home.name}`;
+ document.getElementById('pickShareText').textContent=text;
+ modal.classList.add('open');modal.setAttribute('aria-hidden','false');
+}
+function closePickShareModal(){
+ const modal=document.getElementById('pickShareModal');
+ modal?.classList.remove('open');modal?.setAttribute('aria-hidden','true');
+}
+async function copyGridlockPick(){
+ if(!GRIDLOCK_SHARE_STATE)return false;
+ try{await navigator.clipboard.writeText(GRIDLOCK_SHARE_STATE.full);return true}catch(e){
+   try{
+     const ta=document.createElement('textarea');ta.value=GRIDLOCK_SHARE_STATE.full;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();return ok
+   }catch(_){return false}
+ }
+}
+async function sendMainCardShare(kind){
+ if(!GRIDLOCK_SHARE_STATE)return;
+ const {text,url,full}=GRIDLOCK_SHARE_STATE;
+ if(kind==='copy'){
+   const ok=await copyGridlockPick();
+   const b=document.querySelector('[data-pick-share="copy"]');if(b){const old=b.textContent;b.textContent=ok?'COPIED':'COPY FAILED';setTimeout(()=>b.textContent=old,1800)}
+   return;
+ }
  if(kind==='msg'){
-   // Use SMS directly. Native share sheets often drop the text and keep only the URL.
-   const ua=navigator.userAgent||'';
-   const sep=/iPhone|iPad|iPod/i.test(ua)?'&':'?';
-   location.href='sms:'+sep+'body='+encodeURIComponent(full);
+   // Native device share sheet: gives the normal recipient/suggested-contacts flow.
+   if(navigator.share){
+     try{
+       await navigator.share({
+         title:'GRIDLOCK PICK',
+         text:full
+       });
+       return;
+     }catch(e){
+       if(e?.name==='AbortError')return;
+     }
+   }
+   // Fallback only when native sharing is unavailable.
+   const ua=navigator.userAgent||'',ios=/iPhone|iPad|iPod/i.test(ua);
+   const href=ios?'sms:&body='+encodeURIComponent(full):'sms:?body='+encodeURIComponent(full);
+   const a=document.createElement('a');a.href=href;a.style.display='none';document.body.appendChild(a);a.click();a.remove();
    return;
  }
  if(kind==='x'){
-   window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(url),'_blank','noopener,noreferrer');
+   window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text+'\n'+url),'_blank','noopener,noreferrer');
    return;
  }
  if(kind==='fb'){
-   // Facebook does not reliably allow sites to prefill post text.
-   // Put the pick in the share URL and also pass quote/copy text as a fallback.
-   try{await navigator.clipboard.writeText(text)}catch(e){}
-   const fb='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url)+'&quote='+encodeURIComponent(text);
-   window.open(fb,'_blank','noopener,noreferrer');
-   const card=document.querySelector(`.college-game[data-game="${CSS.escape(String(g.id))}"],.college-game[data-nfl-game="${CSS.escape(String(g.id))}"]`);
-   const label=card?.querySelector('.main-card-share-pick');
-   if(label){
-     const original=label.textContent;
-     label.textContent='PICK COPIED FOR FACEBOOK';
-     setTimeout(()=>{if(label)label.textContent=original},2200);
-   }
+   await copyGridlockPick();
+   window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url),'_blank','noopener,noreferrer');
    return;
  }
 }
@@ -3639,14 +3728,16 @@ function handleMainCardShareClick(e,card,g,league,p){
  const sideEl=e.target.closest('[data-share-side]');
  if(sideEl){
    e.preventDefault();e.stopPropagation();
-   selectMainCardSide(card,sideEl.dataset.shareSide,g,league,p);
+   const side=sideEl.dataset.shareSide;
+   selectMainCardSide(card,side,g,league,p);
+   openPickShareModal(g,side,league,p);
    return true;
  }
  const send=e.target.closest('[data-main-share]');
  if(send){
    e.preventDefault();e.stopPropagation();
    const side=card.dataset.shareSelected;
-   if(side)sendMainCardShare(send.dataset.mainShare,g,side,league,p);
+   if(side)openPickShareModal(g,side,league,p);
    return true;
  }
  return false;
@@ -4429,6 +4520,42 @@ function renderNFLStrip(){
    bar.textContent=['SHARED GRIDLOCK PICK',team+(line?' '+line:''),starText,edgeText].filter(Boolean).join(' • ');
    document.body.prepend(bar);
  }catch(e){}
+})();
+</script>
+
+
+<div class="pick-share-modal" id="pickShareModal" aria-hidden="true">
+  <div class="pick-share-panel" role="dialog" aria-modal="true" aria-labelledby="pickShareTitle">
+    <div class="pick-share-head"><b>SHARE GRIDLOCK PICK</b><button type="button" class="pick-share-close" id="pickShareClose">×</button></div>
+    <div class="pick-share-card">
+      <div class="pick-share-kicker">GRIDLOCK PICK</div>
+      <div class="pick-share-title" id="pickShareTitle">—</div>
+      <div class="pick-share-stars" id="pickShareStars"></div>
+      <div class="pick-share-meta">
+        <div class="pick-share-row"><span>MODEL EDGE</span><b id="pickShareEdge">—</b></div>
+        <div class="pick-share-row"><span>PROJECTION</span><b id="pickShareProjection">—</b></div>
+        <div class="pick-share-row"><span>MATCHUP</span><b id="pickShareMatchup">—</b></div>
+      </div>
+      <div class="pick-share-text" id="pickShareText"></div>
+    </div>
+<div class="pick-share-actions">
+      <button type="button" class="pick-share-action" data-pick-share="msg">MESSAGE / SHARE</button>
+      <button type="button" class="pick-share-action x" data-pick-share="x">X</button>
+      <button type="button" class="pick-share-action fb" data-pick-share="fb">FB</button>
+      <button type="button" class="pick-share-action copy" data-pick-share="copy">COPY PICK</button>
+    </div>
+    <div class="pick-share-note">MESSAGE / SHARE now opens your device’s normal share sheet first, so you can choose Messages and then tap a suggested person/contact just like a normal share. Browsers without native sharing fall back to the standard text-message composer.</div>
+  </div>
+</div>
+
+
+<script>
+(function(){
+ const modal=document.getElementById('pickShareModal');
+ document.getElementById('pickShareClose')?.addEventListener('click',closePickShareModal);
+ modal?.addEventListener('click',e=>{if(e.target===modal)closePickShareModal()});
+ modal?.querySelectorAll('[data-pick-share]').forEach(b=>b.addEventListener('click',()=>sendMainCardShare(b.dataset.pickShare)));
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')closePickShareModal()});
 })();
 </script>
 
