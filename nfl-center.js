@@ -41,28 +41,21 @@
  }
  function model(g){const f=AdvantageModel.project(AWM_DATA.NFL,{...g,league:'NFL'});if(!f.available)return null;return {forecast:f,away:{points:f.away_score,plays:f.expected.away.tempo,totalYds:f.expected.away.tempo*f.expected.away.ypp},home:{points:f.home_score,plays:f.expected.home.tempo,totalYds:f.expected.home.tempo*f.expected.home.ypp},ap:f.away_win_prob,hp:f.home_win_prob,edge:{...f.components,margin:f.margin},margin:f.margin,total:f.total};}
  function market(g){return g.market.details?`MARKET ${g.market.details}${g.market.total!==null?' • O/U '+g.market.total:''}`:g.market.total!==null?'MARKET O/U '+g.market.total:'MARKET LINE UNAVAILABLE'}
- function syncPick(g,p){if(!p||!window.GridlockPicks)return null;return window.GridlockPicks.syncGame({league:'NFL',gameId:g.id,week,date:g.date,away:g.away.name,home:g.home.name,awayAbbr:g.away.abbr,homeAbbr:g.home.abbr,modelHomeMargin:p.margin,marketHomeMargin:g.market.margin,marketDetails:g.market.details||'',complete:g.complete,awayFinal:g.away.score,homeFinal:g.home.score});}
+ function syncPick(g,p){if(!p||!window.GridlockPicks)return null;return window.GridlockPicks.syncGame({league:'NFL',gameId:g.id,week,date:g.date,away:g.away.name,home:g.home.name,awayAbbr:g.away.abbr,homeAbbr:g.home.abbr,modelHomeMargin:p.margin,marketHomeMargin:g.market.margin,marketDetails:g.market.details||'',state:g.state,complete:g.complete,awayFinal:g.away.score,homeFinal:g.home.score});}
  function gameCard(g){
   const p=model(g);
+  const started=window.GridlockPicks?window.GridlockPicks.hasStarted({date:g.date,state:g.state,complete:g.complete}):(g.state!=='pre'||Date.now()>=new Date(g.date).getTime());
+  const frozen=window.GridlockPicks?.get('NFL',g.id);
   let tierHTML='';
-  if(p&&window.GridlockPicks){
-    const modelMargin=Number(p.margin),marketMargin=Number(g.market.margin);
-    if(Number.isFinite(modelMargin)&&Number.isFinite(marketMargin)){
-      const signedEdge=modelMargin-marketMargin,edge=Math.abs(signedEdge),stars=window.GridlockPicks.tier('NFL',edge);
-      if(stars){
-        const side=signedEdge>=0?g.home:g.away;
-        const spread=signedEdge>=0?-marketMargin:marketMargin;
-        const line=(spread>0?'+':'')+spread.toFixed(1);
-        tierHTML=`<div class="pick-slate-badge"><div class="pick-slate-main"><span class="pick-side">${esc(side.abbr||side.name)} ${line}</span><span class="pick-tier-pill"><span class="pick-stars">${window.GridlockPicks.stars(stars)}</span> ${stars}-STAR</span></div><span class="pick-slate-edge">${edge.toFixed(1)}-PT MODEL EDGE</span></div>`;
-      }else{
-        tierHTML=`<div class="pick-slate-badge"><span class="pick-slate-noplay">NO PLAY</span><span class="pick-slate-edge">${edge.toFixed(1)}-PT MODEL EDGE • BELOW 1★ THRESHOLD</span></div>`;
-      }
-    }else{
-      tierHTML=`<div class="pick-slate-badge"><span class="pick-slate-noplay">NO STAR RATING</span><span class="pick-slate-edge">MARKET SPREAD UNAVAILABLE</span></div>`;
-    }
+  if(started){
+    tierHTML=frozen?window.GridlockPicks.slateHTML('NFL',g.id):`<div class="pick-slate-badge"><span class="pick-slate-noplay">PREGAME TIER NOT CAPTURED</span><span class="pick-slate-edge">NO POST-KICKOFF RE-TIERING</span></div>`;
+  }else if(frozen){
+    tierHTML=window.GridlockPicks.slateHTML('NFL',g.id).replace(/ • FROZEN/g,'');
   }
-  const shareHTML=`<div class="main-card-share"><div class="main-card-share-hint">TAP A TEAM TO SHARE PICK</div><div class="main-card-share-actions"><span class="main-card-share-pick">SELECTED: —</span><button type="button" class="main-card-send msg" data-main-share="msg">MSG</button><button type="button" class="main-card-send x" data-main-share="x">X</button><button type="button" class="main-card-send fb" data-main-share="fb">FB</button></div></div>`;
-  return `<div class="college-game" data-nfl-game="${esc(g.id)}" role="button" tabindex="0" aria-label="Open ${esc(g.away.name)} at ${esc(g.home.name)}"><div class="college-game-top"><span class="college-time">${esc(time(g.date))} • ${g.complete?'FINAL':g.state==='in'?'LIVE':'PREGAME'}</span><span class="college-network">${esc(g.network)}</span></div>${['away','home'].map(side=>{const t=g[side];return `<div class="college-team-row" data-share-side="${side}"><div class="nfl-card-name"><img src="${esc(t.logo)}" alt=""><div><div class="college-team-name">${esc(t.name)}</div><div class="college-team-conf">${t.conf} • ${esc(t.record||t.abbr)}</div></div></div><div class="college-proj ${p?'':'blank'}">PROJ ${p?fixed(p[side].points):'—'}</div><div class="college-score">${g.state==='pre'?'':t.score??'—'}</div></div>`}).join('')}<div class="college-game-bottom"><span class="college-status">${esc(market(g))}<br>${esc(g.status)}</span><span class="college-winprob">${p?`${g.home.abbr} ${pct(p.hp)} • ${g.away.abbr} ${pct(p.ap)}`:'MODEL UNAVAILABLE'}</span></div>${tierHTML}${shareHTML}</div>`
+  const shareHTML=started
+    ?`<div class="main-card-share"><div class="main-card-share-hint">PICK SHARING CLOSED AT KICKOFF</div></div>`
+    :`<div class="main-card-share"><div class="main-card-share-hint">TAP A TEAM TO SHARE PICK</div><div class="main-card-share-actions"><span class="main-card-share-pick">SELECTED: —</span><button type="button" class="main-card-send msg" data-main-share="msg">MSG</button><button type="button" class="main-card-send x" data-main-share="x">X</button><button type="button" class="main-card-send fb" data-main-share="fb">FB</button></div></div>`;
+  return `<div class="college-game" data-nfl-game="${esc(g.id)}" role="button" tabindex="0" aria-label="Open ${esc(g.away.name)} at ${esc(g.home.name)}"><div class="college-game-top"><span class="college-time">${esc(time(g.date))} • ${g.complete?'FINAL':g.state==='in'?'LIVE':'PREGAME'}</span><span class="college-network">${esc(g.network)}</span></div>${['away','home'].map(side=>{const t=g[side],shareAttr=started?'':` data-share-side="${side}"`;return `<div class="college-team-row"${shareAttr}><div class="nfl-card-name"><img src="${esc(t.logo)}" alt=""><div><div class="college-team-name">${esc(t.name)}</div><div class="college-team-conf">${t.conf} • ${esc(t.record||t.abbr)}</div></div></div><div class="college-proj ${p?'':'blank'}">PROJ ${p?fixed(p[side].points):'—'}</div><div class="college-score">${g.state==='pre'?'':t.score??'—'}</div></div>`}).join('')}<div class="college-game-bottom"><span class="college-status">${esc(market(g))}<br>${esc(g.status)}</span><span class="college-winprob">${p?`${g.home.abbr} ${pct(p.hp)} • ${g.away.abbr} ${pct(p.ap)}`:'MODEL UNAVAILABLE'}</span></div>${tierHTML}${shareHTML}</div>`
 }
  function renderSlate(){for(const g of slate){const p=model(g);if(p)syncPick(g,p)}const q=$('nflSearch').value.trim().toLowerCase(),conf=$('nflConf').value,state=$('nflState').value,arr=slate.filter(g=>(!q||`${g.away.name} ${g.home.name} ${g.away.abbr} ${g.home.abbr}`.toLowerCase().includes(q))&&(!conf||g.away.conf===conf||g.home.conf===conf)&&(!state||g.state===state));const by=new Map();for(const g of arr){const d=date(g.date);if(!by.has(d))by.set(d,[]);by.get(d).push(g)}$('nflDays').innerHTML=[...by].map(([d,gs])=>`<div class="college-day"><div class="college-day-head"><b>${esc(d)}</b><span>${gs.length} GAME${gs.length===1?'':'S'}</span></div><div class="college-games">${gs.map(gameCard).join('')}</div></div>`).join('');$('nflEmpty').hidden=!!arr.length;$('nflGameCount').textContent=arr.length;$('nflProjectedCount').textContent=arr.filter(model).length;$('nflTeamCount').textContent=new Set(arr.flatMap(g=>[g.away.abbr,g.home.abbr])).size;}
  async function fetchJSON(url){const r=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error('Feed returned '+r.status);return r.json()}
@@ -82,7 +75,21 @@
   $('nflCalibration').innerHTML=row('Model source','Advantage Winner Model V3 • NFL')+row('Market spread',g.market.details||'Unavailable')+row('Market total',g.market.total??'Unavailable')+row('Market home margin',g.market.margin??'Unavailable')+row('Market treatment','Comparison only; does not change projection');
   const pred=(title,sub)=>`<div class="cg-pred good"><div class="cg-pred-title">${esc(title)}</div><div class="cg-pred-sub">${esc(sub)}</div></div>`;
   let predictions=pred(`${p.hp>=.5?g.home.name:g.away.name} TO WIN • ${pct(Math.max(p.hp,p.ap))}`,`GRIDLOCK projects ${g.away.abbr} ${fixed(p.away.points)} – ${g.home.abbr} ${fixed(p.home.points)}.`);
-  if(g.market.margin!==null){const edge=p.margin-g.market.margin;predictions+=pred(`SPREAD LEAN: ${edge>=0?g.home.name:g.away.name} • ${fixed(Math.abs(edge))}-PT MODEL EDGE${window.GridlockPicks&&window.GridlockPicks.tier('NFL',Math.abs(edge))?' • '+window.GridlockPicks.stars(window.GridlockPicks.tier('NFL',Math.abs(edge)))+' '+window.GridlockPicks.tier('NFL',Math.abs(edge))+'-STAR':''}`,`Model home margin ${fixed(p.margin)} vs market home margin ${fixed(g.market.margin)}.`)}
+  {
+    const started=window.GridlockPicks?.hasStarted({date:g.date,state:g.state,complete:g.complete});
+    const fr=window.GridlockPicks?.get('NFL',g.id);
+    if(started&&fr){
+      if(fr.isPlay){
+        const line=(fr.marketSpread>0?'+':'')+Number(fr.marketSpread).toFixed(1);
+        predictions+=pred(`FROZEN PREGAME SPREAD: ${fr.pickTeam} ${line} • ${window.GridlockPicks.stars(fr.stars)} ${fr.stars}-STAR`,`Locked at kickoff with ${Number(fr.edge).toFixed(1)}-point pregame model edge. Later market movement is ignored.`)
+      }else{
+        predictions+=pred('FROZEN PREGAME SPREAD: NO PLAY',`Pregame edge was ${Number(fr.edge).toFixed(1)} points. Later market movement is ignored.`)
+      }
+    }else if(!started&&g.market.margin!==null){
+      const edge=p.margin-g.market.margin,t=window.GridlockPicks?.tier('NFL',Math.abs(edge));
+      predictions+=pred(`SPREAD LEAN: ${edge>=0?g.home.name:g.away.name} • ${fixed(Math.abs(edge))}-PT MODEL EDGE${t?' • '+window.GridlockPicks.stars(t)+' '+t+'-STAR':''}`,`Model home margin ${fixed(p.margin)} vs market home margin ${fixed(g.market.margin)}.`)
+    }
+  }
   if(g.market.total!==null){const edge=p.total-g.market.total;predictions+=pred(`TOTAL LEAN: ${edge>=0?'OVER':'UNDER'} ${g.market.total} • ${fixed(Math.abs(edge))}-PT EDGE`,`Model total ${fixed(p.total)}. Market lines are comparison-only.`)}
   $('nflPredictions').innerHTML=predictions+(g.market.margin===null&&g.market.total===null?empty('Market spread and total are unavailable; no market lean is shown.'):'');
   const a=AdvantageModel.team(AWM_DATA.NFL,g.away),h=AdvantageModel.team(AWM_DATA.NFL,g.home);

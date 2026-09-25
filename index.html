@@ -1783,17 +1783,105 @@ body.college-mode #scoreStrip .college-score-chip{
   const stars=n=>n?'★'.repeat(n):'—';
   function key(league,id){return String(league).toUpperCase()+':'+String(id)}
   function get(league,id){return read().find(x=>x.key===key(league,id))||null}
-  function grade(rec,awayFinal,homeFinal){awayFinal=num(awayFinal);homeFinal=num(homeFinal);if(awayFinal===null||homeFinal===null)return rec;const actualMargin=rec.side==='home'?homeFinal-awayFinal:awayFinal-homeFinal;const ats=actualMargin+rec.marketSpread;rec.awayFinal=awayFinal;rec.homeFinal=homeFinal;rec.atsMargin=+ats.toFixed(3);rec.grade=Math.abs(ats)<1e-9?'PUSH':ats>0?'WIN':'LOSS';rec.gradedAt=new Date().toISOString();return rec}
-  function syncGame(o){if(!o||!o.gameId)return null;const league=String(o.league||'').toUpperCase(),k=key(league,o.gameId),all=read();let rec=all.find(x=>x.key===k)||null;const kickoff=new Date(o.date||0).getTime(),now=Date.now();
-    if(!rec && !o.complete && Number.isFinite(kickoff) && now<kickoff){const modelHome=num(o.modelHomeMargin),marketHome=num(o.marketHomeMargin);if(modelHome!==null&&marketHome!==null){const signedEdge=modelHome-marketHome,edge=Math.abs(signedEdge),t=tier(league,edge);if(t){const side=signedEdge>=0?'home':'away',marketSpread=side==='home'?-marketHome:marketHome,modelTeamMargin=side==='home'?modelHome:-modelHome;rec={key:k,league,gameId:String(o.gameId),week:o.week??'',date:o.date,away:o.away||'',home:o.home||'',awayAbbr:o.awayAbbr||'',homeAbbr:o.homeAbbr||'',side,pickTeam:side==='home'?(o.home||o.homeAbbr):(o.away||o.awayAbbr),marketHomeMargin:marketHome,marketSpread,marketDetails:o.marketDetails||'',modelHomeMargin:modelHome,modelTeamMargin,edge:+edge.toFixed(3),stars:t,frozenAt:new Date().toISOString(),grade:'PENDING'};all.push(rec);write(all)}}}
-    if(rec&&o.complete&&rec.grade==='PENDING'){grade(rec,o.awayFinal,o.homeFinal);write(all)}
-    if(rec){render();return rec}return null
+  function hasStarted(o){
+    const kickoff=new Date(o?.date||0).getTime();
+    if(o?.state==='in'||o?.state==='post'||o?.complete)return true;
+    return Number.isFinite(kickoff)&&Date.now()>=kickoff;
   }
-  function detailHTML(league,id){const r=get(league,id);if(!r)return '';const line=(r.marketSpread>0?'+':'')+Number(r.marketSpread).toFixed(1),g=String(r.grade||'PENDING').toLowerCase();return `<div class="pick-box"><div class="pick-box-title">FROZEN PREGAME MODEL PICK</div><div class="pick-box-main">${esc(r.pickTeam)} ${line} <span class="pick-tier-pill"><span class="pick-stars">${stars(r.stars)}</span> ${r.stars}-STAR</span> <span class="pick-grade ${g}">${esc(r.grade||'PENDING')}</span></div><div class="pick-box-sub">Model edge ${Number(r.edge).toFixed(1)} pts • model team margin ${(r.modelTeamMargin>=0?'+':'')+Number(r.modelTeamMargin).toFixed(1)} • frozen ${new Date(r.frozenAt).toLocaleString()}${r.grade!=='PENDING'?` • final ${r.awayFinal}–${r.homeFinal} • ATS margin ${(r.atsMargin>0?'+':'')+Number(r.atsMargin).toFixed(1)}`:''}</div></div>`}
+  function makeSnapshot(o,league,k,existing=null){
+    const modelHome=num(o.modelHomeMargin),marketHome=num(o.marketHomeMargin);
+    if(modelHome===null||marketHome===null)return existing;
+    const signedEdge=modelHome-marketHome,edge=Math.abs(signedEdge),t=tier(league,edge);
+    const side=signedEdge>=0?'home':'away';
+    const marketSpread=side==='home'?-marketHome:marketHome;
+    const modelTeamMargin=side==='home'?modelHome:-modelHome;
+    const now=new Date().toISOString();
+    return {
+      ...(existing||{}),
+      key:k,league,gameId:String(o.gameId),week:o.week??existing?.week??'',date:o.date,
+      away:o.away||existing?.away||'',home:o.home||existing?.home||'',
+      awayAbbr:o.awayAbbr||existing?.awayAbbr||'',homeAbbr:o.homeAbbr||existing?.homeAbbr||'',
+      side,pickTeam:side==='home'?(o.home||o.homeAbbr):(o.away||o.awayAbbr),
+      marketHomeMargin:marketHome,marketSpread,marketDetails:o.marketDetails||'',
+      modelHomeMargin:modelHome,modelTeamMargin,edge:+edge.toFixed(3),stars:t,
+      isPlay:t>0,
+      snapshotStatus:t>0?'PLAY':'NO PLAY',
+      firstCapturedAt:existing?.firstCapturedAt||now,
+      frozenAt:now,
+      kickoffAt:o.date,
+      locked:false,
+      grade:t>0?(existing?.grade&&existing.grade!=='NO PLAY'?existing.grade:'PENDING'):'NO PLAY'
+    };
+  }
+  function grade(rec,awayFinal,homeFinal){
+    if(!rec||!rec.isPlay)return rec;
+    awayFinal=num(awayFinal);homeFinal=num(homeFinal);
+    if(awayFinal===null||homeFinal===null)return rec;
+    const actualMargin=rec.side==='home'?homeFinal-awayFinal:awayFinal-homeFinal;
+    const ats=actualMargin+rec.marketSpread;
+    rec.awayFinal=awayFinal;rec.homeFinal=homeFinal;rec.atsMargin=+ats.toFixed(3);
+    rec.grade=Math.abs(ats)<1e-9?'PUSH':ats>0?'WIN':'LOSS';
+    rec.gradedAt=new Date().toISOString();
+    return rec
+  }
+  function syncGame(o){
+    if(!o||!o.gameId)return null;
+    const league=String(o.league||'').toUpperCase(),k=key(league,o.gameId),all=read();
+    let i=all.findIndex(x=>x.key===k),rec=i>=0?all[i]:null;
+    const started=hasStarted(o);
+
+    // While the game is still pregame, keep replacing the snapshot with the
+    // latest model-vs-market state. This makes the last pre-kickoff state the record.
+    if(!started){
+      const next=makeSnapshot(o,league,k,rec);
+      if(next){
+        rec=next;
+        if(i>=0)all[i]=rec; else {all.push(rec);i=all.length-1}
+        write(all);
+      }
+    } else if(rec && !rec.locked){
+      // Kickoff is the hard cutoff. Nothing market/model-related changes after this.
+      rec.locked=true;
+      rec.lockedAt=rec.kickoffAt||new Date().toISOString();
+      all[i]=rec;write(all);
+    }
+
+    if(rec&&o.complete&&rec.isPlay&&rec.grade==='PENDING'){
+      grade(rec,o.awayFinal,o.homeFinal);all[i]=rec;write(all)
+    }
+    if(rec){render();return rec}
+    return null
+  }
+  function detailHTML(league,id){
+    const r=get(league,id);if(!r)return '';
+    const line=(r.marketSpread>0?'+':'')+Number(r.marketSpread).toFixed(1);
+    if(!r.isPlay){
+      return `<div class="pick-box"><div class="pick-box-title">FROZEN PREGAME MODEL TIER</div><div class="pick-box-main"><span class="pick-slate-noplay">NO PLAY</span></div><div class="pick-box-sub">${esc(r.pickTeam)} ${line} • model edge ${Number(r.edge).toFixed(1)} pts • locked at kickoff • later line movement does not change this result</div></div>`
+    }
+    const g=String(r.grade||'PENDING').toLowerCase();
+    return `<div class="pick-box"><div class="pick-box-title">FROZEN PREGAME MODEL PICK</div><div class="pick-box-main">${esc(r.pickTeam)} ${line} <span class="pick-tier-pill"><span class="pick-stars">${stars(r.stars)}</span> ${r.stars}-STAR</span> <span class="pick-grade ${g}">${esc(r.grade||'PENDING')}</span></div><div class="pick-box-sub">Model edge ${Number(r.edge).toFixed(1)} pts • model team margin ${(r.modelTeamMargin>=0?'+':'')+Number(r.modelTeamMargin).toFixed(1)} • locked at kickoff${r.grade!=='PENDING'?` • final ${r.awayFinal}–${r.homeFinal} • ATS margin ${(r.atsMargin>0?'+':'')+Number(r.atsMargin).toFixed(1)}`:''}</div></div>`
+  }
+  function slateHTML(league,id){
+    const r=get(league,id);if(!r)return '';
+    if(!r.isPlay)return `<div class="pick-slate-badge"><span class="pick-slate-noplay">NO PLAY • FROZEN</span><span class="pick-slate-edge">${Number(r.edge).toFixed(1)}-PT PREGAME EDGE</span></div>`;
+    const line=(r.marketSpread>0?'+':'')+Number(r.marketSpread).toFixed(1);
+    return `<div class="pick-slate-badge"><div class="pick-slate-main"><span class="pick-side">${esc(r.side==='home'?(r.homeAbbr||r.home):(r.awayAbbr||r.away))} ${line}</span><span class="pick-tier-pill"><span class="pick-stars">${stars(r.stars)}</span> ${r.stars}-STAR</span></div><span class="pick-slate-edge">${Number(r.edge).toFixed(1)}-PT PREGAME EDGE • FROZEN</span></div>`
+  }
   let filter='ALL';
-  function render(){const box=document.getElementById('modelPicksList');if(!box)return;const all=read().sort((a,b)=>new Date(b.date)-new Date(a.date)),shown=all.filter(r=>filter==='ALL'||r.league===filter);const graded=shown.filter(r=>r.grade!=='PENDING'),wins=graded.filter(r=>r.grade==='WIN').length,losses=graded.filter(r=>r.grade==='LOSS').length,pushes=graded.filter(r=>r.grade==='PUSH').length;const k=document.getElementById('modelPicksKpis');if(k)k.innerHTML=[['PICKS',shown.length],['GRADED',graded.length],['ATS RECORD',`${wins}-${losses}-${pushes}`],['WIN RATE',(wins+losses)?(100*wins/(wins+losses)).toFixed(1)+'%':'—'],['5-STAR',shown.filter(r=>r.stars===5).length]].map(x=>`<div class="picks-kpi"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('');box.innerHTML=shown.length?`<div class="pick-row head"><span>LEAGUE</span><span>MATCHUP / PICK</span><span>MARKET</span><span>MODEL</span><span>EDGE</span><span>TIER</span><span>RESULT</span></div>`+shown.map(r=>{const line=(r.marketSpread>0?'+':'')+Number(r.marketSpread).toFixed(1),g=String(r.grade||'PENDING').toLowerCase();return `<div class="pick-row"><div class="pick-cell"><b>${esc(r.league)}</b><small>${esc(r.week?`Week ${r.week}`:'')}</small></div><div class="match"><b>${esc(r.away)} at ${esc(r.home)}</b><small>${esc(r.pickTeam)} ${line} • ${new Date(r.date).toLocaleDateString()}</small></div><div class="pick-cell">${line}<small>${esc(r.marketDetails||'pregame spread')}</small></div><div class="pick-cell">${(r.modelTeamMargin>=0?'+':'')+Number(r.modelTeamMargin).toFixed(1)}<small>team margin</small></div><div class="pick-cell">+${Number(r.edge).toFixed(1)}<small>points</small></div><div class="pick-cell"><span class="pick-stars">${stars(r.stars)}</span><small>${r.stars}-star</small></div><div><span class="pick-grade ${g}">${esc(r.grade||'PENDING')}</span>${r.grade!=='PENDING'?`<small style="display:block;margin-top:4px;color:#718ea2">${r.awayFinal}–${r.homeFinal}</small>`:''}</div></div>`}).join(''):`<div class="pick-empty"><b>No frozen picks yet</b>Pregame spread picks appear here once the model has at least a 1-point edge and a market line.</div>`}
+  function render(){
+    const box=document.getElementById('modelPicksList');if(!box)return;
+    const all=read().sort((a,b)=>new Date(b.date)-new Date(a.date)),shown=all.filter(r=>filter==='ALL'||r.league===filter);
+    const plays=shown.filter(r=>r.isPlay!==false&&Number(r.stars)>0);
+    const graded=plays.filter(r=>r.grade!=='PENDING'),wins=graded.filter(r=>r.grade==='WIN').length,losses=graded.filter(r=>r.grade==='LOSS').length,pushes=graded.filter(r=>r.grade==='PUSH').length;
+    const k=document.getElementById('modelPicksKpis');
+    if(k)k.innerHTML=[['PLAYS',plays.length],['NO PLAYS',shown.filter(r=>!r.isPlay).length],['ATS RECORD',`${wins}-${losses}-${pushes}`],['WIN RATE',(wins+losses)?(100*wins/(wins+losses)).toFixed(1)+'%':'—'],['5-STAR',plays.filter(r=>r.stars===5).length]].map(x=>`<div class="picks-kpi"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('');
+    box.innerHTML=shown.length?`<div class="pick-row head"><span>LEAGUE</span><span>MATCHUP / PICK</span><span>MARKET</span><span>MODEL</span><span>EDGE</span><span>TIER</span><span>RESULT</span></div>`+shown.map(r=>{
+      const line=(r.marketSpread>0?'+':'')+Number(r.marketSpread).toFixed(1),g=String(r.grade||'PENDING').toLowerCase();
+      return `<div class="pick-row"><div class="pick-cell"><b>${esc(r.league)}</b><small>${esc(r.week?`Week ${r.week}`:'')}</small></div><div class="match"><b>${esc(r.away)} at ${esc(r.home)}</b><small>${esc(r.pickTeam)} ${line} • ${new Date(r.date).toLocaleDateString()}</small></div><div class="pick-cell">${line}<small>${esc(r.marketDetails||'pregame spread')}</small></div><div class="pick-cell">${(r.modelTeamMargin>=0?'+':'')+Number(r.modelTeamMargin).toFixed(1)}<small>team margin</small></div><div class="pick-cell">+${Number(r.edge).toFixed(1)}<small>points</small></div><div class="pick-cell">${r.isPlay?`<span class="pick-stars">${stars(r.stars)}</span><small>${r.stars}-star</small>`:`<span class="pick-slate-noplay">NO PLAY</span><small>frozen</small>`}</div><div>${r.isPlay?`<span class="pick-grade ${g}">${esc(r.grade||'PENDING')}</span>`:`<span class="pick-grade">NO PLAY</span>`}${r.isPlay&&r.grade!=='PENDING'?`<small style="display:block;margin-top:4px;color:#718ea2">${r.awayFinal}–${r.homeFinal}</small>`:''}</div></div>`
+    }).join(''):`<div class="pick-empty"><b>No frozen snapshots yet</b>Pregame model tiers appear here before kickoff and lock permanently when the game starts.</div>`
+  }
   function setFilter(v){filter=v;document.querySelectorAll('[data-picks-filter]').forEach(b=>b.classList.toggle('active',b.dataset.picksFilter===v));render()}
-  window.GridlockPicks={tier,stars,get,syncGame,detailHTML,render,setFilter,all:read};
+  window.GridlockPicks={tier,stars,get,syncGame,detailHTML,slateHTML,hasStarted,render,setFilter,all:read};
 })();
 </script>
 
@@ -2620,28 +2708,21 @@ function gameCard(g){
   let hp=p?(p.home_win_prob!=null?+p.home_win_prob:(p.away_win_prob!=null?1-(+p.away_win_prob):null)):null;
   if(hp!=null&&hp>1)hp/=100;
   let ap=hp==null?null:1-hp;
+  const started=window.GridlockPicks?window.GridlockPicks.hasStarted({date:g.date,state:g.state,complete:g.complete}):(g.state!=='pre'||Date.now()>=new Date(g.date).getTime());
+  const frozen=window.GridlockPicks?.get('NCAA',g.id);
   let tierHTML='';
-  if(p&&window.GridlockPicks){
-    const modelMargin=Number(p.margin);
-    const marketMargin=Number.isFinite(Number(p.market_margin))?Number(p.market_margin):Number(g.market?.home_margin);
-    if(Number.isFinite(modelMargin)&&Number.isFinite(marketMargin)){
-      const signedEdge=modelMargin-marketMargin,edge=Math.abs(signedEdge),stars=window.GridlockPicks.tier('NCAA',edge);
-      if(stars){
-        const side=signedEdge>=0?g.home:g.away;
-        const spread=signedEdge>=0?-marketMargin:marketMargin;
-        const line=(spread>0?'+':'')+spread.toFixed(1);
-        tierHTML=`<div class="pick-slate-badge"><div class="pick-slate-main"><span class="pick-side">${side.abbr||side.name} ${line}</span><span class="pick-tier-pill"><span class="pick-stars">${window.GridlockPicks.stars(stars)}</span> ${stars}-STAR</span></div><span class="pick-slate-edge">${edge.toFixed(1)}-PT MODEL EDGE</span></div>`;
-      }else{
-        tierHTML=`<div class="pick-slate-badge"><span class="pick-slate-noplay">NO PLAY</span><span class="pick-slate-edge">${edge.toFixed(1)}-PT MODEL EDGE • BELOW 1★ THRESHOLD</span></div>`;
-      }
-    }else{
-      tierHTML=`<div class="pick-slate-badge"><span class="pick-slate-noplay">NO STAR RATING</span><span class="pick-slate-edge">MARKET SPREAD UNAVAILABLE</span></div>`;
-    }
+  if(started){
+    tierHTML=frozen?window.GridlockPicks.slateHTML('NCAA',g.id):`<div class="pick-slate-badge"><span class="pick-slate-noplay">PREGAME TIER NOT CAPTURED</span><span class="pick-slate-edge">NO POST-KICKOFF RE-TIERING</span></div>`;
+  }else if(frozen){
+    tierHTML=window.GridlockPicks.slateHTML('NCAA',g.id).replace(/ • FROZEN/g,'');
   }
-  const shareHTML=`<div class="main-card-share"><div class="main-card-share-hint">TAP A TEAM TO SHARE PICK</div><div class="main-card-share-actions"><span class="main-card-share-pick">SELECTED: —</span><button type="button" class="main-card-send msg" data-main-share="msg">MSG</button><button type="button" class="main-card-send x" data-main-share="x">X</button><button type="button" class="main-card-send fb" data-main-share="fb">FB</button></div></div>`;
-  return `<div class="college-game" data-game="${g.id}" role="button" tabindex="0"><div class="college-game-top"><span class="college-time">${fmtTime(g.date)}${g.neutral?' • <span class="college-neutral">NEUTRAL</span>':''}</span><span class="college-network">${g.network||''}</span></div><div class="college-team-row" data-share-side="away"><div><div class="college-team-name">${g.away.name}</div><div class="college-team-conf">${g.away.conf||g.away.abbr}</div></div><div class="college-proj ${p?'':'blank'}">${p&&p.away_score!==''?'PROJ '+Number(p.away_score).toFixed(1):'PROJ —'}</div><div class="college-score">${g.away.score||''}</div></div><div class="college-team-row" data-share-side="home"><div><div class="college-team-name">${g.home.name}</div><div class="college-team-conf">${g.home.conf||g.home.abbr}</div></div><div class="college-proj ${p?'':'blank'}">${p&&p.home_score!==''?'PROJ '+Number(p.home_score).toFixed(1):'PROJ —'}</div><div class="college-score">${g.home.score||''}</div></div><div class="college-game-bottom"><span class="college-status">${g.market?.details?`MARKET ${g.market.details}${g.market.over_under?` • O/U ${g.market.over_under}`:''}`:(g.status||g.venue||'')}</span><span class="college-winprob">${hp!=null?`${g.home.abbr} ${(hp*100).toFixed(1)}% • ${g.away.abbr} ${(ap*100).toFixed(1)}%`:p?`${p.source||'GRIDLOCK MODEL'}${p.confidence?` • ${p.confidence}`:''}`:'MODEL UNAVAILABLE'}</span></div>${tierHTML}${shareHTML}</div>`
+  const shareHTML=started
+    ?`<div class="main-card-share"><div class="main-card-share-hint">PICK SHARING CLOSED AT KICKOFF</div></div>`
+    :`<div class="main-card-share"><div class="main-card-share-hint">TAP A TEAM TO SHARE PICK</div><div class="main-card-share-actions"><span class="main-card-share-pick">SELECTED: —</span><button type="button" class="main-card-send msg" data-main-share="msg">MSG</button><button type="button" class="main-card-send x" data-main-share="x">X</button><button type="button" class="main-card-send fb" data-main-share="fb">FB</button></div></div>`;
+  const sideAttr=side=>started?'':` data-share-side="${side}"`;
+  return `<div class="college-game" data-game="${g.id}" role="button" tabindex="0"><div class="college-game-top"><span class="college-time">${fmtTime(g.date)}${g.neutral?' • <span class="college-neutral">NEUTRAL</span>':''}</span><span class="college-network">${g.network||''}</span></div><div class="college-team-row"${sideAttr('away')}><div><div class="college-team-name">${g.away.name}</div><div class="college-team-conf">${g.away.conf||g.away.abbr}</div></div><div class="college-proj ${p?'':'blank'}">${p&&p.away_score!==''?'PROJ '+Number(p.away_score).toFixed(1):'PROJ —'}</div><div class="college-score">${g.away.score||''}</div></div><div class="college-team-row"${sideAttr('home')}><div><div class="college-team-name">${g.home.name}</div><div class="college-team-conf">${g.home.conf||g.home.abbr}</div></div><div class="college-proj ${p?'':'blank'}">${p&&p.home_score!==''?'PROJ '+Number(p.home_score).toFixed(1):'PROJ —'}</div><div class="college-score">${g.home.score||''}</div></div><div class="college-game-bottom"><span class="college-status">${g.market?.details?`MARKET ${g.market.details}${g.market.over_under?` • O/U ${g.market.over_under}`:''}`:(g.status||g.venue||'')}</span><span class="college-winprob">${hp!=null?`${g.home.abbr} ${(hp*100).toFixed(1)}% • ${g.away.abbr} ${(ap*100).toFixed(1)}%`:p?`${p.source||'GRIDLOCK MODEL'}${p.confidence?` • ${p.confidence}`:''}`:'MODEL UNAVAILABLE'}</span></div>${tierHTML}${shareHTML}</div>`
 }
-function render(){for(const g of games){const p=projFor(g);if(p&&window.GridlockPicks)window.GridlockPicks.syncGame({league:'NCAA',gameId:g.id,week:(weeks[+$('collegeWeek').value]?.label||'').replace(/[^0-9]/g,''),date:g.date,away:g.away.name,home:g.home.name,awayAbbr:g.away.abbr,homeAbbr:g.home.abbr,modelHomeMargin:Number(p.margin),marketHomeMargin:Number.isFinite(Number(p.market_margin))?Number(p.market_margin):g.market?.home_margin,marketDetails:g.market?.details||'',complete:g.complete,awayFinal:g.away.score,homeFinal:g.home.score});}let f=$('collegeConf').value,q=norm($('collegeSearch').value);let arr=games.filter(g=>confMatch(g,f)&&(!q||norm(g.name+' '+g.home.name+' '+g.away.name).includes(q)));let by={};for(const g of arr){let bits=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(g.date)).map(p=>[p.type,p.value]));let d=bits.year+'-'+bits.month+'-'+bits.day;(by[d]??=[]).push(g)}$('collegeDays').innerHTML=Object.entries(by).map(([d,gs])=>`<div class="college-day"><div class="college-day-head"><b>${fmtDate(d+'T12:00:00Z')}</b><span>${gs.length} GAME${gs.length===1?'':'S'}</span></div><div class="college-games">${gs.map(gameCard).join('')}</div></div>`).join('');$('collegeEmpty').style.display=arr.length?'none':'block';$('collegeGameCount').textContent=arr.length;$('collegeProjectedCount').textContent=arr.filter(projFor).length;$('collegeFbsCount').textContent=new Set(arr.flatMap(g=>[g.home.name,g.away.name])).size;}
+function render(){for(const g of games){const p=projFor(g);if(p&&window.GridlockPicks)window.GridlockPicks.syncGame({league:'NCAA',gameId:g.id,week:(weeks[+$('collegeWeek').value]?.label||'').replace(/[^0-9]/g,''),date:g.date,away:g.away.name,home:g.home.name,awayAbbr:g.away.abbr,homeAbbr:g.home.abbr,modelHomeMargin:Number(p.margin),marketHomeMargin:Number.isFinite(Number(p.market_margin))?Number(p.market_margin):g.market?.home_margin,marketDetails:g.market?.details||'',state:g.state,complete:g.complete,awayFinal:g.away.score,homeFinal:g.home.score});}let f=$('collegeConf').value,q=norm($('collegeSearch').value);let arr=games.filter(g=>confMatch(g,f)&&(!q||norm(g.name+' '+g.home.name+' '+g.away.name).includes(q)));let by={};for(const g of arr){let bits=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(g.date)).map(p=>[p.type,p.value]));let d=bits.year+'-'+bits.month+'-'+bits.day;(by[d]??=[]).push(g)}$('collegeDays').innerHTML=Object.entries(by).map(([d,gs])=>`<div class="college-day"><div class="college-day-head"><b>${fmtDate(d+'T12:00:00Z')}</b><span>${gs.length} GAME${gs.length===1?'':'S'}</span></div><div class="college-games">${gs.map(gameCard).join('')}</div></div>`).join('');$('collegeEmpty').style.display=arr.length?'none':'block';$('collegeGameCount').textContent=arr.length;$('collegeProjectedCount').textContent=arr.filter(projFor).length;$('collegeFbsCount').textContent=new Set(arr.flatMap(g=>[g.home.name,g.away.name])).size;}
 function csvParse(text){let rows=[],row=[],cell='',q=false;for(let i=0;i<text.length;i++){let c=text[i];if(c==='"'){if(q&&text[i+1]==='"'){cell+='"';i++}else q=!q}else if(c===','&&!q){row.push(cell);cell=''}else if((c==='\n'||c==='\r')&&!q){if(c==='\r'&&text[i+1]==='\n')i++;row.push(cell);if(row.some(x=>x.trim()))rows.push(row);row=[];cell=''}else cell+=c}row.push(cell);if(row.some(x=>x.trim()))rows.push(row);return rows}
 function pick(o,names){for(const n of names)if(o[n]!=null&&String(o[n]).trim()!=='')return o[n];return ''}
 async function importProj(file){let rows=csvParse(await file.text());if(rows.length<2)return alert('No projection rows found.');let hdr=rows[0].map(x=>norm(x).replace(/ /g,'_')), ok=0,bad=[];for(const r of rows.slice(1)){let o={};hdr.forEach((h,i)=>o[h]=r[i]??'');let away=pick(o,['away_team','away','visitor','road_team']),home=pick(o,['home_team','home']);if(!away||!home){bad.push(r.join(','));continue}let rec={away_team:away,home_team:home,away_score:pick(o,['away_score','projected_away_score','away_points','away_pts','proj_away']),home_score:pick(o,['home_score','projected_home_score','home_points','home_pts','proj_home']),away_win_prob:pick(o,['away_win_prob','away_win_probability','away_wp']),home_win_prob:pick(o,['home_win_prob','home_win_probability','home_wp'])};projections[key(away,home)]=rec;ok++}localStorage.setItem('gridlock_college_projections_2026',JSON.stringify(projections));render();alert(`Loaded ${ok} GRIDLOCK projections.${bad.length?` ${bad.length} rows could not be matched to away/home columns.`:''}`)}
@@ -3646,6 +3727,7 @@ function mainCardShareURL(g,league,side,p=null){
 }
 let GRIDLOCK_SHARE_STATE=null;
 function openPickShareModal(g,side,league,p){
+ GRIDLOCK_SHARE_BUSY=false;
  const t=g[side],line=mainCardMarketSpread(g,side,league,p),text=mainCardShareText(g,side,league,p),url=mainCardShareURL(g,league,side,p);
  const modelMargin=p?Number(p.margin):NaN;
  const marketMargin=league==='NFL'?Number(g.market?.margin):(Number.isFinite(Number(p?.market_margin))?Number(p.market_margin):Number(g.market?.home_margin));
@@ -3670,7 +3752,10 @@ function openPickShareModal(g,side,league,p){
 }
 function closePickShareModal(){
  const modal=document.getElementById('pickShareModal');
- modal?.classList.remove('open');modal?.setAttribute('aria-hidden','true');
+ modal?.classList.remove('open');
+ modal?.setAttribute('aria-hidden','true');
+ document.body.style.pointerEvents='';
+ document.documentElement.style.pointerEvents='';
 }
 async function copyGridlockPick(){
  if(!GRIDLOCK_SHARE_STATE)return false;
@@ -3680,41 +3765,82 @@ async function copyGridlockPick(){
    }catch(_){return false}
  }
 }
+let GRIDLOCK_SHARE_BUSY=false;
 async function sendMainCardShare(kind){
- if(!GRIDLOCK_SHARE_STATE)return;
- const {text,url,full}=GRIDLOCK_SHARE_STATE;
- if(kind==='copy'){
-   const ok=await copyGridlockPick();
-   const b=document.querySelector('[data-pick-share="copy"]');if(b){const old=b.textContent;b.textContent=ok?'COPIED':'COPY FAILED';setTimeout(()=>b.textContent=old,1800)}
+ if(!GRIDLOCK_SHARE_STATE||GRIDLOCK_SHARE_BUSY)return;
+ const {g,text,url,full}=GRIDLOCK_SHARE_STATE;
+ if(window.GridlockPicks?.hasStarted({date:g?.date,state:g?.state,complete:g?.complete})){
+   closePickShareModal();
    return;
  }
- if(kind==='msg'){
-   // Native device share sheet: gives the normal recipient/suggested-contacts flow.
-   if(navigator.share){
-     try{
-       await navigator.share({
-         title:'GRIDLOCK PICK',
-         text:full
-       });
-       return;
-     }catch(e){
-       if(e?.name==='AbortError')return;
+
+ GRIDLOCK_SHARE_BUSY=true;
+
+ // Close the GRIDLOCK overlay immediately so it can never be left sitting
+ // over the page while the OS/share destination takes control.
+ closePickShareModal();
+
+ try{
+   if(kind==='copy'){
+     const ok=await copyGridlockPick();
+     if(ok){
+       const toast=document.createElement('div');
+       toast.textContent='PICK COPIED';
+       toast.style.cssText='position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:200;background:#0d3151;color:#fff;border:1px solid #3e8cba;border-radius:999px;padding:9px 14px;font:900 9px system-ui;letter-spacing:.06em';
+       document.body.appendChild(toast);
+       setTimeout(()=>toast.remove(),1400);
      }
+     return;
    }
-   // Fallback only when native sharing is unavailable.
-   const ua=navigator.userAgent||'',ios=/iPhone|iPad|iPod/i.test(ua);
-   const href=ios?'sms:&body='+encodeURIComponent(full):'sms:?body='+encodeURIComponent(full);
-   const a=document.createElement('a');a.href=href;a.style.display='none';document.body.appendChild(a);a.click();a.remove();
-   return;
- }
- if(kind==='x'){
-   window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text+'\n'+url),'_blank','noopener,noreferrer');
-   return;
- }
- if(kind==='fb'){
-   await copyGridlockPick();
-   window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url),'_blank','noopener,noreferrer');
-   return;
+
+   if(kind==='x'){
+     // Open synchronously from the user's click so popup blockers do not
+     // strand the app behind the modal.
+     window.open(
+       'https://twitter.com/intent/tweet?text='+encodeURIComponent(text+'\n'+url),
+       '_blank',
+       'noopener,noreferrer'
+     );
+     return;
+   }
+
+   if(kind==='fb'){
+     // Open Facebook first while the click still counts as a user gesture.
+     const fbUrl='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url);
+     window.open(fbUrl,'_blank','noopener,noreferrer');
+     // Copy the exact pick in the background as a fallback for Facebook.
+     copyGridlockPick().catch(()=>{});
+     return;
+   }
+
+   if(kind==='msg'){
+     // Invoke native share synchronously after the modal has closed.
+     if(navigator.share){
+       try{
+         await navigator.share({
+           title:'GRIDLOCK PICK',
+           text:full
+         });
+         return;
+       }catch(e){
+         if(e?.name==='AbortError')return;
+       }
+     }
+
+     // Fallback only if native share is unavailable or fails.
+     const ua=navigator.userAgent||'',ios=/iPhone|iPad|iPod/i.test(ua);
+     const href=ios?'sms:&body='+encodeURIComponent(full):'sms:?body='+encodeURIComponent(full);
+     const a=document.createElement('a');
+     a.href=href;
+     a.style.display='none';
+     document.body.appendChild(a);
+     a.click();
+     a.remove();
+     return;
+   }
+ }finally{
+   // Always release the UI lock even if the destination app/browser throws.
+   setTimeout(()=>{GRIDLOCK_SHARE_BUSY=false},250);
  }
 }
 function selectMainCardSide(card,side,g,league,p){
@@ -3725,6 +3851,12 @@ function selectMainCardSide(card,side,g,league,p){
  if(label)label.textContent='SELECTED: '+(t.abbr||t.name)+(line?' '+line:'');
 }
 function handleMainCardShareClick(e,card,g,league,p){
+ const started=window.GridlockPicks?window.GridlockPicks.hasStarted({date:g.date,state:g.state,complete:g.complete}):(Date.now()>=new Date(g.date).getTime()||g.state==='in'||g.state==='post'||g.complete);
+ if(started){
+   const shareTarget=e.target.closest('[data-share-side],[data-main-share]');
+   if(shareTarget){e.preventDefault();e.stopPropagation()}
+   return !!shareTarget;
+ }
  const sideEl=e.target.closest('[data-share-side]');
  if(sideEl){
    e.preventDefault();e.stopPropagation();
