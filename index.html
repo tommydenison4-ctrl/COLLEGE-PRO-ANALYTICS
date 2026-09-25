@@ -1824,6 +1824,48 @@ body.college-mode #scoreStrip .college-score-chip{
     rec.gradedAt=new Date().toISOString();
     return rec
   }
+
+  async function verifyCovers(rec){
+    if(!rec||!rec.gameId||!rec.complete||rec.coversChecking)return rec;
+    const all=read(),i=all.findIndex(x=>x.key===rec.key);if(i<0)return rec;
+    const cur=all[i];if(cur.coversVerified)return cur;
+    cur.coversChecking=true;all[i]=cur;write(all);
+    try{
+      const q=new URLSearchParams({
+        league:cur.league,date:String(cur.date||'').slice(0,10),
+        away:cur.away||'',home:cur.home||'',
+        awayAbbr:cur.awayAbbr||'',homeAbbr:cur.homeAbbr||''
+      });
+      const r=await fetch('/api/covers-verify?'+q.toString(),{cache:'no-store'});
+      const j=await r.json();
+      const latest=read(),k=latest.findIndex(x=>x.key===cur.key);if(k<0)return cur;
+      const x=latest[k];x.coversChecking=false;x.coversCheckedAt=new Date().toISOString();
+      if(j&&j.found){
+        x.coversVerified=true;x.coversSource=j.source||'Covers';x.coversUrl=j.url||'';
+        x.coversAwayFinal=num(j.awayFinal);x.coversHomeFinal=num(j.homeFinal);
+        x.coversClosingHomeSpread=num(j.homeSpread);
+        if(x.side==='home'&&x.coversClosingHomeSpread!==null)x.coversClosingPickSpread=x.coversClosingHomeSpread;
+        if(x.side==='away'&&x.coversClosingHomeSpread!==null)x.coversClosingPickSpread=-x.coversClosingHomeSpread;
+        if(x.isPlay&&x.coversAwayFinal!==null&&x.coversHomeFinal!==null){
+          const actual=x.side==='home'?x.coversHomeFinal-x.coversAwayFinal:x.coversAwayFinal-x.coversHomeFinal;
+          const ats=actual+x.marketSpread;
+          x.atsMargin=+ats.toFixed(3);x.awayFinal=x.coversAwayFinal;x.homeFinal=x.coversHomeFinal;
+          x.grade=Math.abs(ats)<1e-9?'PUSH':ats>0?'WIN':'LOSS';
+          x.gradeSource='COVERS VERIFIED FINAL';x.gradedAt=new Date().toISOString();
+        }
+      }else{
+        x.coversVerified=false;x.coversSource=j?.source||'Covers';
+        x.coversNote=j?.note||'Covers result not available yet.';
+        if(x.isPlay&&x.grade&&x.grade!=='PENDING'&&!x.gradeSource)x.gradeSource='FINAL SCORE';
+      }
+      latest[k]=x;write(latest);render();return x;
+    }catch(e){
+      const latest=read(),k=latest.findIndex(x=>x.key===cur.key);
+      if(k>=0){latest[k].coversChecking=false;latest[k].coversCheckedAt=new Date().toISOString();latest[k].coversNote='Covers verification unavailable.';write(latest);render()}
+      return rec;
+    }
+  }
+
   function syncGame(o){
     if(!o||!o.gameId)return null;
     const league=String(o.league||'').toUpperCase(),k=key(league,o.gameId),all=read();
@@ -1846,8 +1888,11 @@ body.college-mode #scoreStrip .college-score-chip{
       all[i]=rec;write(all);
     }
 
-    if(rec&&o.complete&&rec.isPlay&&rec.grade==='PENDING'){
-      grade(rec,o.awayFinal,o.homeFinal);all[i]=rec;write(all)
+    if(rec&&o.complete){
+      rec.complete=true;
+      if(rec.isPlay&&rec.grade==='PENDING'){grade(rec,o.awayFinal,o.homeFinal);rec.gradeSource=rec.gradeSource||'FINAL SCORE'}
+      all[i]=rec;write(all);
+      if(!rec.coversVerified&&!rec.coversChecking)setTimeout(()=>verifyCovers(rec),0);
     }
     if(rec){render();return rec}
     return null
@@ -1874,14 +1919,18 @@ body.college-mode #scoreStrip .college-score-chip{
     const plays=shown.filter(r=>r.isPlay!==false&&Number(r.stars)>0);
     const graded=plays.filter(r=>r.grade!=='PENDING'),wins=graded.filter(r=>r.grade==='WIN').length,losses=graded.filter(r=>r.grade==='LOSS').length,pushes=graded.filter(r=>r.grade==='PUSH').length;
     const k=document.getElementById('modelPicksKpis');
-    if(k)k.innerHTML=[['PLAYS',plays.length],['NO PLAYS',shown.filter(r=>!r.isPlay).length],['ATS RECORD',`${wins}-${losses}-${pushes}`],['WIN RATE',(wins+losses)?(100*wins/(wins+losses)).toFixed(1)+'%':'—'],['5-STAR',plays.filter(r=>r.stars===5).length]].map(x=>`<div class="picks-kpi"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('');
+    if(k){
+      const base=[['PLAYS',plays.length],['NO PLAYS',shown.filter(r=>!r.isPlay).length],['ATS RECORD',`${wins}-${losses}-${pushes}`],['WIN RATE',(wins+losses)?(100*wins/(wins+losses)).toFixed(1)+'%':'—']];
+      const tiers=[1,2,3,4,5].map(s=>{const a=plays.filter(r=>Number(r.stars)===s&&r.grade!=='PENDING'),w=a.filter(r=>r.grade==='WIN').length,l=a.filter(r=>r.grade==='LOSS').length,p=a.filter(r=>r.grade==='PUSH').length;return [`${'★'.repeat(s)} ${s}-STAR`,`${w}-${l}-${p} • ${(w+l)?(100*w/(w+l)).toFixed(1)+'%':'—'}`]});
+      k.innerHTML=[...base,...tiers].map(x=>`<div class="picks-kpi"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('');
+    }
     box.innerHTML=shown.length?`<div class="pick-row head"><span>LEAGUE</span><span>MATCHUP / PICK</span><span>MARKET</span><span>MODEL</span><span>EDGE</span><span>TIER</span><span>RESULT</span></div>`+shown.map(r=>{
       const line=(r.marketSpread>0?'+':'')+Number(r.marketSpread).toFixed(1),g=String(r.grade||'PENDING').toLowerCase();
-      return `<div class="pick-row"><div class="pick-cell"><b>${esc(r.league)}</b><small>${esc(r.week?`Week ${r.week}`:'')}</small></div><div class="match"><b>${esc(r.away)} at ${esc(r.home)}</b><small>${esc(r.pickTeam)} ${line} • ${new Date(r.date).toLocaleDateString()}</small></div><div class="pick-cell">${line}<small>${esc(r.marketDetails||'pregame spread')}</small></div><div class="pick-cell">${(r.modelTeamMargin>=0?'+':'')+Number(r.modelTeamMargin).toFixed(1)}<small>team margin</small></div><div class="pick-cell">+${Number(r.edge).toFixed(1)}<small>points</small></div><div class="pick-cell">${r.isPlay?`<span class="pick-stars">${stars(r.stars)}</span><small>${r.stars}-star</small>`:`<span class="pick-slate-noplay">NO PLAY</span><small>frozen</small>`}</div><div>${r.isPlay?`<span class="pick-grade ${g}">${esc(r.grade||'PENDING')}</span>`:`<span class="pick-grade">NO PLAY</span>`}${r.isPlay&&r.grade!=='PENDING'?`<small style="display:block;margin-top:4px;color:#718ea2">${r.awayFinal}–${r.homeFinal}</small>`:''}</div></div>`
+      return `<div class="pick-row"><div class="pick-cell"><b>${esc(r.league)}</b><small>${esc(r.week?`Week ${r.week}`:'')}</small></div><div class="match"><b>${esc(r.away)} at ${esc(r.home)}</b><small>${esc(r.pickTeam)} ${line} • ${new Date(r.date).toLocaleDateString()}</small></div><div class="pick-cell">${line}<small>${esc(r.marketDetails||'pregame spread')}</small></div><div class="pick-cell">${(r.modelTeamMargin>=0?'+':'')+Number(r.modelTeamMargin).toFixed(1)}<small>team margin</small></div><div class="pick-cell">+${Number(r.edge).toFixed(1)}<small>points</small></div><div class="pick-cell">${r.isPlay?`<span class="pick-stars">${stars(r.stars)}</span><small>${r.stars}-star</small>`:`<span class="pick-slate-noplay">NO PLAY</span><small>frozen</small>`}</div><div>${r.isPlay?`<span class="pick-grade ${g}">${esc(r.grade||'PENDING')}</span>`:`<span class="pick-grade">NO PLAY</span>`}${r.isPlay&&r.grade!=='PENDING'?`<small style="display:block;margin-top:4px;color:#718ea2">${r.awayFinal}–${r.homeFinal}</small>`:''}${r.coversVerified?`<small style="display:block;margin-top:4px;color:#6fbf8f">Covers verified${r.coversClosingPickSpread!==null&&r.coversClosingPickSpread!==undefined?` • close ${(r.coversClosingPickSpread>0?'+':'')+Number(r.coversClosingPickSpread).toFixed(1)}`:''}</small>`:r.complete?`<small style="display:block;margin-top:4px;color:#718ea2">${r.coversChecking?'Checking Covers…':'Covers check pending'}</small>`:''}</div></div>`
     }).join(''):`<div class="pick-empty"><b>No frozen snapshots yet</b>Pregame model tiers appear here before kickoff and lock permanently when the game starts.</div>`
   }
   function setFilter(v){filter=v;document.querySelectorAll('[data-picks-filter]').forEach(b=>b.classList.toggle('active',b.dataset.picksFilter===v));render()}
-  window.GridlockPicks={tier,stars,get,syncGame,detailHTML,slateHTML,hasStarted,render,setFilter,all:read};
+  window.GridlockPicks={tier,stars,get,syncGame,verifyCovers,detailHTML,slateHTML,hasStarted,render,setFilter,all:read};
 })();
 </script>
 
