@@ -19,3 +19,22 @@ window.COLLEGE_AWM=(()=>{
 })();
 
 window.GRIDLOCK_COLLEGE_PROJ_FOR=g=>{const p=COLLEGE_AWM.project(g);return p.available?p:null;};
+
+// Load season watches and sourced player views after the existing page initializes.
+(function(){
+ async function panels(){
+  if(window.AWM_BUNDLED)return;
+  for(const file of ['season-watch-data.js','season-watch.js','player-stats-nfl-data.js','player-stats-ncaa-data.js','football-tabs.js']){
+   try{
+    await new Promise((resolve,reject)=>{
+     const script=document.createElement('script');
+     script.src=file+'?v=20260926-v72restore';
+     script.onload=resolve;
+     script.onerror=reject;
+     document.head.append(script);
+    });
+   }catch(error){console.warn('Season panel unavailable:',file);break;}
+  }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',panels,{once:true});else panels();
+})();
